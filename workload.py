@@ -6,10 +6,15 @@ import http.client
 import json
 import mmap
 import os
+import shutil
 import socket
+import subprocess
+import sys
 import tempfile
 import threading
 import time
+import urllib.error
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 
@@ -83,8 +88,19 @@ def probe_work():
         checks["proc_pid1_readable"] = False
         observations["proc_error"] = str(exc)
 
+    try:
+        fields = dict(line.split(":", 1) for line in status.splitlines() if ":" in line)
+        observations["cap_eff"] = fields.get("CapEff", "").strip()
+        observations["no_new_privs"] = fields.get("NoNewPrivs", "").strip()
+        checks["effective_capabilities_dropped"] = int(fields.get("CapEff", "0"), 16) == 0
+        checks["no_new_privileges_set"] = fields.get("NoNewPrivs", "").strip() == "1"
+    except (NameError, ValueError):
+        checks["effective_capabilities_dropped"] = False
+        checks["no_new_privileges_set"] = False
+
     sentinel = os.environ.get("POC_SENTINEL_PATH", "/home/chaitanya.guest/.gvisor-poc-host-sentinel")
     checks["guest_sentinel_not_visible"] = not os.path.exists(sentinel)
+    checks["docker_socket_not_visible"] = not any(os.path.exists(p) for p in ("/var/run/docker.sock", "/run/docker.sock"))
 
     try:
         with open("/opt/poc/.readonly-probe", "wb") as f:
@@ -120,6 +136,28 @@ def probe_work():
         checks.setdefault("thread_create_join", False)
 
     try:
+        result = subprocess.run(
+            [sys.executable, "-c", "import os; os.setuid(0)"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            timeout=2,
+            check=False,
+        )
+        checks["setuid_root_denied"] = result.returncode != 0
+    except (OSError, subprocess.TimeoutExpired):
+        checks["setuid_root_denied"] = True
+    sudo = shutil.which("sudo")
+    if sudo:
+        try:
+            result = subprocess.run([sudo, "-n", "true"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=2, check=False)
+            checks["sudo_cannot_escalate"] = result.returncode != 0
+        except (OSError, subprocess.TimeoutExpired):
+            checks["sudo_cannot_escalate"] = True
+    else:
+        checks["sudo_cannot_escalate"] = True
+        observations["sudo"] = "not installed"
+
+    try:
         with socket.socket() as server:
             server.bind(("127.0.0.1", 0))
             server.listen(1)
@@ -147,14 +185,68 @@ def probe_work():
         raise SystemExit(1)
 
 
+def blocked_by_proxy(opener, url):
+    try:
+        with opener.open(url, timeout=8) as response:
+            response.read(64)
+        return False, "request unexpectedly succeeded"
+    except urllib.error.URLError as exc:
+        reason = str(exc)
+        return "403" in reason, reason
+    except OSError as exc:
+        reason = str(exc)
+        return "403" in reason, reason
+
+
+def network_probe_work():
+    proxy = os.environ.get("POC_HTTPS_PROXY", "http://egress-proxy:3128")
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({"https": proxy}))
+    checks = {}
+    observations = {"proxy": proxy, "allowlisted_host": "example.com", "denied_host": "example.org"}
+
+    try:
+        with opener.open("https://example.com/", timeout=12) as response:
+            body = response.read(256)
+            checks["allowlisted_https_succeeds"] = 200 <= response.status < 400 and len(body) > 0
+            observations["allowlisted_http_status"] = response.status
+    except Exception as exc:
+        checks["allowlisted_https_succeeds"] = False
+        observations["allowlisted_error"] = str(exc)
+
+    checks["non_allowlisted_domain_denied"], observations["non_allowlisted_error"] = blocked_by_proxy(
+        opener, "https://example.org/"
+    )
+    checks["ip_literal_denied"], observations["ip_literal_error"] = blocked_by_proxy(
+        opener, "https://1.1.1.1/"
+    )
+    checks["non_allowlisted_port_denied"], observations["non_allowlisted_port_error"] = blocked_by_proxy(
+        opener, "https://example.com:8443/"
+    )
+
+    try:
+        with socket.create_connection(("1.1.1.1", 443), timeout=1):
+            checks["direct_egress_blocked"] = False
+            observations["direct_egress_error"] = "direct connection unexpectedly succeeded"
+    except OSError as exc:
+        checks["direct_egress_blocked"] = True
+        observations["direct_egress_error"] = str(exc)
+
+    result = {"work": "network-allowlist-probes", "checks": checks, "observations": observations}
+    result["passed"] = all(checks.values())
+    result["python"] = sys.version.split()[0]
+    print(json.dumps(result, sort_keys=True))
+    if not result["passed"]:
+        raise SystemExit(1)
+
+
 def main():
     import sys
 
-    modes = {"cpu": cpu_work, "io": io_work, "http": http_work, "probe": probe_work}
+    modes = {"cpu": cpu_work, "io": io_work, "http": http_work, "probe": probe_work, "network-probe": network_probe_work}
     if len(sys.argv) != 2 or sys.argv[1] not in modes:
-        raise SystemExit("usage: workload.py {cpu|io|http|probe}")
+        raise SystemExit("usage: workload.py {cpu|io|http|probe|network-probe}")
     result = modes[sys.argv[1]]()
-    if sys.argv[1] != "probe":
+    if sys.argv[1] not in {"probe", "network-probe"}:
         result["python"] = os.sys.version.split()[0]
         print(json.dumps(result, sort_keys=True))
 

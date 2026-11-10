@@ -65,3 +65,29 @@ Date: 2026-11-10. The same probe image ran under both runtimes with 1 CPU, 256 M
 | Networking | Loopback socket works; external connection to a documentation-only address is blocked | Pass | Pass |
 
 Raw probe output is in `results/safety-20261110T155834Z/checks.jsonl`. These are configuration regression checks for one benign process. They do not attempt container escapes, kernel exploitation, or malicious workloads, and they do not establish that either runtime is secure.
+
+## Expanded boundary and egress policy checks
+
+Date: 2026-11-10. Follow-up checks used the same guest, pinned workload image, and runtime limits. The safety runner inspected Docker's saved launch configuration as well as the process's observed state. Both `runc` and `runsc` passed all 25 checks; evidence is in `results/safety-20261110T180847Z/checks.jsonl`.
+
+| Area | Result under both runtimes |
+| --- | --- |
+| Privilege | UID 10001, effective capability mask zero, `no_new_privs=1`, and an attempted `setuid(0)` was denied |
+| Sudo | `sudo` is absent from this minimal image; the process also cannot switch to UID 0 via `setuid` |
+| Host boundary | No bind mounts, devices, privileged mode, host namespaces, or visible Docker socket; a synthetic guest-home marker was not visible |
+| Filesystem/process | Read-only root rejects writes (`EROFS`), `/tmp` remains writable, and only PID 1 appears in the container's proc view |
+| Networking | Safety probe uses Docker `network=none`; loopback works and external access is blocked |
+
+The sudo result is specifically “sudo unavailable and privilege escalation probes denied”; this does not test a separately installed sudo binary. The synthetic marker is not a real sensitive file and no host home directory is mounted into the VM.
+
+The separate allowlist test uses two Docker networks: the workload joins an internal-only network, while the proxy joins that network and a bridge network. The workload has no direct egress route. The proxy allows exact host `example.com` on TCP 443, resolves the hostname and rejects non-global destination addresses, and records decisions. Both runtimes passed 5/5 checks in `results/network-20261110T180956Z-19376/`:
+
+| Probe | `runc` | `runsc` |
+| --- | --- | --- |
+| HTTPS to `example.com:443` succeeds through proxy (HTTP 200) | Pass | Pass |
+| HTTPS to `example.org:443` is denied | Pass | Pass |
+| Proxy request to IP literal `1.1.1.1:443` is denied | Pass | Pass |
+| Proxy request to `example.com:8443` is denied | Pass | Pass |
+| Direct workload egress to `1.1.1.1:443` is blocked | Pass | Pass |
+
+This validates the demonstrated policy path with a public example domain. It does not establish resilience to hostile proxy clients, covert channels, proxy compromise, or production domain-filtering requirements. Treat the proxy as trusted infrastructure and enforce real egress policy at the network boundary as well. These probes are not a substitute for security review or adversarial testing.

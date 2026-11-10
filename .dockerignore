@@ -1,0 +1,4 @@
+*
+!Dockerfile
+!workload.py
+!allowlist_proxy.py

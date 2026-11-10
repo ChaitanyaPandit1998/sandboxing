@@ -5,5 +5,6 @@ RUN useradd --create-home --uid 10001 poc \
     && chown poc:poc /opt/poc
 WORKDIR /opt/poc
 COPY --chown=poc:poc workload.py /opt/poc/workload.py
+COPY --chown=poc:poc allowlist_proxy.py /opt/poc/allowlist_proxy.py
 USER 10001:10001
 ENTRYPOINT ["python3", "/opt/poc/workload.py"]
