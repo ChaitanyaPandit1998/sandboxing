@@ -1,0 +1,18 @@
+{"runtime":"runc","trial":1,"result":{"digest": "1873d3c971e88055e7e2b4445c68b1e8a6236c9f30643ec20ad24a24e9fa67d9", "iterations": 300000, "python": "3.12.16", "seconds": 0.06124533600001314, "work": "cpu"}}
+{"runtime":"runc","trial":1,"result":{"bytes": 8388608, "digest": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f", "python": "3.12.16", "seconds": 0.005318104000025414, "work": "io"}}
+{"runtime":"runc","trial":1,"result":{"python": "3.12.16", "requests": 200, "seconds": 0.5485114509999676, "work": "http"}}
+{"runtime":"runc","trial":2,"result":{"digest": "1873d3c971e88055e7e2b4445c68b1e8a6236c9f30643ec20ad24a24e9fa67d9", "iterations": 300000, "python": "3.12.16", "seconds": 0.06171943200001806, "work": "cpu"}}
+{"runtime":"runc","trial":2,"result":{"bytes": 8388608, "digest": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f", "python": "3.12.16", "seconds": 0.008329684999978326, "work": "io"}}
+{"runtime":"runc","trial":2,"result":{"python": "3.12.16", "requests": 200, "seconds": 0.5465096039999935, "work": "http"}}
+{"runtime":"runc","trial":3,"result":{"digest": "1873d3c971e88055e7e2b4445c68b1e8a6236c9f30643ec20ad24a24e9fa67d9", "iterations": 300000, "python": "3.12.16", "seconds": 0.06474259800000937, "work": "cpu"}}
+{"runtime":"runc","trial":3,"result":{"bytes": 8388608, "digest": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f", "python": "3.12.16", "seconds": 0.0052089330000058, "work": "io"}}
+{"runtime":"runc","trial":3,"result":{"python": "3.12.16", "requests": 200, "seconds": 0.543257724, "work": "http"}}
+{"runtime":"runsc","trial":1,"result":{"digest": "1873d3c971e88055e7e2b4445c68b1e8a6236c9f30643ec20ad24a24e9fa67d9", "iterations": 300000, "python": "3.12.16", "seconds": 0.07124006699999999, "work": "cpu"}}
+{"runtime":"runsc","trial":1,"result":{"bytes": 8388608, "digest": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f", "python": "3.12.16", "seconds": 0.00591191100000002, "work": "io"}}
+{"runtime":"runsc","trial":1,"result":{"python": "3.12.16", "requests": 200, "seconds": 0.702027969, "work": "http"}}
+{"runtime":"runsc","trial":2,"result":{"digest": "1873d3c971e88055e7e2b4445c68b1e8a6236c9f30643ec20ad24a24e9fa67d9", "iterations": 300000, "python": "3.12.16", "seconds": 0.06919863600000001, "work": "cpu"}}
+{"runtime":"runsc","trial":2,"result":{"bytes": 8388608, "digest": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f", "python": "3.12.16", "seconds": 0.005833367000000006, "work": "io"}}
+{"runtime":"runsc","trial":2,"result":{"python": "3.12.16", "requests": 200, "seconds": 0.726926146, "work": "http"}}
+{"runtime":"runsc","trial":3,"result":{"digest": "1873d3c971e88055e7e2b4445c68b1e8a6236c9f30643ec20ad24a24e9fa67d9", "iterations": 300000, "python": "3.12.16", "seconds": 0.069375141, "work": "cpu"}}
+{"runtime":"runsc","trial":3,"result":{"bytes": 8388608, "digest": "7d212b9c884f5c77896de960ae17cc341cda43b14d6a971f34ca29ebd4badf7f", "python": "3.12.16", "seconds": 0.005867119000000004, "work": "io"}}
+{"runtime":"runsc","trial":3,"result":{"python": "3.12.16", "requests": 200, "seconds": 0.703133998, "work": "http"}}

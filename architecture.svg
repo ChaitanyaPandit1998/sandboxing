@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Local gVisor POC architecture</title>
+  <desc id="desc">An Apple Silicon Mac uses Lima to run an isolated Ubuntu virtual machine. The experiment runner invokes Docker Engine and containerd, which runs identical pinned Python workloads using either runc or gVisor runsc. Results are collected in the guest and copied back to the host workspace.</desc>
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #172b4d; }
+      .title { font-size: 34px; font-weight: 700; letter-spacing: -0.4px; }
+      .subtitle { font-size: 17px; fill: #53657d; }
+      .panel-title { font-size: 21px; font-weight: 700; }
+      .label { font-size: 16px; font-weight: 650; }
+      .body { font-size: 14px; fill: #40536c; }
+      .small { font-size: 12px; fill: #53657d; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; fill: #334860; }
+      .card { fill: #ffffff; stroke: #c8d5e4; stroke-width: 1.5; }
+      .host-card { fill: #f8fbff; stroke: #b8cbe2; stroke-width: 1.5; }
+      .runtime-runc { fill: #eff6ff; stroke: #5b8fd4; stroke-width: 2; }
+      .runtime-runsc { fill: #f4f1ff; stroke: #8b70d6; stroke-width: 2; }
+      .line { fill: none; stroke: #61758f; stroke-width: 2.5; marker-end: url(#arrow); }
+      .line-dashed { fill: none; stroke: #8b70d6; stroke-width: 2; stroke-dasharray: 8 7; marker-end: url(#arrowPurple); }
+      .return-line { fill: none; stroke: #0d8874; stroke-width: 2.5; stroke-dasharray: 7 6; marker-end: url(#arrowTeal); }
+      .pill-text { font-size: 12px; font-weight: 700; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#61758f"/></marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8b70d6"/></marker>
+    <marker id="arrowTeal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0d8874"/></marker>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#f4f7fb"/>
+  <text x="48" y="58" class="title">Local gVisor POC</text>
+  <text x="50" y="88" class="subtitle">Paired runtime experiment on one ARM64 Linux VM · same image, workload, and limits</text>
+
+  <!-- Host boundary -->
+  <rect x="40" y="125" width="350" height="820" rx="18" fill="#eaf1fa" stroke="#a9bfd8" stroke-width="2"/>
+  <text x="66" y="166" class="panel-title">Mac host</text>
+  <text x="66" y="192" class="body">Apple Silicon · macOS · ARM64</text>
+  <rect x="66" y="218" width="298" height="190" rx="12" class="host-card"/>
+  <text x="88" y="250" class="label">POC workspace</text>
+  <text x="88" y="279" class="mono">sandboxing/gvisor-poc/</text>
+  <text x="88" y="309" class="body">Dockerfile · workload.py</text>
+  <text x="88" y="334" class="body">install_gvisor.sh</text>
+  <text x="88" y="359" class="body">run_experiments.sh</text>
+  <text x="88" y="387" class="small">Files copied into guest; no host folder mount</text>
+
+  <rect x="66" y="442" width="298" height="124" rx="12" class="host-card"/>
+  <text x="88" y="475" class="label">Lima virtual machine manager</text>
+  <text x="88" y="505" class="body">Virtualization.framework (VZ)</text>
+  <text x="88" y="532" class="small">Creates and controls the Linux guest</text>
+
+  <rect x="66" y="755" width="298" height="150" rx="12" fill="#e8f6f2" stroke="#83c7b6" stroke-width="1.5"/>
+  <text x="88" y="789" class="label">Results copied back</text>
+  <text x="88" y="819" class="mono">environment.json</text>
+  <text x="88" y="844" class="mono">raw.jsonl · warmup.jsonl</text>
+  <text x="88" y="869" class="mono">summary.json</text>
+
+  <!-- Guest boundary -->
+  <rect x="420" y="125" width="1140" height="820" rx="18" fill="#ffffff" stroke="#879bb5" stroke-width="2.5"/>
+  <text x="450" y="166" class="panel-title">Dedicated Lima Linux VM</text>
+  <text x="450" y="192" class="body">Ubuntu 26.04.1 LTS · ARM64 · kernel 7.0.0-38-generic · 4 vCPU · 6 GiB RAM · 40 GiB disk</text>
+
+  <rect x="455" y="225" width="270" height="112" rx="12" class="card"/>
+  <text x="477" y="257" class="label">Experiment runner</text>
+  <text x="477" y="285" class="body">Builds image · schedules trials</text>
+  <text x="477" y="311" class="body">Captures timings and metadata</text>
+
+  <rect x="800" y="225" width="330" height="112" rx="12" fill="#edf3fb" stroke="#9fb2c9" stroke-width="1.5"/>
+  <text x="822" y="257" class="label">Docker Engine 29.9.3</text>
+  <text x="822" y="285" class="body">containerd · cgroups v2</text>
+  <text x="822" y="311" class="body">Default: runc · registered: runsc</text>
+
+  <rect x="1200" y="225" width="320" height="112" rx="12" class="card"/>
+  <text x="1222" y="257" class="label">Pinned Python image</text>
+  <text x="1222" y="285" class="body">python:3.12-slim</text>
+  <text x="1222" y="311" class="small">Same image used in both paths</text>
+
+  <path d="M364 310 H405 V281 H445" class="return-line"/>
+  <text x="350" y="430" text-anchor="end" class="small" fill="#0d8874">project files to VM</text>
+  <path d="M725 281 H790" class="line"/>
+  <text x="737" y="265" class="small">build / run</text>
+  <path d="M1130 281 H1190" class="line"/>
+  <text x="1134" y="265" class="small">build</text>
+
+  <rect x="620" y="369" width="740" height="64" rx="12" fill="#f7f9fc" stroke="#c8d5e4" stroke-width="1.5"/>
+  <text x="990" y="397" text-anchor="middle" class="label">Runtime selected per container invocation</text>
+  <text x="990" y="420" text-anchor="middle" class="small">Runner alternates which runtime goes first on each trial</text>
+  <path d="M965 337 V360" class="line"/>
+
+  <!-- Runtime lanes -->
+  <rect x="490" y="480" width="480" height="245" rx="14" class="runtime-runc"/>
+  <rect x="1010" y="480" width="480" height="245" rx="14" class="runtime-runsc"/>
+  <path d="M820 433 V452 H730 V470" class="line"/>
+  <path d="M1160 433 V452 H1250 V470" class="line"/>
+
+  <rect x="518" y="501" width="92" height="27" rx="13" fill="#dceaff"/>
+  <text x="564" y="520" text-anchor="middle" class="pill-text" fill="#245d9c">BASELINE</text>
+  <text x="630" y="522" class="panel-title">runc</text>
+  <text x="518" y="558" class="body">Standard OCI runtime path</text>
+  <line x1="518" y1="576" x2="942" y2="576" stroke="#c4d8f0"/>
+  <text x="518" y="607" class="label">Same Python workloads</text>
+  <text x="518" y="632" class="body">CPU · /tmp I/O · loopback HTTP · safe probes</text>
+  <text x="518" y="668" class="small">Selected by Docker's default runtime</text>
+  <text x="518" y="700" class="small">Container limits and image match the runsc lane</text>
+
+  <rect x="1038" y="501" width="92" height="27" rx="13" fill="#e8e0ff"/>
+  <text x="1084" y="520" text-anchor="middle" class="pill-text" fill="#6149a7">SANDBOX</text>
+  <text x="1150" y="522" class="panel-title">runsc · gVisor</text>
+  <text x="1038" y="558" class="body">Sentry-based application kernel</text>
+  <line x1="1038" y1="576" x2="1462" y2="576" stroke="#d8cff5"/>
+  <text x="1038" y="607" class="label">Same Python workloads</text>
+  <text x="1038" y="632" class="body">CPU · /tmp I/O · loopback HTTP · safe probes</text>
+  <text x="1038" y="668" class="small">Docker runtime registered from official gVisor package</text>
+  <text x="1038" y="700" class="small">Only the runtime changes between paired paths</text>
+
+  <rect x="535" y="750" width="910" height="82" rx="12" fill="#fff8e9" stroke="#e3c77d" stroke-width="1.5"/>
+  <text x="990" y="780" text-anchor="middle" class="label">Identical container policy in both lanes</text>
+  <text x="990" y="807" text-anchor="middle" class="body">1 CPU · 256 MiB RAM · 128 PIDs · no external network · read-only root · 64 MiB /tmp · UID 10001 · no-new-privileges</text>
+  <path d="M730 725 V740" class="line"/>
+  <path d="M1250 725 V740" class="line"/>
+
+  <rect x="735" y="858" width="510" height="62" rx="12" fill="#e8f6f2" stroke="#83c7b6" stroke-width="1.5"/>
+  <text x="990" y="884" text-anchor="middle" class="label">Guest results</text>
+  <text x="990" y="906" text-anchor="middle" class="small">Warm-ups · 20 trials · raw timings · quartiles · environment</text>
+  <path d="M990 832 V848" class="line"/>
+
+  <!-- File transfer boundary -->
+  <path d="M735 888 H405 V831 H355" class="return-line"/>
+  <text x="425" y="866" class="small" fill="#0d8874">copy results to Mac</text>
+
+  <rect x="48" y="953" width="1504" height="1" fill="#d7e0eb"/>
+  <text x="50" y="978" class="small">Docker Desktop is installed on the host but is not the experiment daemon. Both runtime paths execute inside the same Lima VM.</text>
+</svg>
