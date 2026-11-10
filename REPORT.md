@@ -105,3 +105,21 @@ Date: 2026-11-11 IST (2026-11-10 UTC). Deliberately weakened, temporary containe
 | Give workload a direct bridge route alongside the proxy network | Allowlisted proxy request still works, while direct egress succeeds and the bypass probe fails | Detected | Detected |
 
 The bind-mount control exposed a checker gap: Docker reports mounts created with `--mount` in the top-level inspect `Mounts` field, not only in `HostConfig.Binds`. The shared validator now checks both representations, and the negative control imports that same validator. No real host files, credentials, privileged containers, or host namespaces were used. These cases test selected probe sensitivity and do not constitute adversarial testing.
+
+## Kernel-interface syscall matrix
+
+Date: 2026-11-11 IST (2026-11-10 UTC). Seven non-destructive probes were run under the same container policy on the ARM64 Lima guest: UID 10001, no capabilities, `no_new_privileges`, read-only root, and no network. Docker Engine 29.9.3 reported `seccomp,profile=builtin` and `apparmor,profile=default`; the active Docker seccomp profile can therefore account for shared denials. Full observations are in `results/syscall-20261110T192449Z-26740/matrix.jsonl`, with daemon settings in `engine.json` and unchanged synthetic marker hashes in `host-state.jsonl`.
+
+| Probe | `runc` observation | `runsc` observation |
+| --- | --- | --- |
+| Invalid-filesystem `mount` request | `EPERM` | `EPERM` |
+| `unshare(CLONE_NEWNS)` in a short-lived child | `EPERM` | `EPERM` |
+| Invalid `bpf` command | `EPERM` | `EPERM` |
+| Invalid `keyctl` operation | `EPERM` | `ENOSYS` |
+| Invalid `ptrace` request | `ESRCH` | `ESRCH` |
+| `perf_event_open` with a null attribute pointer | `EPERM` | `ENODEV` |
+| `userfaultfd` create-and-immediately-close | `EPERM` | `ENOSYS` |
+
+The equal `EPERM` results are consistent with shared Docker filtering, while `ENOSYS` under `runsc` is consistent with an interface not being implemented there. These observations do not by themselves prove which layer produced a denial or show that one runtime is more secure. `ESRCH` and `ENODEV` are errors from deliberately invalid probes, not successful use of those interfaces. The userfaultfd probe closes its descriptor immediately if creation succeeds. Both runs observed the same SHA-256 for the synthetic guest marker afterward.
+
+This is a small interface-behavior inventory, not syscall fuzzing or escape testing. A stronger comparison would require reviewed, version-specific test cases and host-side monitoring in a disposable VM, while retaining identical Docker security profiles and container settings. Docker documents its built-in seccomp profile as an allowlist that blocks selected system calls; see [Docker seccomp documentation](https://docs.docker.com/engine/security/seccomp).

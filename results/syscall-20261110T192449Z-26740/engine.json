@@ -1,0 +1,9 @@
+{
+  "docker_engine_version": "29.9.3",
+  "seccomp_note": "Record the daemon-reported profile. If no seccomp profile is listed, verify daemon configuration; Docker normally applies its default profile unless overridden.",
+  "security_options": [
+    "name=apparmor,profile=default",
+    "name=seccomp,profile=builtin",
+    "name=cgroupns"
+  ]
+}

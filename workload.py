@@ -2,10 +2,13 @@
 """Small dependency-free workloads for paired runc/runsc smoke measurements."""
 
 import hashlib
+import errno
 import http.client
 import json
 import mmap
 import os
+import platform
+import ctypes
 import shutil
 import socket
 import subprocess
@@ -185,6 +188,121 @@ def probe_work():
         raise SystemExit(1)
 
 
+def syscall_matrix_work():
+    """Record harmless kernel-interface probe outcomes; do not treat this as an escape test."""
+    if not sys.platform.startswith("linux"):
+        raise SystemExit("syscall matrix must run inside the Linux guest")
+    machine = platform.machine().lower()
+    numbers = {
+        "aarch64": {"bpf": 280, "keyctl": 219, "ptrace": 117, "perf_event_open": 241, "userfaultfd": 282},
+        "x86_64": {"bpf": 321, "keyctl": 250, "ptrace": 101, "perf_event_open": 298, "userfaultfd": 323},
+    }.get(machine)
+    if numbers is None:
+        raise SystemExit(f"syscall matrix has no syscall numbers for {machine}")
+
+    child_program = r'''import ctypes, errno, json, os, sys
+name, number = sys.argv[1], int(sys.argv[2])
+libc = ctypes.CDLL(None, use_errno=True)
+if name == "mount-invalid-fstype":
+    libc.mount.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_ulong, ctypes.c_void_p]
+    libc.mount.restype = ctypes.c_int
+    ctypes.set_errno(0)
+    result = libc.mount(b"none", b"/tmp", b"poc-no-such-filesystem", 0, None)
+elif name == "unshare-mount-namespace":
+    libc.unshare.argtypes = [ctypes.c_int]
+    libc.unshare.restype = ctypes.c_int
+    ctypes.set_errno(0)
+    result = libc.unshare(0x00020000)  # CLONE_NEWNS; the child exits immediately if permitted.
+else:
+    number = int(number)
+    libc.syscall.restype = ctypes.c_long
+    ctypes.set_errno(0)
+    if name == "bpf-invalid-command":
+        result = libc.syscall(number, 0xffffffff, 0, 0)
+    elif name == "keyctl-invalid-operation":
+        result = libc.syscall(number, -1, 0, 0, 0, 0)
+    elif name == "ptrace-invalid-request":
+        result = libc.syscall(number, 0x7fffffff, 0, 0, 0)
+    elif name == "perf-event-open-null-attr":
+        result = libc.syscall(number, 0, -1, 0, -1, 0)
+    elif name == "userfaultfd-create-close":
+        result = libc.syscall(number, 0x80000 | 0x800)  # O_CLOEXEC | O_NONBLOCK
+        if result >= 0:
+            os.close(result)
+    else:
+        raise SystemExit("unknown syscall probe")
+error = ctypes.get_errno() if result < 0 else 0
+print(json.dumps({"return": int(result), "errno": error, "errno_name": errno.errorcode.get(error, "")}, sort_keys=True))
+'''
+
+    probes = [
+        ("mount-invalid-fstype", 0),
+        ("unshare-mount-namespace", 0),
+        ("bpf-invalid-command", numbers["bpf"]),
+        ("keyctl-invalid-operation", numbers["keyctl"]),
+        ("ptrace-invalid-request", numbers["ptrace"]),
+        ("perf-event-open-null-attr", numbers["perf_event_open"]),
+        ("userfaultfd-create-close", numbers["userfaultfd"]),
+    ]
+    outcomes = {}
+    for name, number in probes:
+        try:
+            child = subprocess.run(
+                [sys.executable, "-c", child_program, name, str(number)],
+                capture_output=True, text=True, timeout=3, check=False,
+            )
+            try:
+                detail = json.loads(child.stdout.strip().splitlines()[-1])
+                code = detail["errno"]
+                classification = "permitted" if detail["return"] >= 0 else (
+                    "blocked" if code in (errno.EPERM, errno.EACCES) else
+                    "unsupported" if code == errno.ENOSYS else "rejected-invalid-probe"
+                )
+                outcomes[name] = {"classification": classification, **detail, "child_exit": child.returncode}
+            except (IndexError, KeyError, json.JSONDecodeError):
+                outcomes[name] = {
+                    "classification": "terminated-or-no-result",
+                    "child_exit": child.returncode,
+                    "stderr": child.stderr[-300:],
+                }
+        except subprocess.TimeoutExpired:
+            outcomes[name] = {"classification": "timed-out"}
+
+    status = {}
+    try:
+        with open("/proc/self/status", encoding="utf-8") as stream:
+            fields = dict(line.split(":", 1) for line in stream if ":" in line)
+        status = {"cap_eff": fields.get("CapEff", "").strip(), "no_new_privs": fields.get("NoNewPrivs", "").strip()}
+    except OSError as exc:
+        status = {"status_error": str(exc)}
+
+    sentinel = os.environ.get("POC_SYSCALL_SENTINEL_PATH", "/home/chaitanya.guest/.gvisor-poc-syscall-sentinel")
+    checks = {
+        "non_root_uid": os.getuid() != 0,
+        "effective_capabilities_dropped": status.get("cap_eff") == "0000000000000000",
+        "no_new_privileges_set": status.get("no_new_privs") == "1",
+        "guest_sentinel_not_visible": not os.path.exists(sentinel),
+        "all_syscalls_recorded": len(outcomes) == len(probes),
+    }
+    observations = {
+        "uid": os.getuid(),
+        "pid": os.getpid(),
+        "architecture": machine,
+        "kernel_release": platform.release(),
+        "cap_eff": status.get("cap_eff"),
+        "no_new_privs": status.get("no_new_privs"),
+        "sentinel_path_visible": os.path.exists(sentinel),
+        "syscall_matrix": outcomes,
+        "interpretation": "Observed syscall outcomes only; permitted, rejected, or unsupported does not prove runtime security.",
+    }
+    result = {"work": "kernel-interface-syscall-matrix", "checks": checks, "observations": observations}
+    result["passed"] = all(checks.values())
+    result["python"] = sys.version.split()[0]
+    print(json.dumps(result, sort_keys=True))
+    if not result["passed"]:
+        raise SystemExit(1)
+
+
 def blocked_by_proxy(opener, url):
     try:
         with opener.open(url, timeout=8) as response:
@@ -242,11 +360,11 @@ def network_probe_work():
 def main():
     import sys
 
-    modes = {"cpu": cpu_work, "io": io_work, "http": http_work, "probe": probe_work, "network-probe": network_probe_work}
+    modes = {"cpu": cpu_work, "io": io_work, "http": http_work, "probe": probe_work, "network-probe": network_probe_work, "syscall-matrix": syscall_matrix_work}
     if len(sys.argv) != 2 or sys.argv[1] not in modes:
-        raise SystemExit("usage: workload.py {cpu|io|http|probe|network-probe}")
+        raise SystemExit("usage: workload.py {cpu|io|http|probe|network-probe|syscall-matrix}")
     result = modes[sys.argv[1]]()
-    if sys.argv[1] not in {"probe", "network-probe"}:
+    if sys.argv[1] not in {"probe", "network-probe", "syscall-matrix"}:
         result["python"] = os.sys.version.split()[0]
         print(json.dumps(result, sort_keys=True))
 

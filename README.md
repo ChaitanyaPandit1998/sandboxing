@@ -28,6 +28,7 @@ The host has Go 1.27.3, Lima 2.3.0, and Docker Desktop. The guest uses Ubuntu 26
 - `run_experiments.sh`: warm-ups, alternating paired measurements, environment capture, and summary statistics. Set `POC_TRIALS` to change the default of 20.
 - `run_safety_checks.sh`: checks filesystem visibility, Docker launch configuration, PID namespace, privilege restrictions, syscalls, loopback, and no-network behavior under both runtimes.
 - `safety_validation.py`: shared Docker launch-config checks used by both regular and negative-control runs.
+- `run_syscall_matrix.sh`: records harmless kernel-interface probe outcomes for both runtimes, under the daemon's reported security profile, and verifies a synthetic guest marker remains unchanged.
 - `allowlist_proxy.py`, `run_network_allowlist.sh`: check exact-host HTTPS allowlisting with an internal-only workload network and a proxy that alone has external bridge egress.
 - `run_negative_controls.sh`: deliberately weakens selected settings using only temporary containers and a synthetic marker, then confirms the probes detect root execution, an added capability, writable rootfs, a bind mount, and direct egress.
 
@@ -46,6 +47,7 @@ limactl shell gvisor-poc -- sh -lc 'cd "$HOME/gvisor-poc" && sudo bash install_g
 limactl shell gvisor-poc -- sh -lc 'cd "$HOME/gvisor-poc" && bash run_safety_checks.sh'
 limactl shell gvisor-poc -- sh -lc 'cd "$HOME/gvisor-poc" && bash run_network_allowlist.sh'
 limactl shell gvisor-poc -- sh -lc 'cd "$HOME/gvisor-poc" && bash run_negative_controls.sh'
+limactl shell gvisor-poc -- sh -lc 'cd "$HOME/gvisor-poc" && bash run_syscall_matrix.sh'
 ```
 
 Results are written under the project directory regardless of the caller's working directory. Each run saves `environment.json`, `runtimes.json`, `warmup.jsonl`, `raw.jsonl`, and `summary.json` in a timestamped results directory.
@@ -55,5 +57,7 @@ Run the selected safety/compatibility probes from the same guest with `bash run_
 Run the separate allowlist test with `bash run_network_allowlist.sh`. By default it permits HTTPS to `example.com`, denies `example.org`, IP literals, and non-443 ports, and checks that the workload cannot bypass the proxy with direct egress. Only the trusted test proxy joins the external bridge network. Override the demonstration allowlist with `POC_ALLOWED_HOSTS`, and update the probe targets to match. The example-domain run is a policy-path check, not a production egress proxy recommendation.
 
 All checks are narrow regression probes, not an adversarial security assessment or proof of isolation.
+
+The syscall matrix is observational: it records whether each harmless probe was permitted, blocked, unsupported, rejected for its deliberately invalid arguments, or terminated. Compare outcomes only alongside the recorded Docker security options and runtime configuration; the matrix does not test escape resistance.
 
 Do not compare results from Docker Desktop with results from the Lima VM. The experiment measures synthetic compatibility and speed only; it does not establish a security guarantee.
