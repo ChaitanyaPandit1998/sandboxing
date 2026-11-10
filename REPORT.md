@@ -108,18 +108,20 @@ The bind-mount control exposed a checker gap: Docker reports mounts created with
 
 ## Kernel-interface syscall matrix
 
-Date: 2026-11-11 IST (2026-11-10 UTC). Seven non-destructive probes were run under the same container policy on the ARM64 Lima guest: UID 10001, no capabilities, `no_new_privileges`, read-only root, and no network. Docker Engine 29.9.3 reported `seccomp,profile=builtin` and `apparmor,profile=default`; the active Docker seccomp profile can therefore account for shared denials. Full observations are in `results/syscall-20261110T192449Z-26740/matrix.jsonl`, with daemon settings in `engine.json` and unchanged synthetic marker hashes in `host-state.jsonl`.
+Date: 2026-11-11 IST (2026-11-10 UTC). Seven non-destructive probes were run under two profiles on the same ARM64 Lima guest. All runs used UID 10001, no capabilities, `no_new_privileges`, read-only root, and no network. Docker Engine 29.9.3 reported its built-in seccomp profile. The comparison also used a derived profile from the exact Moby `docker-v29.9.3` source, adding unconditional allow rules for six probe syscalls while retaining the default deny action and all original rules. The source and derived profile hashes are recorded in `results/syscall-20261110T195338Z-29350/engine.json`; the profile is for this experiment only, not production. See [the pinned Moby profile](https://github.com/moby/moby/blob/docker-v29.9.3/vendor/github.com/moby/profiles/seccomp/default.json) and [Docker's seccomp documentation](https://docs.docker.com/engine/security/seccomp).
 
-| Probe | `runc` observation | `runsc` observation |
-| --- | --- | --- |
-| Invalid-filesystem `mount` request | `EPERM` | `EPERM` |
-| `unshare(CLONE_NEWNS)` in a short-lived child | `EPERM` | `EPERM` |
-| Invalid `bpf` command | `EPERM` | `EPERM` |
-| Invalid `keyctl` operation | `EPERM` | `ENOSYS` |
-| Invalid `ptrace` request | `ESRCH` | `ESRCH` |
-| `perf_event_open` with a null attribute pointer | `EPERM` | `ENODEV` |
-| `userfaultfd` create-and-immediately-close | `EPERM` | `ENOSYS` |
+| Probe | `runc` built-in | `runc` probe overlay | `runsc` built-in | `runsc` probe overlay |
+| --- | --- | --- | --- | --- |
+| Invalid-filesystem `mount` request | `EPERM` | `ENODEV` | `EPERM` | `EPERM` |
+| `unshare(CLONE_NEWNS)` in a short-lived child | `EPERM` | `EPERM` | `EPERM` | `EPERM` |
+| Invalid `bpf` command | `EPERM` | `EINVAL` | `EPERM` | `EPERM` |
+| Invalid `keyctl` operation | `EPERM` | `ENOTSUP` | `ENOSYS` | `ENOSYS` |
+| Invalid `ptrace` request | `ESRCH` | `ESRCH` | `ESRCH` | `ESRCH` |
+| `perf_event_open` with a null attribute pointer | `EPERM` | `EACCES` | `ENODEV` | `ENODEV` |
+| `userfaultfd` create-and-immediately-close | `EPERM` | `EPERM` | `ENOSYS` | `ENOSYS` |
 
-The equal `EPERM` results are consistent with shared Docker filtering, while `ENOSYS` under `runsc` is consistent with an interface not being implemented there. These observations do not by themselves prove which layer produced a denial or show that one runtime is more secure. `ESRCH` and `ENODEV` are errors from deliberately invalid probes, not successful use of those interfaces. The userfaultfd probe closes its descriptor immediately if creation succeeds. Both runs observed the same SHA-256 for the synthetic guest marker afterward.
+With the overlay, three `runc` results changed from generic `EPERM` to errors from invalid requests (`bpf`: `EINVAL`; `keyctl`: `ENOTSUP`; `mount`: `ENODEV`). This is consistent with Docker's built-in filter causing those baseline denials. `perf_event_open` changed to `EACCES`; the guest reports `kernel.perf_event_paranoid=4`. `userfaultfd` remained `EPERM`, consistent with `vm.unprivileged_userfaultfd=0`. `unshare` remained `EPERM` with all capabilities dropped. `ptrace` was already allowed by the upstream profile on Linux 4.8 and later, and the deliberately invalid request returned `ESRCH` in all cases.
 
-This is a small interface-behavior inventory, not syscall fuzzing or escape testing. A stronger comparison would require reviewed, version-specific test cases and host-side monitoring in a disposable VM, while retaining identical Docker security profiles and container settings. Docker documents its built-in seccomp profile as an allowlist that blocks selected system calls; see [Docker seccomp documentation](https://docs.docker.com/engine/security/seccomp).
+`runsc` returned the same result for each probe under both profiles. This suggests the observed outcomes are coming from its own syscall handling or another unchanged control, but the errno values alone cannot identify the exact enforcement layer. In particular, they do not prove that `runsc` is more secure. Both profile modes passed the container-policy checks, and the synthetic guest marker hash was unchanged in all four runs. Each syscall used deliberately invalid arguments or closed any descriptor immediately after creation.
+
+This is a small interface-behavior comparison, not syscall fuzzing or escape testing. Docker describes its built-in seccomp profile as an allowlist that blocks selected system calls. The profile overlay shows how changing that shared filter changes `runc` responses for some probes, while the `runsc` observations stayed constant; it does not establish comparative exploit resistance.

@@ -15,6 +15,10 @@ def evaluate_launch_config(inspect):
     devices = host.get("Devices") or []
     mounts = inspect.get("Mounts") or []
     bind_mounts = [mount for mount in mounts if mount.get("Type") == "bind"]
+    security_record = [
+        "seccomp=custom-profile" if item.startswith("seccomp=") else item
+        for item in security
+    ]
     checks = {
         "not_privileged": not host.get("Privileged", False),
         "no_host_bind_mounts": len(binds) == 0 and len(bind_mounts) == 0,
@@ -38,7 +42,7 @@ def evaluate_launch_config(inspect):
         "mounts": [{"type": mount.get("Type"), "destination": mount.get("Destination"), "rw": mount.get("RW")} for mount in mounts],
         "devices": devices,
         "readonly_rootfs": host.get("ReadonlyRootfs", False),
-        "security_options": security,
+        "security_options": security_record,
     }
     return checks, launch
 

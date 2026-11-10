@@ -289,6 +289,8 @@ print(json.dumps({"return": int(result), "errno": error, "errno_name": errno.err
         "pid": os.getpid(),
         "architecture": machine,
         "kernel_release": platform.release(),
+        "seccomp_mode": os.environ.get("POC_SYSCALL_SECCOMP_MODE", "unspecified"),
+        "seccomp_profile_sha256": os.environ.get("POC_SYSCALL_PROFILE_SHA256") or None,
         "cap_eff": status.get("cap_eff"),
         "no_new_privs": status.get("no_new_privs"),
         "sentinel_path_visible": os.path.exists(sentinel),

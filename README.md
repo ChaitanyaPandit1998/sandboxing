@@ -28,7 +28,8 @@ The host has Go 1.27.3, Lima 2.3.0, and Docker Desktop. The guest uses Ubuntu 26
 - `run_experiments.sh`: warm-ups, alternating paired measurements, environment capture, and summary statistics. Set `POC_TRIALS` to change the default of 20.
 - `run_safety_checks.sh`: checks filesystem visibility, Docker launch configuration, PID namespace, privilege restrictions, syscalls, loopback, and no-network behavior under both runtimes.
 - `safety_validation.py`: shared Docker launch-config checks used by both regular and negative-control runs.
-- `run_syscall_matrix.sh`: records harmless kernel-interface probe outcomes for both runtimes, under the daemon's reported security profile, and verifies a synthetic guest marker remains unchanged.
+- `run_syscall_matrix.sh`: compares harmless syscall-probe outcomes under Docker's built-in seccomp profile and a narrow derived profile for both runtimes, and verifies a synthetic guest marker remains unchanged.
+- `generate_syscall_probe_profile.py`, `profiles/`: derive the probe-only seccomp overlay from the exact Docker Engine 29.9.3 built-in profile with a SHA-256 check.
 - `allowlist_proxy.py`, `run_network_allowlist.sh`: check exact-host HTTPS allowlisting with an internal-only workload network and a proxy that alone has external bridge egress.
 - `run_negative_controls.sh`: deliberately weakens selected settings using only temporary containers and a synthetic marker, then confirms the probes detect root execution, an added capability, writable rootfs, a bind mount, and direct egress.
 
@@ -36,7 +37,7 @@ Create the VM with `limactl start --name=gvisor-poc --vm-type=vz --cpus=4 --memo
 
 ```bash
 limactl shell gvisor-poc -- mkdir -p /tmp/gvisor-poc
-limactl copy -r .dockerignore Dockerfile README.md REPORT.md architecture.svg install_gvisor.sh run_experiments.sh run_safety_checks.sh safety_validation.py run_network_allowlist.sh run_negative_controls.sh workload.py allowlist_proxy.py gvisor-poc:/tmp/gvisor-poc/
+limactl copy -r .dockerignore Dockerfile README.md REPORT.md architecture.svg install_gvisor.sh run_experiments.sh run_safety_checks.sh safety_validation.py run_network_allowlist.sh run_negative_controls.sh run_syscall_matrix.sh generate_syscall_probe_profile.py profiles workload.py allowlist_proxy.py gvisor-poc:/tmp/gvisor-poc/
 limactl shell gvisor-poc -- sh -lc 'mkdir -p "$HOME/gvisor-poc" && cp -R /tmp/gvisor-poc/. "$HOME/gvisor-poc/"'
 ```
 
@@ -58,6 +59,6 @@ Run the separate allowlist test with `bash run_network_allowlist.sh`. By default
 
 All checks are narrow regression probes, not an adversarial security assessment or proof of isolation.
 
-The syscall matrix is observational: it records whether each harmless probe was permitted, blocked, unsupported, rejected for its deliberately invalid arguments, or terminated. Compare outcomes only alongside the recorded Docker security options and runtime configuration; the matrix does not test escape resistance.
+For each runtime, the syscall matrix runs once with Docker's built-in seccomp profile and once with a derived probe profile. The latter is based on the Engine 29.9.3 profile and adds unconditional allow rules only for `bpf`, `keyctl`, `mount`, `perf_event_open`, `unshare`, and `userfaultfd`; capabilities remain dropped, and all arguments are invalid or any returned descriptor is closed immediately. The runner refuses to compare if the engine version or reported built-in seccomp profile does not match the pinned source. This derived profile is strictly for the isolated experiment, not a production profile. The matrix is observational: it records whether each probe was permitted, blocked, unsupported, rejected for its deliberately invalid arguments, or terminated. It does not test escape resistance.
 
 Do not compare results from Docker Desktop with results from the Lima VM. The experiment measures synthetic compatibility and speed only; it does not establish a security guarantee.

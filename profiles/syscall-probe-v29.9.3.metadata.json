@@ -1,0 +1,16 @@
+{
+  "additional_unconditional_allow_syscalls": [
+    "bpf",
+    "keyctl",
+    "mount",
+    "perf_event_open",
+    "unshare",
+    "userfaultfd"
+  ],
+  "derived_profile_sha256": "f770de52203a03e82d731e67cbdd3340c35c2c04fabe38305887d782bbeba446",
+  "ptrace_note": "Not changed; already allowed by the upstream profile for Linux >= 4.8.",
+  "source_engine_tag": "docker-v29.9.3",
+  "source_sha256": "785b2429264afba4d594320337cb17f144f3c7d51585f9805eef72e28f4f9334",
+  "source_url": "https://raw.githubusercontent.com/moby/moby/docker-v29.9.3/vendor/github.com/moby/profiles/seccomp/default.json",
+  "warning": "For isolated, invalid-argument syscall probes only; not a production seccomp profile."
+}
