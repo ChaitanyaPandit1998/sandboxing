@@ -91,3 +91,17 @@ The separate allowlist test uses two Docker networks: the workload joins an inte
 | Direct workload egress to `1.1.1.1:443` is blocked | Pass | Pass |
 
 This validates the demonstrated policy path with a public example domain. It does not establish resilience to hostile proxy clients, covert channels, proxy compromise, or production domain-filtering requirements. Treat the proxy as trusted infrastructure and enforce real egress policy at the network boundary as well. These probes are not a substitute for security review or adversarial testing.
+
+## Negative controls for probe sensitivity
+
+Date: 2026-11-11 IST (2026-11-10 UTC). Deliberately weakened, temporary containers were used to check whether the probes fail when selected controls are absent. All ten cases were detected across `runc` and `runsc`; summary evidence is in `results/negative-20261110T185453Z-24675/negative-controls.jsonl`. After the negative run, the normal configuration passed all 25 checks on both runtimes again; see `results/safety-20261110T185500Z/checks.jsonl`.
+
+| Deliberate change | Detection signal | `runc` | `runsc` |
+| --- | --- | --- | --- |
+| Run the workload as UID 0 | Non-root probe fails and launch-config validator rejects the configured user | Detected | Detected |
+| Grant `CAP_CHOWN` to a root test process | Effective capability probe and launch-config validator detect the grant | Detected | Detected |
+| Make the image root writable | Rootfs write succeeds and `ReadonlyRootfs` is false | Detected | Detected |
+| Bind mount a synthetic marker file | Marker becomes visible and launch-config validator detects a bind mount | Detected | Detected |
+| Give workload a direct bridge route alongside the proxy network | Allowlisted proxy request still works, while direct egress succeeds and the bypass probe fails | Detected | Detected |
+
+The bind-mount control exposed a checker gap: Docker reports mounts created with `--mount` in the top-level inspect `Mounts` field, not only in `HostConfig.Binds`. The shared validator now checks both representations, and the negative control imports that same validator. No real host files, credentials, privileged containers, or host namespaces were used. These cases test selected probe sensitivity and do not constitute adversarial testing.

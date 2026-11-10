@@ -1,0 +1,10 @@
+{"detected": true, "probe_exit": 1, "runtime": "runc", "scenario": "root-user", "signal": "non_root_uid=false; configured user is root"}
+{"detected": true, "probe_exit": 1, "runtime": "runc", "scenario": "added-capability", "signal": "effective capability mask is nonzero; CAP_CHOWN granted"}
+{"detected": true, "probe_exit": 1, "runtime": "runc", "scenario": "writable-rootfs", "signal": "rootfs_write_blocked=false; ReadonlyRootfs=false"}
+{"detected": true, "probe_exit": 1, "runtime": "runc", "scenario": "synthetic-bind", "signal": "guest_sentinel_not_visible=false; host bind configured"}
+{"detected": true, "probe_exit": 1, "runtime": "runsc", "scenario": "root-user", "signal": "non_root_uid=false; configured user is root"}
+{"detected": true, "probe_exit": 1, "runtime": "runsc", "scenario": "added-capability", "signal": "effective capability mask is nonzero; CAP_CHOWN granted"}
+{"detected": true, "probe_exit": 1, "runtime": "runsc", "scenario": "writable-rootfs", "signal": "rootfs_write_blocked=false; ReadonlyRootfs=false"}
+{"detected": true, "probe_exit": 1, "runtime": "runsc", "scenario": "synthetic-bind", "signal": "guest_sentinel_not_visible=false; host bind configured"}
+{"detected": true, "probe_exit": 1, "runtime": "runc", "scenario": "dual-homed-direct-egress", "signal": "allowlisted proxy works; direct egress is available"}
+{"detected": true, "probe_exit": 1, "runtime": "runsc", "scenario": "dual-homed-direct-egress", "signal": "allowlisted proxy works; direct egress is available"}

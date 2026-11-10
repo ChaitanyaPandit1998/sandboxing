@@ -16,7 +16,7 @@ The VM is dedicated to this POC and does not mount the host home directory. Work
 
 ## Status
 
-The host has Go 1.27.3, Lima 2.3.0, and Docker Desktop. The guest uses Ubuntu 26.04.1, kernel 7.0.0-38-generic, Docker Engine 29.9.3, and gVisor 20261102.0. Both runtimes passed the smoke checks, 25 selected privilege/host-boundary checks, and five HTTPS allowlist checks. These are narrow configuration and policy probes, not a security assessment. The refined benchmark completed 20 trials per workload/runtime after warm-ups, alternating runtime order.
+The host has Go 1.27.3, Lima 2.3.0, and Docker Desktop. The guest uses Ubuntu 26.04.1, kernel 7.0.0-38-generic, Docker Engine 29.9.3, and gVisor 20261102.0. Both runtimes passed the smoke checks, 25 selected privilege/host-boundary checks, and five HTTPS allowlist checks. Ten negative-control cases also detected the deliberately weakened settings under both runtimes. These are narrow configuration and policy probes, not a security assessment. The refined benchmark completed 20 trials per workload/runtime after warm-ups, alternating runtime order.
 
 ## Files
 
@@ -27,13 +27,15 @@ The host has Go 1.27.3, Lima 2.3.0, and Docker Desktop. The guest uses Ubuntu 26
 - `install_gvisor.sh`: adds the official gVisor apt repository and configures Docker inside Ubuntu.
 - `run_experiments.sh`: warm-ups, alternating paired measurements, environment capture, and summary statistics. Set `POC_TRIALS` to change the default of 20.
 - `run_safety_checks.sh`: checks filesystem visibility, Docker launch configuration, PID namespace, privilege restrictions, syscalls, loopback, and no-network behavior under both runtimes.
+- `safety_validation.py`: shared Docker launch-config checks used by both regular and negative-control runs.
 - `allowlist_proxy.py`, `run_network_allowlist.sh`: check exact-host HTTPS allowlisting with an internal-only workload network and a proxy that alone has external bridge egress.
+- `run_negative_controls.sh`: deliberately weakens selected settings using only temporary containers and a synthetic marker, then confirms the probes detect root execution, an added capability, writable rootfs, a bind mount, and direct egress.
 
 Create the VM with `limactl start --name=gvisor-poc --vm-type=vz --cpus=4 --memory=6 --disk=40 --mount-none template:docker-rootful`. From this repository's root, copy the project files into the guest:
 
 ```bash
 limactl shell gvisor-poc -- mkdir -p /tmp/gvisor-poc
-limactl copy -r .dockerignore Dockerfile README.md REPORT.md architecture.svg install_gvisor.sh run_experiments.sh run_safety_checks.sh run_network_allowlist.sh workload.py allowlist_proxy.py gvisor-poc:/tmp/gvisor-poc/
+limactl copy -r .dockerignore Dockerfile README.md REPORT.md architecture.svg install_gvisor.sh run_experiments.sh run_safety_checks.sh safety_validation.py run_network_allowlist.sh run_negative_controls.sh workload.py allowlist_proxy.py gvisor-poc:/tmp/gvisor-poc/
 limactl shell gvisor-poc -- sh -lc 'mkdir -p "$HOME/gvisor-poc" && cp -R /tmp/gvisor-poc/. "$HOME/gvisor-poc/"'
 ```
 
@@ -43,6 +45,7 @@ Then install gVisor and run the experiments inside the guest:
 limactl shell gvisor-poc -- sh -lc 'cd "$HOME/gvisor-poc" && sudo bash install_gvisor.sh && bash run_experiments.sh'
 limactl shell gvisor-poc -- sh -lc 'cd "$HOME/gvisor-poc" && bash run_safety_checks.sh'
 limactl shell gvisor-poc -- sh -lc 'cd "$HOME/gvisor-poc" && bash run_network_allowlist.sh'
+limactl shell gvisor-poc -- sh -lc 'cd "$HOME/gvisor-poc" && bash run_negative_controls.sh'
 ```
 
 Results are written under the project directory regardless of the caller's working directory. Each run saves `environment.json`, `runtimes.json`, `warmup.jsonl`, `raw.jsonl`, and `summary.json` in a timestamped results directory.
