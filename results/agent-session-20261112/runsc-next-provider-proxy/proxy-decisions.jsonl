@@ -1,0 +1,10 @@
+{"event": "listening", "address": ["0.0.0.0", 3128], "allowed_hosts": ["api.anthropic.com", "auth.openai.com", "chatgpt.com", "claude.ai", "claude.com", "platform.claude.com"], "allowed_port": 443}
+{"decision": "allow", "host": "api.anthropic.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "claude.ai", "port": 443, "reason": ""}
+{"decision": "allow", "host": "claude.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "platform.claude.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "auth.openai.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "deny", "host": "example.org", "port": 443, "reason": "not in exact host/port allowlist"}
+{"decision": "deny", "host": "1.1.1.1", "port": 443, "reason": "not in exact host/port allowlist"}
+{"decision": "deny", "host": "api.anthropic.com", "port": 8443, "reason": "not in exact host/port allowlist"}

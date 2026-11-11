@@ -1,0 +1,22 @@
+{
+  "custom_profile_added_syscalls": [
+    "bpf",
+    "keyctl",
+    "mount",
+    "perf_event_open",
+    "unshare",
+    "userfaultfd"
+  ],
+  "custom_profile_sha256": "f770de52203a03e82d731e67cbdd3340c35c2c04fabe38305887d782bbeba446",
+  "custom_profile_source": "https://raw.githubusercontent.com/moby/moby/docker-v29.9.3/vendor/github.com/moby/profiles/seccomp/default.json",
+  "custom_profile_source_sha256": "785b2429264afba4d594320337cb17f144f3c7d51585f9805eef72e28f4f9334",
+  "docker_engine_version": "29.9.3",
+  "host_kernel_perf_event_paranoid": "4",
+  "host_vm_unprivileged_userfaultfd": "0",
+  "seccomp_note": "Each runtime is measured once with Docker's reported built-in profile and once with the hash-pinned derived profile. The derived profile retains Docker's default deny behavior and adds unconditional allow rules only for the listed probe syscalls.",
+  "security_options": [
+    "name=apparmor,profile=default",
+    "name=seccomp,profile=builtin",
+    "name=cgroupns"
+  ]
+}

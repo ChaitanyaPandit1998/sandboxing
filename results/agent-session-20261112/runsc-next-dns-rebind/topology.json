@@ -1,0 +1,1 @@
+{"target":"example.com","dns_answers":["1.1.1.1","127.0.0.1"],"client_network":"internal","proxy_egress":"bridge","runtime_scope":"runsc-next"}

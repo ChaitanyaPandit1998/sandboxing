@@ -1,0 +1,93 @@
+{
+  "date": "2026-11-12",
+  "candidate_runtime": "runsc-next",
+  "runtime_version": "release-20261102.0-252-g9217bce7a9c4",
+  "runtime_channel": "official ARM64 nightly downloaded 2026-11-11 and SHA-512 verified",
+  "latest_official_stable_release_checked": "20261102.0",
+  "stable_release_with_bubblewrap_fix_available": false,
+  "agent_boundary_smoke": {
+    "status": "passed",
+    "capabilities_effective": "0000000000000000",
+    "no_new_privileges": true,
+    "workspace_write": "allowed",
+    "rootfs_write": "denied",
+    "setuid_root": "denied",
+    "direct_egress": "blocked"
+  },
+  "cross_session_isolation_smoke": {
+    "status": "passed",
+    "cross_session_file": "isolated",
+    "cross_session_process_environment": "not visible",
+    "guest_host_marker": "not visible",
+    "cleanup": "complete"
+  },
+  "provider_proxy_smoke": {
+    "status": "passed",
+    "allowed_provider_hosts": 6,
+    "blocked_cases": [
+      "unlisted hostname",
+      "IP literal target",
+      "alternate port",
+      "direct egress",
+      "client DNS lookup"
+    ],
+    "model_requests_sent": false,
+    "raw_output": "runsc-next-provider-proxy/"
+  },
+  "notes": [
+    "Regression checks ran under the nightly candidate and did not change the POC's pinned stable runtime.",
+    "These are selected regression checks, not a complete security assessment or release certification.",
+    "Recheck the official release channel before pinning a stable runtime that includes the merged Bubblewrap fix."
+  ],
+  "additional_regression_results": {
+    "filesystem_safety": {
+      "status": "passed",
+      "checks_passed": 29,
+      "non_root_uid": 10001,
+      "effective_capabilities": "0000000000000000",
+      "no_new_privileges": true,
+      "rootfs_and_outside_tmp_writes": "blocked",
+      "workspace_and_tmp_writes": "allowed",
+      "sudo_escalation": "not possible"
+    },
+    "exact_host_network_allowlist": {
+      "status": "passed",
+      "checks_passed": 16,
+      "allowed_example_https": "succeeded",
+      "blocked_cases": [
+        "unlisted hostname",
+        "IP/IPv6 literal",
+        "alternate port",
+        "proxy authority/header tricks",
+        "private DNS answer",
+        "direct IPv4/IPv6 egress",
+        "direct UDP DNS"
+      ]
+    },
+    "controlled_dns_rebinding": {
+      "status": "passed",
+      "public_answer_proxy_status": 200,
+      "subsequent_loopback_answer_proxy_status": 502
+    },
+    "common_syscall_compatibility": {
+      "status": "passed",
+      "evidence": "runsc-next-syscall-compat/"
+    },
+    "syscall_matrix": {
+      "status": "passed",
+      "seccomp_profiles": [
+        "builtin-default",
+        "custom-probe-overlay"
+      ],
+      "syscall_outcomes_recorded_per_profile": 7,
+      "evidence": "runsc-next-syscall-matrix/matrix.jsonl"
+    }
+  },
+  "evidence_directories": {
+    "safety": "runsc-next-safety/",
+    "exact_host_allowlist": "runsc-next-allowlist/",
+    "dns_rebinding": "runsc-next-dns-rebind/",
+    "syscall_compatibility": "runsc-next-syscall-compat/",
+    "syscall_matrix": "runsc-next-syscall-matrix/"
+  }
+}

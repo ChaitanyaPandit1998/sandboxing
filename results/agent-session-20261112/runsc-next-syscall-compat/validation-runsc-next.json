@@ -1,0 +1,46 @@
+{
+  "checks": {
+    "all_capabilities_dropped": true,
+    "configured_non_root_user": true,
+    "epoll_pipe_readiness": true,
+    "eventfd_round_trip": true,
+    "exec_wait_child": true,
+    "memfd_mmap": true,
+    "network_is_none": true,
+    "no_host_bind_mounts": true,
+    "no_host_devices": true,
+    "no_host_namespaces": true,
+    "no_new_privileges_configured": true,
+    "not_privileged": true,
+    "openat_relative_read_write": true,
+    "root_filesystem_read_only": true,
+    "thread_clone_join": true,
+    "unix_socketpair": true
+  },
+  "launch_config": {
+    "binds": [],
+    "cap_add": [],
+    "cap_drop": [
+      "ALL"
+    ],
+    "devices": [],
+    "ipc_mode": "private",
+    "mounts": [],
+    "network_mode": "none",
+    "pid_mode": "private default",
+    "privileged": false,
+    "readonly_rootfs": true,
+    "security_options": [
+      "no-new-privileges"
+    ],
+    "user": "10001:10001"
+  },
+  "observations": {
+    "child_exit": 0,
+    "kernel": "4.19.0-gvisor",
+    "uid": 10001
+  },
+  "passed": true,
+  "runtime": "runsc-next",
+  "work": "syscall-compatibility"
+}

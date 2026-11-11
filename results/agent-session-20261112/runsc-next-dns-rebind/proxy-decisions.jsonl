@@ -1,0 +1,3 @@
+{"event": "listening", "address": ["0.0.0.0", 3128], "allowed_hosts": ["example.com"], "allowed_port": 443}
+{"decision": "allow", "host": "example.com", "port": 443, "reason": ""}
+{"decision": "error", "host": "example.com", "port": 443, "reason": "non-public address rejected: 127.0.0.1"}

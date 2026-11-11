@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-12",
+  "test": "authenticated Codex workspace-write smoke",
+  "cli_version": "0.167.1",
+  "runtime_name": "runsc-next",
+  "runtime_version": "release-20261102.0-252-g9217bce7a9c4",
+  "image_id": "sha256:1c699e85c4765335983513403bc9edb812ffcc88dab0f9132274406079fdee5a",
+  "container": {
+    "user": "10001:10001",
+    "read_only_rootfs": true,
+    "capabilities_dropped": ["ALL"],
+    "no_new_privileges": true,
+    "docker_network": "agent-session-client",
+    "host_mounts": []
+  },
+  "codex_sandbox": "workspace-write",
+  "codex_reported_approval": "never",
+  "task": {
+    "created_workspace_file": true,
+    "read_back_exact_content": true,
+    "deleted_workspace_file": true,
+    "file_absent_after_task": true,
+    "content": "RUNSC_NEXT_WORKSPACE_WRITE_OK."
+  },
+  "notes": [
+    "The Codex CLI printed a model-list refresh timeout before starting; the requested task nevertheless completed successfully.",
+    "This is a functional compatibility smoke, not a boundary-escape test or security assessment.",
+    "Approval mode was reported as never, so this run did not validate interactive approval prompts."
+  ]
+}
