@@ -3,6 +3,8 @@
 Compare Docker's default `runc` runtime with gVisor's `runsc` runtime on the same Lima Linux VM. This is a local engineering experiment, not a security certification.
 
 See [POC_SUMMARY.md](POC_SUMMARY.md) for a 13-point overview of the design, findings, limitations, and next steps.
+For a concise shareable brief, see [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md).
+The detailed threat model, prioritized security test matrix, and evidence criteria are in [SECURITY_VALIDATION_PLAN.md](SECURITY_VALIDATION_PLAN.md).
 
 ![Architecture diagram showing the Mac host, Lima Linux VM, paired Docker runtime paths, and saved experiment results](architecture.svg)
 
@@ -29,6 +31,8 @@ The host has Go 1.27.3, Lima 2.3.0, and Docker Desktop. The guest uses Ubuntu 26
 - `architecture.svg`: host, VM, runtime, workload, and results flow.
 - `file-flow.svg`: repository file map and how the runners connect to code and evidence.
 - `poc-metrics.svg`: benchmark slowdown and selected safety/policy check results.
+- `EXECUTIVE_SUMMARY.md`: concise POC outcome, evidence, and recommendation for executive review.
+- `SECURITY_VALIDATION_PLAN.md`: threat model, prioritized security tests, pass criteria, and evidence template for the next phase.
 - `Dockerfile`: creates the small Python workload image.
 - `.dockerignore`: keeps local results and tools out of the image build context.
 - `workload.py`: CPU, file I/O, and loopback HTTP synthetic workloads.
@@ -45,7 +49,7 @@ Create the VM with `limactl start --name=gvisor-poc --vm-type=vz --cpus=4 --memo
 
 ```bash
 limactl shell gvisor-poc -- mkdir -p /tmp/gvisor-poc
-limactl copy -r .dockerignore Dockerfile README.md REPORT.md POC_SUMMARY.md architecture.svg file-flow.svg poc-metrics.svg install_gvisor.sh run_experiments.sh run_safety_checks.sh safety_validation.py run_network_allowlist.sh run_negative_controls.sh run_syscall_matrix.sh generate_syscall_probe_profile.py profiles workload.py allowlist_proxy.py gvisor-poc:/tmp/gvisor-poc/
+limactl copy -r .dockerignore Dockerfile README.md REPORT.md POC_SUMMARY.md EXECUTIVE_SUMMARY.md SECURITY_VALIDATION_PLAN.md architecture.svg file-flow.svg poc-metrics.svg install_gvisor.sh run_experiments.sh run_safety_checks.sh safety_validation.py run_network_allowlist.sh run_negative_controls.sh run_syscall_matrix.sh generate_syscall_probe_profile.py profiles workload.py allowlist_proxy.py gvisor-poc:/tmp/gvisor-poc/
 limactl shell gvisor-poc -- sh -lc 'mkdir -p "$HOME/gvisor-poc" && cp -R /tmp/gvisor-poc/. "$HOME/gvisor-poc/"'
 ```
 
