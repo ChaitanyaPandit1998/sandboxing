@@ -42,6 +42,8 @@ The revised runner performs one warm-up for each runtime/workload pair, alternat
 | I/O | 201.43 ms | 247.37 ms | +22.8% |
 | HTTP | 774.17 ms | 973.06 ms | +25.7% |
 
+![Chart comparing median performance overhead and selected safety-check outcomes](poc-metrics.svg)
+
 In this VM and workload set, `runsc` was slower on all three workload timers and all three end-to-end timers. The P25–P75 ranges do not overlap for these samples, but this remains one machine and one run; it is not a general performance claim.
 
 ## Interpretation and limits
@@ -125,3 +127,7 @@ With the overlay, three `runc` results changed from generic `EPERM` to errors fr
 `runsc` returned the same result for each probe under both profiles. This suggests the observed outcomes are coming from its own syscall handling or another unchanged control, but the errno values alone cannot identify the exact enforcement layer. In particular, they do not prove that `runsc` is more secure. Both profile modes passed the container-policy checks, and the synthetic guest marker hash was unchanged in all four runs. Each syscall used deliberately invalid arguments or closed any descriptor immediately after creation.
 
 This is a small interface-behavior comparison, not syscall fuzzing or escape testing. Docker describes its built-in seccomp profile as an allowlist that blocks selected system calls. The profile overlay shows how changing that shared filter changes `runc` responses for some probes, while the `runsc` observations stayed constant; it does not establish comparative exploit resistance.
+
+### Follow-up: collect gVisor syscall traces
+
+The next evidence step is a separate, traced rerun of the syscall matrix with a dedicated `runsc-trace` Docker runtime using gVisor's `--strace` and debug-log options. The runbook is in README.md. It has not been run yet; the existing results above are unchanged. Tracing must stay separate from performance measurements because it adds overhead. Its purpose is to inspect gVisor's handling of application syscalls; it does not reveal the exact host-kernel seccomp decision for `runc`, and trace output alone cannot support a security-superiority claim. Creating the debug runtime changes Docker daemon configuration and requires an approved restart of the disposable VM's daemon. See [gVisor's debugging guide](https://gvisor.dev/docs/user_guide/debugging/).

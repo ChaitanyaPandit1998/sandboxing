@@ -6,6 +6,7 @@ cd "$ROOT"
 IMAGE="${POC_IMAGE:-local/gvisor-poc:latest}"
 RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-$$"
 OUT="${POC_SYSCALL_OUTPUT:-results/syscall-${RUN_ID}}"
+read -r -a RUNTIMES <<< "${POC_SYSCALL_RUNTIMES:-runc runsc}"
 if [[ "$OUT" != /* ]]; then OUT="$ROOT/$OUT"; fi
 MARKER="$HOME/.gvisor-poc-syscall-sentinel"
 CUSTOM_PROFILE="$ROOT/profiles/syscall-probe-v29.9.3.json"
@@ -19,7 +20,7 @@ printf 'synthetic syscall-matrix marker; not a credential\n' > "$MARKER"
 chmod 600 "$MARKER"
 
 cleanup() {
-  for runtime in runc runsc; do
+  for runtime in "${RUNTIMES[@]}"; do
     for mode in builtin-default custom-probe-overlay; do
       docker rm -f "poc-syscall-${runtime}-${mode}-${RUN_ID}" >/dev/null 2>&1 || true
     done
@@ -76,7 +77,7 @@ print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())
 PY
 )"
 
-for runtime in runc runsc; do
+for runtime in "${RUNTIMES[@]}"; do
   for mode in builtin-default custom-probe-overlay; do
     name="poc-syscall-${runtime}-${mode}-${RUN_ID}"
     security_options=(--security-opt no-new-privileges)

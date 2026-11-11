@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050" role="img" aria-labelledby="title desc">
+  <title id="title">gVisor POC performance and safety metrics</title>
+  <desc id="desc">The benchmark panel compares runsc median slowdown against runc for three workloads. The safety panel shows both runtimes passed all recorded isolation, allowlist, and negative-control checks.</desc>
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #172b4d; }
+      .title { font-size: 32px; font-weight: 700; }
+      .subtitle { font-size: 16px; fill: #53657d; }
+      .section { font-size: 21px; font-weight: 700; }
+      .label { font-size: 15px; font-weight: 650; }
+      .body { font-size: 13px; fill: #40536c; }
+      .small { font-size: 12px; fill: #53657d; }
+      .panel { fill: #fff; stroke: #c8d5e4; stroke-width: 1.5; }
+      .axis { stroke: #8799ad; stroke-width: 1.2; }
+      .grid { stroke: #e0e7ef; stroke-width: 1; }
+      .runc { fill: #4c83c3; }
+      .runsc { fill: #8d75cf; }
+      .pass { fill: #1c9b78; }
+      .track { fill: #e8edf3; }
+      .value { font-size: 14px; font-weight: 700; }
+    </style>
+  </defs>
+  <rect width="1600" height="1050" fill="#f4f7fb"/>
+  <text x="56" y="60" class="title">POC performance and safety results</text>
+  <text x="58" y="90" class="subtitle">Recorded 2026-11-10/11 · same ARM64 Lima VM and matched container limits · benchmark: 20 trials per runtime/workload</text>
+
+  <!-- Performance panels -->
+  <rect x="48" y="125" width="735" height="505" rx="16" class="panel"/>
+  <text x="78" y="166" class="section">Workload median time</text>
+  <text x="78" y="191" class="small">runsc slowdown vs runc · median of 20 trials</text>
+  <rect x="565" y="151" width="14" height="14" rx="3" class="runsc"/>
+  <text x="586" y="163" class="small">runsc</text>
+
+  <line x1="270" y1="225" x2="270" y2="525" class="axis"/>
+  <line x1="270" y1="525" x2="690" y2="525" class="axis"/>
+  <line x1="390" y1="225" x2="390" y2="525" class="grid"/>
+  <line x1="510" y1="225" x2="510" y2="525" class="grid"/>
+  <line x1="630" y1="225" x2="630" y2="525" class="grid"/>
+  <text x="266" y="548" class="small">0%</text>
+  <text x="379" y="548" class="small">10%</text>
+  <text x="499" y="548" class="small">20%</text>
+  <text x="619" y="548" class="small">30%</text>
+  <text x="590" y="574" class="small">Higher overhead →</text>
+  <text x="79" y="280" class="label">CPU</text>
+  <text x="79" y="380" class="label">/tmp I/O</text>
+  <text x="79" y="480" class="label">Loopback HTTP</text>
+  <rect x="270" y="248" width="92.4" height="42" rx="6" class="runsc"/>
+  <text x="372" y="275" class="value">+7.7%</text>
+  <rect x="270" y="348" width="180" height="42" rx="6" class="runsc"/>
+  <text x="460" y="375" class="value">+15.0%</text>
+  <rect x="270" y="448" width="338.4" height="42" rx="6" class="runsc"/>
+  <text x="618" y="475" class="value">+28.2%</text>
+  <text x="79" y="603" class="small">CPU: 63.46 vs 68.33 ms · I/O: 4.85 vs 5.58 ms · HTTP: 544.69 vs 698.40 ms</text>
+
+  <rect x="817" y="125" width="735" height="505" rx="16" class="panel"/>
+  <text x="847" y="166" class="section">End-to-end container time</text>
+  <text x="847" y="191" class="small">runsc slowdown vs runc · median of 20 trials</text>
+  <rect x="1334" y="151" width="14" height="14" rx="3" class="runsc"/>
+  <text x="1355" y="163" class="small">runsc</text>
+  <line x1="1039" y1="225" x2="1039" y2="525" class="axis"/>
+  <line x1="1039" y1="525" x2="1459" y2="525" class="axis"/>
+  <line x1="1159" y1="225" x2="1159" y2="525" class="grid"/>
+  <line x1="1279" y1="225" x2="1279" y2="525" class="grid"/>
+  <line x1="1399" y1="225" x2="1399" y2="525" class="grid"/>
+  <text x="1035" y="548" class="small">0%</text>
+  <text x="1148" y="548" class="small">10%</text>
+  <text x="1268" y="548" class="small">20%</text>
+  <text x="1388" y="548" class="small">30%</text>
+  <text x="1359" y="574" class="small">Higher overhead →</text>
+  <text x="848" y="280" class="label">CPU</text>
+  <text x="848" y="380" class="label">/tmp I/O</text>
+  <text x="848" y="480" class="label">Loopback HTTP</text>
+  <rect x="1039" y="248" width="266.4" height="42" rx="6" class="runsc"/>
+  <text x="1315" y="275" class="value">+22.2%</text>
+  <rect x="1039" y="348" width="273.6" height="42" rx="6" class="runsc"/>
+  <text x="1322" y="375" class="value">+22.8%</text>
+  <rect x="1039" y="448" width="308.4" height="42" rx="6" class="runsc"/>
+  <text x="1357" y="475" class="value">+25.7%</text>
+  <text x="848" y="603" class="small">CPU: 255.90 vs 312.63 ms · I/O: 201.43 vs 247.37 ms · HTTP: 774.17 vs 973.06 ms</text>
+
+  <!-- Safety panel -->
+  <rect x="48" y="660" width="1504" height="335" rx="16" class="panel"/>
+  <text x="78" y="703" class="section">Safety and policy checks</text>
+  <text x="78" y="730" class="small">Pass/detection rate by check group · both runtimes scored 100% on these selected probes</text>
+  <rect x="1130" y="694" width="14" height="14" rx="3" class="runc"/>
+  <text x="1151" y="706" class="small">runc</text>
+  <rect x="1210" y="694" width="14" height="14" rx="3" class="runsc"/>
+  <text x="1231" y="706" class="small">runsc</text>
+
+  <text x="80" y="790" class="label">Isolation &amp; privilege</text>
+  <text x="80" y="813" class="small">25 selected checks per runtime</text>
+  <rect x="350" y="770" width="830" height="22" rx="8" class="track"/><rect x="350" y="770" width="830" height="22" rx="8" class="runc"/>
+  <text x="1195" y="787" class="value">25/25</text>
+  <rect x="350" y="801" width="830" height="22" rx="8" class="track"/><rect x="350" y="801" width="830" height="22" rx="8" class="runsc"/>
+  <text x="1195" y="818" class="value">25/25</text>
+
+  <text x="80" y="870" class="label">HTTPS allowlist</text>
+  <text x="80" y="893" class="small">5 policy checks per runtime</text>
+  <rect x="350" y="850" width="830" height="22" rx="8" class="track"/><rect x="350" y="850" width="830" height="22" rx="8" class="runc"/>
+  <text x="1195" y="867" class="value">5/5</text>
+  <rect x="350" y="881" width="830" height="22" rx="8" class="track"/><rect x="350" y="881" width="830" height="22" rx="8" class="runsc"/>
+  <text x="1195" y="898" class="value">5/5</text>
+
+  <text x="80" y="950" class="label">Negative controls detected</text>
+  <text x="80" y="973" class="small">5 weakened settings per runtime</text>
+  <rect x="350" y="930" width="830" height="22" rx="8" class="track"/><rect x="350" y="930" width="830" height="22" rx="8" class="runc"/>
+  <text x="1195" y="947" class="value">5/5</text>
+  <rect x="350" y="961" width="830" height="22" rx="8" class="track"/><rect x="350" y="961" width="830" height="22" rx="8" class="runsc"/>
+  <text x="1195" y="978" class="value">5/5</text>
+  <text x="1300" y="790" class="small">100%</text>
+  <text x="1300" y="870" class="small">100%</text>
+  <text x="1300" y="950" class="small">100%</text>
+
+  <text x="58" y="1028" class="small">Safety bars show selected regression probes and deliberate-control detection, not exploit resistance or comparative security. Sources: results/20261110T152643Z/summary.json, safety-20261110T180847Z, network-20261110T180956Z-19376, negative-20261110T185453Z-24675.</text>
+</svg>

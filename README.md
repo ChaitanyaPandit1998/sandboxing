@@ -2,7 +2,13 @@
 
 Compare Docker's default `runc` runtime with gVisor's `runsc` runtime on the same Lima Linux VM. This is a local engineering experiment, not a security certification.
 
+See [POC_SUMMARY.md](POC_SUMMARY.md) for a 13-point overview of the design, findings, limitations, and next steps.
+
 ![Architecture diagram showing the Mac host, Lima Linux VM, paired Docker runtime paths, and saved experiment results](architecture.svg)
+
+![Repository file flow showing runner scripts, shared workload and validation code, seccomp profiles, and results](file-flow.svg)
+
+![Charts showing runsc median slowdown and safety-check pass rates](poc-metrics.svg)
 
 ## Current setup
 
@@ -21,6 +27,8 @@ The host has Go 1.27.3, Lima 2.3.0, and Docker Desktop. The guest uses Ubuntu 26
 ## Files
 
 - `architecture.svg`: host, VM, runtime, workload, and results flow.
+- `file-flow.svg`: repository file map and how the runners connect to code and evidence.
+- `poc-metrics.svg`: benchmark slowdown and selected safety/policy check results.
 - `Dockerfile`: creates the small Python workload image.
 - `.dockerignore`: keeps local results and tools out of the image build context.
 - `workload.py`: CPU, file I/O, and loopback HTTP synthetic workloads.
@@ -37,7 +45,7 @@ Create the VM with `limactl start --name=gvisor-poc --vm-type=vz --cpus=4 --memo
 
 ```bash
 limactl shell gvisor-poc -- mkdir -p /tmp/gvisor-poc
-limactl copy -r .dockerignore Dockerfile README.md REPORT.md architecture.svg install_gvisor.sh run_experiments.sh run_safety_checks.sh safety_validation.py run_network_allowlist.sh run_negative_controls.sh run_syscall_matrix.sh generate_syscall_probe_profile.py profiles workload.py allowlist_proxy.py gvisor-poc:/tmp/gvisor-poc/
+limactl copy -r .dockerignore Dockerfile README.md REPORT.md POC_SUMMARY.md architecture.svg file-flow.svg poc-metrics.svg install_gvisor.sh run_experiments.sh run_safety_checks.sh safety_validation.py run_network_allowlist.sh run_negative_controls.sh run_syscall_matrix.sh generate_syscall_probe_profile.py profiles workload.py allowlist_proxy.py gvisor-poc:/tmp/gvisor-poc/
 limactl shell gvisor-poc -- sh -lc 'mkdir -p "$HOME/gvisor-poc" && cp -R /tmp/gvisor-poc/. "$HOME/gvisor-poc/"'
 ```
 
@@ -60,5 +68,26 @@ Run the separate allowlist test with `bash run_network_allowlist.sh`. By default
 All checks are narrow regression probes, not an adversarial security assessment or proof of isolation.
 
 For each runtime, the syscall matrix runs once with Docker's built-in seccomp profile and once with a derived probe profile. The latter is based on the Engine 29.9.3 profile and adds unconditional allow rules only for `bpf`, `keyctl`, `mount`, `perf_event_open`, `unshare`, and `userfaultfd`; capabilities remain dropped, and all arguments are invalid or any returned descriptor is closed immediately. The runner refuses to compare if the engine version or reported built-in seccomp profile does not match the pinned source. This derived profile is strictly for the isolated experiment, not a production profile. The matrix is observational: it records whether each probe was permitted, blocked, unsupported, rejected for its deliberately invalid arguments, or terminated. It does not test escape resistance.
+
+### Optional gVisor syscall tracing
+
+To collect gVisor's own syscall trace alongside a repeat of the matrix, register a separate debug runtime inside the disposable Lima VM. This changes Docker's daemon configuration and requires a Docker restart, which interrupts running containers. Do this only when the VM is idle and the restart is approved for your environment. Do not enable debug tracing on a production daemon. The official gVisor guide documents `--strace` and per-command debug log files: <https://gvisor.dev/docs/user_guide/debugging/>.
+
+```bash
+sudo mkdir -p /tmp/gvisor-poc-runsc-trace
+sudo chmod 700 /tmp/gvisor-poc-runsc-trace
+sudo runsc install --runtime runsc-trace -- \
+  --debug \
+  --debug-log=/tmp/gvisor-poc-runsc-trace/ \
+  --strace
+sudo systemctl restart docker
+docker info --format '{{json .Runtimes}}'
+POC_SYSCALL_RUNTIMES=runsc-trace \
+POC_SYSCALL_OUTPUT=results/syscall-runsc-trace \
+  bash run_syscall_matrix.sh
+sudo cp -R /tmp/gvisor-poc-runsc-trace results/syscall-runsc-trace/runsc-trace-logs
+```
+
+The runner accepts a space-separated `POC_SYSCALL_RUNTIMES` list; its default remains `runc runsc`. Keep this tracing run separate from timing benchmarks: tracing adds overhead and captures extra syscall detail. gVisor's trace can show how `runsc` handles application syscalls, but it cannot identify the exact host-kernel seccomp decision for `runc`. Compare it with the probe JSON and existing Docker/profile metadata, and report conclusions as observed handling rather than proof of a security advantage. After collecting the logs, remove the temporary `runsc-trace` entry from Docker's daemon configuration and restart Docker again when the VM is idle. Keep the copied trace directory access restricted because syscall logs can contain workload arguments.
 
 Do not compare results from Docker Desktop with results from the Lima VM. The experiment measures synthetic compatibility and speed only; it does not establish a security guarantee.
