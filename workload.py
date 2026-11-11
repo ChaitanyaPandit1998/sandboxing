@@ -9,6 +9,7 @@ import mmap
 import os
 import platform
 import ctypes
+import select
 import shutil
 import socket
 import subprocess
@@ -16,6 +17,7 @@ import sys
 import tempfile
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -45,6 +47,14 @@ def io_work():
 
 
 class Handler(BaseHTTPRequestHandler):
+    protocol_version = "HTTP/1.1"
+    tcp_nodelay = False
+
+    def setup(self):
+        super().setup()
+        if self.tcp_nodelay:
+            self.connection.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
     def do_GET(self):
         body = b"poc-ok"
         self.send_response(200)
@@ -65,7 +75,7 @@ def http_work():
     try:
         for _ in range(count):
             conn = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=3)
-            conn.request("GET", "/")
+            conn.request("GET", "/", headers={"Connection": "close"})
             response = conn.getresponse()
             body = response.read()
             conn.close()
@@ -75,6 +85,117 @@ def http_work():
         server.shutdown()
         server.server_close()
     return {"work": "http", "requests": count, "seconds": time.perf_counter() - start}
+
+
+def http_keepalive_work():
+    """Measure serial loopback HTTP requests over one persistent connection."""
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    start = time.perf_counter()
+    count = 200
+    conn = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=3)
+    try:
+        for _ in range(count):
+            conn.request("GET", "/")
+            response = conn.getresponse()
+            body = response.read()
+            if response.status != 200 or body != b"poc-ok":
+                raise RuntimeError("loopback HTTP response mismatch")
+    finally:
+        conn.close()
+        server.shutdown()
+        server.server_close()
+    return {
+        "work": "http-keepalive",
+        "requests": count,
+        "connections": 1,
+        "connection_policy": "keep-alive",
+        "seconds": time.perf_counter() - start,
+    }
+
+
+class NoDelayHandler(Handler):
+    tcp_nodelay = True
+
+
+def http_keepalive_nodelay_work():
+    """Measure one persistent connection with TCP_NODELAY on client and server."""
+    server = ThreadingHTTPServer(("127.0.0.1", 0), NoDelayHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    count = 200
+    conn = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=3)
+    start = time.perf_counter()
+    try:
+        conn.connect()
+        conn.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        for _ in range(count):
+            conn.request("GET", "/")
+            response = conn.getresponse()
+            body = response.read()
+            if response.status != 200 or body != b"poc-ok":
+                raise RuntimeError("loopback HTTP response mismatch")
+    finally:
+        conn.close()
+        server.shutdown()
+        server.server_close()
+    return {
+        "work": "http-keepalive-nodelay",
+        "requests": count,
+        "connections": 1,
+        "connection_policy": "keep-alive",
+        "tcp_nodelay_client": True,
+        "tcp_nodelay_server": True,
+        "seconds": time.perf_counter() - start,
+    }
+
+
+def http_concurrent_keepalive_work(tcp_nodelay=False):
+    """Measure 200 requests on eight concurrent persistent loopback connections."""
+    server = ThreadingHTTPServer(("127.0.0.1", 0), NoDelayHandler if tcp_nodelay else Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    clients = 8
+    requests_per_client = 25
+    start = time.perf_counter()
+
+    def client_work(_client_id):
+        conn = http.client.HTTPConnection("127.0.0.1", server.server_port, timeout=3)
+        try:
+            if tcp_nodelay:
+                conn.connect()
+                conn.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+            for _ in range(requests_per_client):
+                conn.request("GET", "/")
+                response = conn.getresponse()
+                body = response.read()
+                if response.status != 200 or body != b"poc-ok":
+                    raise RuntimeError("loopback HTTP response mismatch")
+        finally:
+            conn.close()
+
+    try:
+        with ThreadPoolExecutor(max_workers=clients) as pool:
+            list(pool.map(client_work, range(clients)))
+    finally:
+        server.shutdown()
+        server.server_close()
+    return {
+        "work": "http-concurrent-keepalive-nodelay" if tcp_nodelay else "http-concurrent-keepalive",
+        "requests": clients * requests_per_client,
+        "connections": clients,
+        "requests_per_connection": requests_per_client,
+        "connection_policy": "keep-alive",
+        "concurrent_clients": clients,
+        "tcp_nodelay_client": tcp_nodelay,
+        "tcp_nodelay_server": tcp_nodelay,
+        "seconds": time.perf_counter() - start,
+    }
+
+
+def http_concurrent_keepalive_nodelay_work():
+    return http_concurrent_keepalive_work(tcp_nodelay=True)
 
 
 def probe_work():
@@ -87,8 +208,10 @@ def probe_work():
             status = f.read()
         checks["proc_pid1_readable"] = "Pid:\t1" in status or "Pid: 1" in status
         observations["visible_proc_pids"] = sorted(int(name) for name in os.listdir("/proc") if name.isdigit())
+        checks["private_process_view"] = observations["visible_proc_pids"] == [1]
     except OSError as exc:
         checks["proc_pid1_readable"] = False
+        checks["private_process_view"] = False
         observations["proc_error"] = str(exc)
 
     try:
@@ -112,6 +235,40 @@ def probe_work():
     except OSError as exc:
         checks["rootfs_write_blocked"] = exc.errno == 30  # EROFS
         observations["rootfs_write_errno"] = exc.errno
+
+    outside_write_results = {}
+    for path in (f"/etc/.poc-write-probe-{os.getpid()}", f"/var/tmp/.poc-write-probe-{os.getpid()}"):
+        try:
+            with open(path, "xb") as f:
+                f.write(b"synthetic")
+            os.unlink(path)
+            outside_write_results[path] = False
+        except OSError:
+            outside_write_results[path] = True
+    checks["writes_outside_tmp_blocked"] = all(outside_write_results.values())
+    observations["outside_write_denials"] = outside_write_results
+
+    try:
+        with tempfile.TemporaryDirectory(dir="/tmp") as temp_dir:
+            link = os.path.join(temp_dir, "etc-link")
+            os.symlink("/etc", link)
+            try:
+                symlink_target = os.path.join(link, f".poc-symlink-write-probe-{os.getpid()}")
+                with open(symlink_target, "xb") as f:
+                    f.write(b"synthetic")
+                os.unlink(symlink_target)
+                checks["symlink_traversal_write_blocked"] = False
+            except OSError:
+                checks["symlink_traversal_write_blocked"] = True
+    except OSError as exc:
+        checks["symlink_traversal_write_blocked"] = False
+        observations["symlink_probe_error"] = str(exc)
+
+    try:
+        checks["sysfs_read_only"] = bool(os.statvfs("/sys").f_flag & getattr(os, "ST_RDONLY", 1))
+    except OSError as exc:
+        checks["sysfs_read_only"] = False
+        observations["sysfs_error"] = str(exc)
 
     try:
         with tempfile.NamedTemporaryFile(dir="/tmp") as f:
@@ -319,6 +476,8 @@ def blocked_by_proxy(opener, url):
 
 
 def network_probe_work():
+    from urllib.parse import urlsplit
+
     proxy = os.environ.get("POC_HTTPS_PROXY", "http://egress-proxy:3128")
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({"https": proxy}))
     checks = {}
@@ -343,6 +502,76 @@ def network_probe_work():
         opener, "https://example.com:8443/"
     )
 
+    proxy_parts = urlsplit(proxy)
+
+    def raw_proxy_status(request_line, host_header):
+        with socket.create_connection((proxy_parts.hostname, proxy_parts.port or 3128), timeout=3) as client:
+            client.settimeout(5)
+            request = f"{request_line}\r\nHost: {host_header}\r\nConnection: close\r\n\r\n"
+            client.sendall(request.encode("ascii"))
+            first_line = client.recv(4096).split(b"\r\n", 1)[0].decode("ascii", "replace")
+            return int(first_line.split()[1]), first_line
+
+    raw_cases = {
+        "proxy_rejects_plain_http_method": ("GET http://example.com/ HTTP/1.1", "example.com"),
+        "proxy_rejects_unlisted_connect_with_allowed_host_header": ("CONNECT example.org:443 HTTP/1.1", "example.com:443"),
+        "proxy_rejects_alternate_port_connect": ("CONNECT example.com:8443 HTTP/1.1", "example.com:443"),
+        "proxy_rejects_lookalike_subdomain": ("CONNECT example.com.attacker.invalid:443 HTTP/1.1", "example.com:443"),
+        "proxy_rejects_ip_connect_with_allowed_host_header": ("CONNECT 1.1.1.1:443 HTTP/1.1", "example.com:443"),
+        "proxy_rejects_userinfo_authority": ("CONNECT example.com:443@attacker.invalid HTTP/1.1", "example.com:443"),
+        "proxy_rejects_bracketed_ipv6_connect": ("CONNECT [2606:4700:4700::1111]:443 HTTP/1.1", "example.com:443"),
+    }
+    raw_statuses = {}
+    for name, (request_line, host_header) in raw_cases.items():
+        try:
+            status, response = raw_proxy_status(request_line, host_header)
+            checks[name] = status == 403
+            raw_statuses[name] = response
+        except (OSError, ValueError, IndexError) as exc:
+            checks[name] = False
+            raw_statuses[name] = str(exc)
+    observations["raw_proxy_responses"] = raw_statuses
+
+    redirect_url = os.environ.get("POC_REDIRECT_TEST_URL")
+    if redirect_url:
+        checks["redirect_to_denied_domain_blocked"], observations["redirect_probe_error"] = blocked_by_proxy(
+            opener, redirect_url
+        )
+    checks["ipv6_literal_denied"], observations["ipv6_literal_error"] = blocked_by_proxy(
+        opener, "https://[2606:4700:4700::1111]/"
+    )
+
+    # Unit-probe the proxy's resolve/validate/connect sequence with synthetic DNS answers.
+    # A private answer is rejected, and only the validated public sockaddr is connected.
+    try:
+        from unittest.mock import patch
+        import allowlist_proxy
+
+        private = (socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("127.0.0.1", 443))
+        public = (socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("93.184.216.34", 443))
+        connected = []
+
+        class FakeSocket:
+            def settimeout(self, _timeout):
+                pass
+
+            def connect(self, sockaddr):
+                connected.append(sockaddr)
+
+            def close(self):
+                pass
+
+        with patch("allowlist_proxy.socket.getaddrinfo", return_value=[private, public]), patch(
+            "allowlist_proxy.socket.socket", side_effect=lambda *_args: FakeSocket()
+        ):
+            upstream = allowlist_proxy.connect_public("synthetic.example", 443)
+            upstream.close()
+        checks["proxy_rejects_private_dns_answer"] = connected == [public[4]]
+        observations["dns_answer_probe"] = {"private_answer_skipped": True, "connected_sockaddrs": connected}
+    except Exception as exc:
+        checks["proxy_rejects_private_dns_answer"] = False
+        observations["dns_answer_probe_error"] = str(exc)
+
     try:
         with socket.create_connection(("1.1.1.1", 443), timeout=1):
             checks["direct_egress_blocked"] = False
@@ -350,6 +579,29 @@ def network_probe_work():
     except OSError as exc:
         checks["direct_egress_blocked"] = True
         observations["direct_egress_error"] = str(exc)
+
+    try:
+        with socket.create_connection(("2606:4700:4700::1111", 443), timeout=1):
+            checks["direct_ipv6_egress_blocked"] = False
+            observations["direct_ipv6_egress_error"] = "direct IPv6 connection unexpectedly succeeded"
+    except OSError as exc:
+        checks["direct_ipv6_egress_blocked"] = True
+        observations["direct_ipv6_egress_error"] = str(exc)
+
+    try:
+        qname = b"\x07example\x03com\x00"
+        query = b"\x12\x34\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00" + qname + b"\x00\x01\x00\x01"
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
+            udp.settimeout(1)
+            udp.connect(("1.1.1.1", 53))
+            udp.sendall(query)
+            response = udp.recv(512)
+        answers = int.from_bytes(response[6:8], "big") if len(response) >= 8 else 0
+        checks["direct_udp_dns_blocked"] = not (response[:2] == b"\x12\x34" and answers > 0)
+        observations["direct_udp_dns_response_bytes"] = len(response)
+    except OSError as exc:
+        checks["direct_udp_dns_blocked"] = True
+        observations["direct_udp_dns_error"] = str(exc)
 
     result = {"work": "network-allowlist-probes", "checks": checks, "observations": observations}
     result["passed"] = all(checks.values())
@@ -359,14 +611,141 @@ def network_probe_work():
         raise SystemExit(1)
 
 
+def dns_rebind_probe_work():
+    from urllib.parse import urlsplit
+
+    proxy = urlsplit(os.environ.get("POC_HTTPS_PROXY", "http://egress-proxy:3128"))
+    host = os.environ.get("POC_REBIND_TARGET", "example.com")
+    port = proxy.port or 3128
+
+    def connect_status():
+        with socket.create_connection((proxy.hostname, port), timeout=5) as sock:
+            sock.settimeout(8)
+            sock.sendall(f"CONNECT {host}:443 HTTP/1.1\r\nHost: {host}:443\r\n\r\n".encode("ascii"))
+            response = sock.recv(4096).split(b"\r\n", 1)[0].decode("ascii", "replace")
+            return int(response.split()[1]), response
+
+    first_status, first_response = connect_status()
+    second_status, second_response = connect_status()
+    checks = {"initial_public_answer_connects": first_status == 200,
+              "rebound_loopback_answer_rejected": second_status == 502}
+    result = {"work": "dns-rebinding-probe", "checks": checks,
+              "observations": {"target": host, "first_proxy_status": first_status,
+                               "first_response": first_response, "second_proxy_status": second_status,
+                               "second_response": second_response,
+                               "interpretation": "Controlled DNS response changed from a public address to loopback; each proxy resolution was validated before connect."}}
+    result["passed"] = all(checks.values())
+    result["python"] = sys.version.split()[0]
+    print(json.dumps(result, sort_keys=True))
+    if not result["passed"]:
+        raise SystemExit(1)
+
+
+def syscall_compatibility_work():
+    checks = {}
+    observations = {"uid": os.getuid(), "kernel": platform.release()}
+
+    try:
+        with tempfile.TemporaryDirectory(dir="/tmp") as temp_dir:
+            directory_fd = os.open(temp_dir, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+            try:
+                fd = os.open("relative-file", os.O_CREAT | os.O_RDWR, 0o600, dir_fd=directory_fd)
+                try:
+                    os.write(fd, b"openat-ok")
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    checks["openat_relative_read_write"] = os.read(fd, 32) == b"openat-ok"
+                finally:
+                    os.close(fd)
+            finally:
+                os.close(directory_fd)
+    except OSError as exc:
+        checks["openat_relative_read_write"] = False
+        observations["openat_error"] = str(exc)
+
+    try:
+        fd = os.memfd_create("poc-memfd", 0)
+        try:
+            os.write(fd, b"memfd-ok")
+            os.lseek(fd, 0, os.SEEK_SET)
+            with mmap.mmap(fd, 8) as view:
+                checks["memfd_mmap"] = view[:] == b"memfd-ok"
+        finally:
+            os.close(fd)
+    except (AttributeError, OSError) as exc:
+        checks["memfd_mmap"] = False
+        observations["memfd_error"] = str(exc)
+
+    try:
+        fd = os.eventfd(0, 0)
+        try:
+            os.write(fd, (3).to_bytes(8, "little"))
+            checks["eventfd_round_trip"] = os.read(fd, 8) == (3).to_bytes(8, "little")
+        finally:
+            os.close(fd)
+    except (AttributeError, OSError) as exc:
+        checks["eventfd_round_trip"] = False
+        observations["eventfd_error"] = str(exc)
+
+    try:
+        read_fd, write_fd = os.pipe()
+        try:
+            with select.epoll() as poller:
+                poller.register(read_fd, select.EPOLLIN)
+                os.write(write_fd, b"e")
+                checks["epoll_pipe_readiness"] = any(poller.poll(1)) and os.read(read_fd, 1) == b"e"
+        finally:
+            os.close(read_fd)
+            os.close(write_fd)
+    except OSError as exc:
+        checks["epoll_pipe_readiness"] = False
+        observations["epoll_error"] = str(exc)
+
+    try:
+        left, right = socket.socketpair()
+        try:
+            left.sendall(b"socketpair-ok")
+            checks["unix_socketpair"] = right.recv(32) == b"socketpair-ok"
+        finally:
+            left.close()
+            right.close()
+    except OSError as exc:
+        checks["unix_socketpair"] = False
+        observations["socketpair_error"] = str(exc)
+
+    try:
+        child = subprocess.run(["/bin/true"], timeout=3, check=False)
+        checks["exec_wait_child"] = child.returncode == 0
+        observations["child_exit"] = child.returncode
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        checks["exec_wait_child"] = False
+        observations["child_error"] = str(exc)
+
+    try:
+        event = threading.Event()
+        thread = threading.Thread(target=event.set)
+        thread.start()
+        thread.join(timeout=2)
+        checks["thread_clone_join"] = event.is_set()
+    except RuntimeError as exc:
+        checks["thread_clone_join"] = False
+        observations["thread_error"] = str(exc)
+
+    result = {"work": "syscall-compatibility", "checks": checks, "observations": observations}
+    result["passed"] = bool(checks) and all(checks.values())
+    result["python"] = sys.version.split()[0]
+    print(json.dumps(result, sort_keys=True))
+    if not result["passed"]:
+        raise SystemExit(1)
+
+
 def main():
     import sys
 
-    modes = {"cpu": cpu_work, "io": io_work, "http": http_work, "probe": probe_work, "network-probe": network_probe_work, "syscall-matrix": syscall_matrix_work}
+    modes = {"cpu": cpu_work, "io": io_work, "http": http_work, "http-keepalive": http_keepalive_work, "http-keepalive-nodelay": http_keepalive_nodelay_work, "http-concurrent-keepalive": http_concurrent_keepalive_work, "http-concurrent-keepalive-nodelay": http_concurrent_keepalive_nodelay_work, "probe": probe_work, "network-probe": network_probe_work, "dns-rebind-probe": dns_rebind_probe_work, "syscall-matrix": syscall_matrix_work, "syscall-compatibility": syscall_compatibility_work}
     if len(sys.argv) != 2 or sys.argv[1] not in modes:
-        raise SystemExit("usage: workload.py {cpu|io|http|probe|network-probe|syscall-matrix}")
+        raise SystemExit("usage: workload.py {cpu|io|http|http-keepalive|http-keepalive-nodelay|http-concurrent-keepalive|http-concurrent-keepalive-nodelay|probe|network-probe|dns-rebind-probe|syscall-matrix|syscall-compatibility}")
     result = modes[sys.argv[1]]()
-    if sys.argv[1] not in {"probe", "network-probe", "syscall-matrix"}:
+    if sys.argv[1] not in {"probe", "network-probe", "dns-rebind-probe", "syscall-matrix", "syscall-compatibility"}:
         result["python"] = os.sys.version.split()[0]
         print(json.dumps(result, sort_keys=True))
 

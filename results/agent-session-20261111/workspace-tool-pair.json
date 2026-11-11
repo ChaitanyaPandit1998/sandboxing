@@ -1,0 +1,91 @@
+{
+  "date": "2026-11-11",
+  "test": "authenticated Codex workspace write/read/delete and shell verification",
+  "cli": "Codex CLI 0.167.1",
+  "model": "gpt-6-luna",
+  "task": "Within /workspace, create codex-smoke.txt containing exactly 'codex workspace smoke', verify its contents with a shell command, then delete it and verify it is absent. Do not access paths outside /workspace or use network/MCP.",
+  "policy": "--ephemeral --sandbox workspace-write",
+  "runtimes": {
+    "runsc": {
+      "container": "agent-session-runsc-codex",
+      "result": "failed_before_task_execution",
+      "error": "bwrap: loopback: Failed RTM_NEWADDR: No such process",
+      "retry": "same failure",
+      "workspace_file_created": false
+    },
+    "runc": {
+      "container": "agent-session-runc-codex",
+      "result": "failed_before_task_execution",
+      "error": "bwrap: No permissions to create a new namespace, likely because the kernel does not allow non-privileged user namespaces.",
+      "retry": "same failure",
+      "workspace_file_created": false
+    }
+  },
+  "interpretation": "The CLI's bundled bubblewrap tool sandbox could not initialize in the current nested Docker/Lima security configuration. This does not demonstrate a security or compatibility difference between runc and runsc.",
+  "read_only_guest_settings": {
+    "user.max_user_namespaces": 21089,
+    "kernel.unprivileged_userns_clone": 1,
+    "kernel.apparmor_restrict_unprivileged_userns": 1,
+    "docker_security_opts": ["AppArmor default", "seccomp builtin", "cgroupns"]
+  },
+  "standalone_bwrap_probe_after_image_rebuild": {
+    "image": "local/agent-session:claude-2.1.322-codex-0.167.1",
+    "command_profile": "--network=none --read-only --cap-drop=ALL --security-opt=no-new-privileges; bwrap --unshare-user --unshare-pid --unshare-net --ro-bind / / --proc /proc --dev /dev /bin/true",
+    "runc": {
+      "result": "failed",
+      "error": "bwrap: No permissions to create new namespace, likely because the kernel does not allow non-privileged user namespaces."
+    },
+    "runsc": {
+      "result": "failed",
+      "error": "bwrap: loopback: Failed RTM_NEWADDR: No child processes"
+    },
+    "kernel_journal": "User ran journalctl -k --since '20 minutes ago' filtered for apparmor, seccomp, DENIED, bwrap, and userns; no matching lines were returned.",
+    "interpretation": "Installing the distro bubblewrap package did not resolve the nested sandbox. The runc container uses Docker's built-in seccomp profile, which blocks clone/unshare operations that create new namespaces; with all capabilities dropped, this is the likely immediate cause of the user-namespace failure. AppArmor may also constrain the operation. The VM has the bwrap-userns-restrict profile file, but the aa-status grep used so far may not match its attachment label; load status is not yet conclusive. The runsc loopback failure matches a known gVisor netstack behavior in which a new namespace's loopback already has addresses that bubblewrap tries to add. These are distinct blockers; neither result is a runtime escape or security comparison."
+  },
+  "runc_probe_with_candidate_seccomp": {
+    "profile": "profiles/bwrap-seccomp-v29.9.3.json",
+    "profile_sha256": "a1573d3a238e6b496e24f9e4eb75ac74003cc6bf8dee96126b3710744e57fc9d",
+    "result": "failed",
+    "error": "bwrap: No permissions to create new namespace, likely because the kernel does not allow non-privileged user namespaces.",
+    "capabilities_added": false,
+    "apparmor": "Container reports docker-default (enforce); the aa-status grep returned docker-default only, but may not match a bwrap attachment label such as /usr/bin/bwrap. The profile file exists; loaded status is inconclusive.",
+    "interpretation": "The candidate seccomp profile alone did not unblock user-namespace creation. AppArmor remains a likely blocker, but the current aa-status search does not establish whether the scoped bwrap profile loaded or whether docker-default prevents its transition."
+  },
+  "runc_probe_after_apparmor_parser_command": {
+    "result": "failed",
+    "error": "bwrap: No permissions to create new namespace, likely because the kernel does not allow non-privileged user namespaces.",
+    "parser_exit_code": 0,
+    "aa_status_filtered_output": ["bwrap", "unpriv_bwrap", "docker-default"],
+    "kernel_journal_after_attempt": "Only AppArmor profile_replace STATUS messages appeared; no DENIED or seccomp records matched.",
+    "container_apparmor_profile": "docker-default (enforce)",
+    "interpretation": "The Ubuntu bwrap and unpriv_bwrap profiles are loaded, but the test container still runs under docker-default. The current evidence does not show that executing bwrap from docker-default transitions to the bwrap profile. The next isolated probe should explicitly select apparmor=bwrap for the harmless bwrap command, alongside the candidate seccomp profile."
+  },
+  "runc_probe_with_explicit_bwrap_apparmor": {
+    "result": "failed",
+    "error": "bwrap: No permissions to create new namespace, likely because the kernel does not allow non-privileged user namespaces.",
+    "apparmor_option": "apparmor=bwrap",
+    "candidate_seccomp_profile": "profiles/bwrap-seccomp-v29.9.3.json",
+    "active_process_label": "not captured",
+    "interpretation": "Selecting the loaded bwrap profile explicitly did not resolve the failure. Capture /proc/self/attr/current and Seccomp/NoNewPrivs from a container launched with these same options to confirm both profiles are active before changing policy further."
+  },
+  "policy_changes": [],
+  "candidate_seccomp_profile": {
+    "path": "profiles/bwrap-seccomp-v29.9.3.json",
+    "sha256": "a1573d3a238e6b496e24f9e4eb75ac74003cc6bf8dee96126b3710744e57fc9d",
+    "source": "Moby Docker v29.9.3 built-in seccomp profile, SHA-256 verified before derivation",
+    "status": "generated_not_yet_run",
+    "change_summary": "Allows ARM64 clone/unshare namespace flags for mount, user, PID, network, IPC, and UTS; leaves cgroup/time namespaces blocked; adds mount and umount2; leaves clone3, setns, defaultAction, capabilities, and AppArmor unchanged.",
+    "scope": "Disposable POC only: seccomp applies to all processes in the container, not just bwrap."
+  },
+  "cleanup": {
+    "status": "verified_by_user",
+    "reason": "The user confirmed both Codex CLIs logged out and the temporary session/proxy containers and memory-backed homes were removed.",
+    "temporary_resources": [
+      "agent-session-runsc-codex",
+      "agent-session-runc-codex",
+      "agent-session-proxy",
+      "agent-session-client",
+      "agent-session-egress"
+    ]
+  }
+}

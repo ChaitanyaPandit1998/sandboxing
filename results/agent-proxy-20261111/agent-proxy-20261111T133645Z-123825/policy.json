@@ -1,0 +1,1 @@
+{"allowed_hosts":"api.anthropic.com,claude.ai,claude.com,platform.claude.com,auth.openai.com,chatgpt.com","allowed_port":443,"client_network":"internal","proxy_only_egress":true,"model_requests_sent":false}

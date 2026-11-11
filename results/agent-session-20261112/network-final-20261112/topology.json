@@ -1,0 +1,1 @@
+{"allowed_hosts":"example.com,httpbin.org","allowed_port":443,"client_network":"internal","proxy_ip":"172.18.0.2","proxy_egress":"Docker bridge","direct_client_egress":"blocked by internal network"}

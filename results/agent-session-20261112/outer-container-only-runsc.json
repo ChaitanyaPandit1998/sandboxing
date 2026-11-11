@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-12",
+  "test_id": "codex-workspace-smoke-outer-container-only-runsc",
+  "purpose": "Paired runsc check of Codex CLI workspace tool execution with Codex's nested sandbox disabled and the outer Docker container as the isolation boundary.",
+  "cli": {
+    "name": "Codex CLI",
+    "version": "0.167.1",
+    "sandbox_mode": "danger-full-access",
+    "approval_policy_requested": "on-request",
+    "approval_policy_reported_by_cli": "never",
+    "daemon_mode": "no-daemon",
+    "model": "gpt-6-luna"
+  },
+  "runtime": {
+    "name": "runsc",
+    "docker_version": "29.9.3",
+    "image_id": "sha256:1c699e85c4765335983513403bc9edb812ffcc88dab0f9132274406079fdee5a"
+  },
+  "outer_container_policy": {
+    "read_only_root": true,
+    "capabilities_dropped": "ALL",
+    "no_new_privileges": true,
+    "host_mounts": [],
+    "writable_tmpfs": {
+      "/home/agent": "128 MiB",
+      "/tmp": "128 MiB",
+      "/workspace": "512 MiB"
+    },
+    "network": "agent-session-client internal network through the configured proxy"
+  },
+  "task": "Create /workspace/codex-smoke.txt with the exact text 'outer-container smoke passed', read and verify it, then delete it.",
+  "result": {
+    "codex_started": true,
+    "workspace_write": "passed",
+    "readback_verification": "passed",
+    "deletion": "passed",
+    "file_absent_after_task": true,
+    "exit_code": 0,
+    "reported_tokens": 2617,
+    "latency_measured": false
+  },
+  "limitations": [
+    "This validates the outer-container-only mode; it does not validate Codex's nested bubblewrap sandbox.",
+    "The effective approval policy was 'never'; the task ran without approval prompts and relied on the outer container controls.",
+    "This is one functional smoke, not a security assessment or performance measurement."
+  ]
+}

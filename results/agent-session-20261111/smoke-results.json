@@ -1,0 +1,78 @@
+{
+  "run_date": "2026-11-11",
+  "environment": {
+    "vm": "Lima Ubuntu ARM64",
+    "kernel": "7.0.0-38-generic",
+    "architecture": "aarch64",
+    "docker_engine": "29.9.3",
+    "runc": "1.5.2",
+    "runsc": "release-20261102.0",
+    "image": "local/agent-session:claude-2.1.322-codex-0.167.1",
+    "image_id": "sha256:3517ea14c82bd2baef598724c6321632af912aeb015e534768adfd1a06c56d29",
+    "base_image": "node:22-bookworm-slim@sha256:5ec23b7c622b00547753bc6ffd78085dd868a68aeb41c8e0a1418f033e13d96d",
+    "claude_code": "2.1.322",
+    "codex_cli": "0.167.1"
+  },
+  "common_container_policy": {
+    "uid_gid": "10001:10001",
+    "capabilities": "all dropped",
+    "no_new_privileges": true,
+    "rootfs": "read-only",
+    "workspace": "session-private tmpfs",
+    "network": "none",
+    "limits": {
+      "cpus": 1,
+      "memory": "256m",
+      "pids": 128
+    },
+    "host_mounts": []
+  },
+  "results": {
+    "runc": {
+      "claude_version": "passed",
+      "claude_help": "passed",
+      "codex_version": "passed",
+      "codex_help": "passed",
+      "nonroot_uid_10001": "passed",
+      "effective_capabilities_zero": "passed",
+      "no_new_privileges_one": "passed",
+      "workspace_write": "passed",
+      "read_only_rootfs_write_denied": "passed",
+      "setuid_zero_denied": "passed",
+      "direct_egress_with_network_none": "blocked",
+      "child_process": "passed",
+      "worker_thread": "passed",
+      "cross_session_file_and_process_environment": "not_visible",
+      "guest_host_marker_without_mount": "not_visible",
+      "container_cleanup": "passed"
+    },
+    "runsc": {
+      "claude_version": "passed",
+      "claude_help": "passed",
+      "codex_version": "passed",
+      "codex_help": "passed",
+      "nonroot_uid_10001": "passed",
+      "effective_capabilities_zero": "passed",
+      "no_new_privileges_one": "passed",
+      "workspace_write": "passed",
+      "read_only_rootfs_write_denied": "passed",
+      "setuid_zero_denied": "passed",
+      "direct_egress_with_network_none": "blocked",
+      "child_process": "passed",
+      "worker_thread": "passed",
+      "cross_session_file_and_process_environment": "not_visible",
+      "guest_host_marker_without_mount": "not_visible",
+      "container_cleanup": "passed"
+    }
+  },
+  "not_run": [
+    "interactive PTY and ready prompt",
+    "authenticated model request",
+    "Git with a disposable credential",
+    "proxy allowlist and proxy bypass checks",
+    "full CLI-directed workspace/build task",
+    "forced-stop retention audit",
+    "MCP integration"
+  ],
+  "scope_note": "Configuration and compatibility smoke evidence only; not an adversarial security test or proof of runtime escape resistance."
+}

@@ -2,3 +2,4 @@
 !Dockerfile
 !workload.py
 !allowlist_proxy.py
+!dns_rebind_server.py

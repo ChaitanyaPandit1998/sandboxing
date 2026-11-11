@@ -1,0 +1,42 @@
+{"event": "listening", "address": ["0.0.0.0", 3128], "allowed_hosts": ["api.anthropic.com", "auth.openai.com", "chatgpt.com", "claude.ai", "claude.com", "platform.claude.com"], "allowed_port": 443}
+{"decision": "allow", "host": "auth.openai.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "auth.openai.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "auth.openai.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "deny", "host": "sdmntprsouthcentralus.oaiusercontent.com", "port": 443, "reason": "not in exact host/port allowlist"}
+{"decision": "deny", "host": "sdmntprcentralus.oaiusercontent.com", "port": 443, "reason": "not in exact host/port allowlist"}
+{"decision": "deny", "host": "sdmntprsouthcentralus.oaiusercontent.com", "port": 443, "reason": "not in exact host/port allowlist"}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "deny", "host": "ab.chatgpt.com", "port": 443, "reason": "not in exact host/port allowlist"}
+{"decision": "allow", "host": "auth.openai.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "auth.openai.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "auth.openai.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "auth.openai.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "deny", "host": "sdmntprsouthcentralus.oaiusercontent.com", "port": 443, "reason": "not in exact host/port allowlist"}
+{"decision": "deny", "host": "sdmntprcentralus.oaiusercontent.com", "port": 443, "reason": "not in exact host/port allowlist"}
+{"decision": "deny", "host": "sdmntprsouthcentralus.oaiusercontent.com", "port": 443, "reason": "not in exact host/port allowlist"}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "allow", "host": "chatgpt.com", "port": 443, "reason": ""}
+{"decision": "deny", "host": "ab.chatgpt.com", "port": 443, "reason": "not in exact host/port allowlist"}

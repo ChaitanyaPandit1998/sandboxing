@@ -1,0 +1,19 @@
+{
+  "added_rules": {
+    "clone": "ARM64 only; allows mount, user, PID, network, IPC, and UTS namespace flags; keeps cgroup and time namespace flags denied.",
+    "mount_umount_pivot_root": "Allowed so bubblewrap can assemble its private mount tree. Linux still applies namespace capability checks; these operations require CAP_SYS_ADMIN in the owning mount namespace.",
+    "unshare": "Allows the same namespace subset; keeps cgroup and time namespace flags denied."
+  },
+  "derived_profile_sha256": "5826c5054f5709c416ebd3cbcefcf68c7ec7a83c9afb9be0066a108c6de8816a",
+  "purpose": "Disposable POC probe for Codex/bubblewrap nested namespaces under Docker.",
+  "scope_warning": "Test only in the disposable POC VM. Seccomp applies to every process in the container, not only /usr/bin/bwrap. Any process can create the allowed nested namespaces and attempt namespace-scoped mounts. Keep the outer container non-root, drop all capabilities, retain no-new-privileges and AppArmor, and do not use this profile in production without a separate security review.",
+  "source_engine_tag": "docker-v29.9.3",
+  "source_sha256": "785b2429264afba4d594320337cb17f144f3c7d51585f9805eef72e28f4f9334",
+  "source_url": "https://raw.githubusercontent.com/moby/moby/docker-v29.9.3/vendor/github.com/moby/profiles/seccomp/default.json",
+  "unchanged_restrictions": [
+    "defaultAction remains SCMP_ACT_ERRNO",
+    "clone3 remains at the Docker default (ENOSYS without CAP_SYS_ADMIN)",
+    "setns remains denied by the Docker default",
+    "no Linux capabilities are added by this profile"
+  ]
+}

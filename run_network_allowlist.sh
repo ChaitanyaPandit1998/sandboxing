@@ -47,10 +47,14 @@ printf '{"allowed_hosts":"%s","allowed_port":443,"client_network":"internal","pr
 
 for runtime in runc runsc; do
   echo "Checking HTTPS allowlist under $runtime"
+  optional_probe_env=()
+  if [[ -n "${POC_REDIRECT_TEST_URL:-}" ]]; then
+    optional_probe_env+=(-e "POC_REDIRECT_TEST_URL=$POC_REDIRECT_TEST_URL")
+  fi
   docker run --rm --runtime="$runtime" --network="$CLIENT_NET" \
     --cpus=1 --memory=256m --pids-limit=128 --read-only --tmpfs /tmp:size=64m \
     --security-opt no-new-privileges --cap-drop=ALL --user 10001:10001 \
-    -e "POC_HTTPS_PROXY=http://$PROXY_IP:3128" "$IMAGE" network-probe \
+    -e "POC_HTTPS_PROXY=http://$PROXY_IP:3128" "${optional_probe_env[@]}" "$IMAGE" network-probe \
     > "$OUT/check-$runtime.json"
 done
 

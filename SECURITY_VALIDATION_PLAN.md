@@ -6,6 +6,10 @@ This plan defines the next validation phase for the local gVisor POC. Current ev
 
 The goal of the next phase is to test specific boundaries under a defined attacker model, preserve reproducible evidence, and identify gaps before considering a production design. gVisor is designed to interpose a userspace application kernel between the workload and host kernel; its own security model also relies on host resource controls such as cgroups and separately configured network policy. Tests should cover those layers as well as the runtime. [gVisor security model](https://gvisor.dev/docs/architecture_guide/security/)
 
+### Latest P0 progress (2026-11-12)
+
+The disposable Lima VM runs passed expanded filesystem/process checks, 17 egress/proxy-bypass checks per runtime, a controlled DNS-rebinding sequence, a common syscall compatibility smoke, the four-run syscall diagnostic, and configuration-only negative controls for privileged mode, host PID/network, device access, and writable bind mounts. These are targeted probes; host-level settings in the negative controls were never started. See the detailed records in [AGENT_SESSION_VALIDATION_PLAN.md](AGENT_SESSION_VALIDATION_PLAN.md) and `results/agent-session-20261112/`. Further protocol-specific bypass cases and broader supported-syscall/namespace/mount/ptrace coverage remain open.
+
 ## Threat model
 
 ### Assume the workload attacker can

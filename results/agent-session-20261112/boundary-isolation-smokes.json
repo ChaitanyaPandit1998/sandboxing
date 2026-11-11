@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-12",
+  "scope": "Synthetic outer-container boundary and cross-session isolation smoke probes",
+  "runtimes": {
+    "runc": {
+      "boundary": {
+        "cap_eff": "0000000000000000",
+        "no_new_privs": true,
+        "workspace_write_allowed": true,
+        "rootfs_write_denied": true,
+        "setuid_root_denied": true,
+        "direct_egress_blocked": true
+      },
+      "isolation": {
+        "cross_session_file_isolated": true,
+        "cross_session_process_environment_not_visible": true,
+        "synthetic_host_marker_not_visible": true,
+        "temporary_container_cleanup_complete": true
+      },
+      "passed": true
+    },
+    "runsc": {
+      "boundary": {
+        "cap_eff": "0000000000000000",
+        "no_new_privs": true,
+        "workspace_write_allowed": true,
+        "rootfs_write_denied": true,
+        "setuid_root_denied": true,
+        "direct_egress_blocked": true
+      },
+      "isolation": {
+        "cross_session_file_isolated": true,
+        "cross_session_process_environment_not_visible": true,
+        "synthetic_host_marker_not_visible": true,
+        "temporary_container_cleanup_complete": true
+      },
+      "passed": true
+    }
+  },
+  "limitations": [
+    "These are narrow synthetic configuration probes, not an adversarial escape assessment.",
+    "They do not test Codex's nested sandbox, approval behavior, or runtime security superiority."
+  ]
+}

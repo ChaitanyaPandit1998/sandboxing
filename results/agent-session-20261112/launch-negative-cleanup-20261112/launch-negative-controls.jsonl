@@ -1,0 +1,10 @@
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runc", "scenario": "privileged", "setting_observed": true}
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runc", "scenario": "host-pid", "setting_observed": true}
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runc", "scenario": "host-network", "setting_observed": true}
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runc", "scenario": "device-access", "setting_observed": true}
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runc", "scenario": "writable-bind", "setting_observed": true}
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runsc", "scenario": "privileged", "setting_observed": true}
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runsc", "scenario": "host-pid", "setting_observed": true}
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runsc", "scenario": "host-network", "setting_observed": true}
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runsc", "scenario": "device-access", "setting_observed": true}
+{"container_started": false, "detected": true, "method": "Docker create/inspect only; workload was not started", "runtime": "runsc", "scenario": "writable-bind", "setting_observed": true}

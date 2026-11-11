@@ -6,6 +6,19 @@ cd "$ROOT"
 IMAGE="${POC_IMAGE:-local/gvisor-poc:latest}"
 TRIALS="${POC_TRIALS:-20}"
 OUT="${POC_OUTPUT:-results/$(date -u +%Y%m%dT%H%M%SZ)}"
+DEFAULT_WORKLOADS="cpu io http http-keepalive http-keepalive-nodelay http-concurrent-keepalive http-concurrent-keepalive-nodelay"
+WORKLOADS="${POC_WORKLOADS:-$DEFAULT_WORKLOADS}"
+read -r -a WORKLOAD_ARRAY <<< "$WORKLOADS"
+if [[ ${#WORKLOAD_ARRAY[@]} -eq 0 ]]; then
+  echo "POC_WORKLOADS must contain at least one workload" >&2
+  exit 2
+fi
+for work in "${WORKLOAD_ARRAY[@]}"; do
+  case "$work" in
+    cpu|io|http|http-keepalive|http-keepalive-nodelay|http-concurrent-keepalive|http-concurrent-keepalive-nodelay) ;;
+    *) echo "Unsupported workload in POC_WORKLOADS: $work" >&2; exit 2 ;;
+  esac
+done
 
 if ! [[ "$TRIALS" =~ ^[1-9][0-9]*$ ]]; then
   echo "POC_TRIALS must be a positive integer" >&2
@@ -30,6 +43,7 @@ def cmd(*args):
         return f"unavailable: {exc}"
 
 image, trials = sys.argv[2], int(sys.argv[3])
+workloads = os.environ.get("POC_WORKLOADS", "cpu io http http-keepalive http-keepalive-nodelay http-concurrent-keepalive http-concurrent-keepalive-nodelay").split()
 info = json.loads(cmd("docker", "info", "--format", "{{json .}}"))
 runtimes = json.loads(cmd("docker", "info", "--format", "{{json .Runtimes}}"))
 image_info = json.loads(cmd("docker", "image", "inspect", image))[0]
@@ -52,6 +66,7 @@ data = {
     "workload_image": image,
     "workload_image_id": image_info.get("Id"),
     "workload_image_repo_digests": image_info.get("RepoDigests", []),
+    "workloads": workloads,
     "configured_limits": {"cpus": 1, "memory": "256m", "pids": 128, "network": "none", "rootfs": "read-only", "tmpfs": "/tmp:size=64m", "user": "10001:10001", "no_new_privileges": True},
     "warmup_runs_per_runtime_workload": 1,
     "measured_trials_per_runtime_workload": trials,
@@ -93,7 +108,7 @@ PY
   rm -f "$result_file"
 }
 
-for work in cpu io http; do
+for work in "${WORKLOAD_ARRAY[@]}"; do
   for runtime in runc runsc; do
     echo "warmup runtime=$runtime work=$work"
     run_one "$runtime" "$work" warmup 0
@@ -102,7 +117,12 @@ done
 
 for trial in $(seq 1 "$TRIALS"); do
   if (( trial % 2 == 1 )); then runtimes=(runc runsc); else runtimes=(runsc runc); fi
-  if (( trial % 2 == 1 )); then works=(cpu io http); else works=(http io cpu); fi
+  if (( trial % 2 == 1 )); then
+    works=("${WORKLOAD_ARRAY[@]}")
+  else
+    works=()
+    for ((idx=${#WORKLOAD_ARRAY[@]}-1; idx>=0; idx--)); do works+=("${WORKLOAD_ARRAY[idx]}"); done
+  fi
   for runtime in "${runtimes[@]}"; do
     for work in "${works[@]}"; do
       echo "trial=$trial runtime=$runtime work=$work"

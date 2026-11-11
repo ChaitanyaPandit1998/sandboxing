@@ -1,0 +1,62 @@
+{
+  "run_date": "2026-11-11",
+  "common_policy": {
+    "runtime": "runsc release-20261102.0",
+    "network": "internal client network; external HTTPS via exact-host proxy only",
+    "read_only_rootfs": true,
+    "uid_gid": "10001:10001",
+    "capabilities": "all dropped",
+    "no_new_privileges": true,
+    "host_mounts": [],
+    "home_and_workspace": "memory-backed tmpfs"
+  },
+  "codex": {
+    "cli_version": "0.167.1",
+    "authentication": "completed by user with a normal ChatGPT account; identity not recorded",
+    "command": "codex exec --ephemeral --sandbox read-only --skip-git-repo-check",
+    "prompt": "Reply with exactly: Codex sandbox smoke passed. Do not use tools or access files.",
+    "expected_reply_received": true,
+    "exit_code": 0,
+    "model_reported_by_cli": "gpt-6-luna",
+    "tokens_reported_by_cli": 2083,
+    "proxy_allowed_hosts_observed": ["auth.openai.com", "chatgpt.com"],
+    "additional_hosts_denied": [
+      "sdmntprsouthcentralus.oaiusercontent.com",
+      "sdmntprcentralus.oaiusercontent.com"
+    ],
+    "note": "The extra hosts were denied by the exact-host allowlist and the request still completed. No files or tools were used. Codex warned that system bubblewrap was absent and said it would use its bundled bubblewrap; the prompt did not exercise shell tools."
+  },
+  "codex_runc": {
+    "cli_version": "0.167.1",
+    "authentication": "completed by user with a normal ChatGPT account; identity not recorded",
+    "command": "codex exec --ephemeral --sandbox read-only --skip-git-repo-check",
+    "prompt": "Reply with exactly: Codex sandbox smoke passed. Do not use tools or access files.",
+    "expected_reply_received": true,
+    "exit_code": 0,
+    "wall_seconds": 4.70,
+    "model_reported_by_cli": "gpt-6-luna",
+    "tokens_reported_by_cli": 2083,
+    "container_policy_verified": {
+      "runtime": "runc",
+      "uid_gid": "10001:10001",
+      "capabilities": "all dropped",
+      "no_new_privileges": true,
+      "read_only_rootfs": true,
+      "host_mounts": [],
+      "cpus": 1,
+      "memory": "1g"
+    },
+    "proxy_decisions": "auth.openai.com and chatgpt.com allowed; unlisted oaiusercontent.com and ab.chatgpt.com hosts denied",
+    "note": "Same prompt and CLI/runtime policy as the runsc smoke. No files or tools were used. The runsc call was not timed with the same wall-clock method, so these are functional paired results, not a latency comparison."
+  },
+  "claude": {
+    "status": "deferred by user; no model request run"
+  },
+  "cleanup": {
+    "codex_runsc_logout": "completed",
+    "codex_runc_logout": "completed",
+    "codex_test_containers": "removed; memory-backed homes deleted",
+    "claude_test_container": "removed without login",
+    "proxy": "stopped; temporary Docker networks removed"
+  }
+}

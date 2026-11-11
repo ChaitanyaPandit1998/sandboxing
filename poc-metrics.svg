@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1400" viewBox="0 0 1600 1400" role="img" aria-labelledby="title desc">
   <title id="title">gVisor POC performance and safety metrics</title>
-  <desc id="desc">The benchmark panel compares runsc median slowdown against runc for three workloads. The safety panel shows both runtimes passed all recorded isolation, allowlist, and negative-control checks.</desc>
+  <desc id="desc">The chart shows original benchmark slowdowns, TCP-sensitive HTTP keep-alive follow-up results, and selected safety checks for runc and runsc.</desc>
   <defs>
     <style>
       text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #172b4d; }
@@ -78,38 +78,72 @@
   <text x="1357" y="475" class="value">+25.7%</text>
   <text x="848" y="603" class="small">CPU: 255.90 vs 312.63 ms · I/O: 201.43 vs 247.37 ms · HTTP: 774.17 vs 973.06 ms</text>
 
+  <!-- TCP-sensitive HTTP follow-up -->
+  <rect x="48" y="660" width="1504" height="295" rx="16" class="panel"/>
+  <text x="78" y="701" class="section">Keep-alive HTTP: TCP settings change the result</text>
+  <text x="78" y="729" class="small">Runsc workload time difference vs runc · negative means runsc was faster · follow-up: 20 trials (initial serial default: 50)</text>
+  <text x="82" y="774" class="small">Case and median time (runc → runsc)</text>
+  <text x="624" y="774" class="small">runsc faster</text>
+  <text x="1234" y="774" class="small">runsc slower</text>
+  <line x1="1270" y1="786" x2="1270" y2="920" class="axis"/>
+  <line x1="610" y1="920" x2="1340" y2="920" class="axis"/>
+  <line x1="610" y1="916" x2="610" y2="924" class="axis"/>
+  <line x1="940" y1="916" x2="940" y2="924" class="axis"/>
+  <line x1="1270" y1="916" x2="1270" y2="924" class="axis"/>
+  <line x1="1340" y1="916" x2="1340" y2="924" class="axis"/>
+  <text x="596" y="942" class="small">−100%</text>
+  <text x="927" y="942" class="small">−50%</text>
+  <text x="1263" y="942" class="small">0%</text>
+  <text x="1333" y="942" class="small">+10%</text>
+  <text x="82" y="808" class="label">Serial, default TCP</text>
+  <text x="82" y="827" class="small">9.053 s → 0.506 s</text>
+  <rect x="647" y="793" width="623" height="22" rx="6" class="runsc"/>
+  <text x="1370" y="810" class="value">−94.4%</text>
+  <text x="82" y="844" class="label">Serial, TCP_NODELAY both ends</text>
+  <text x="82" y="863" class="small">0.503 s → 0.504 s</text>
+  <rect x="1270" y="829" width="3" height="22" rx="2" class="runsc"/>
+  <text x="1370" y="846" class="value">+0.3%</text>
+  <text x="82" y="880" class="label">8 concurrent clients, default TCP</text>
+  <text x="82" y="899" class="small">1.510 s → 0.514 s</text>
+  <rect x="835" y="865" width="435" height="22" rx="6" class="runsc"/>
+  <text x="1370" y="882" class="value">−66.0%</text>
+  <text x="82" y="916" class="label">8 clients, TCP_NODELAY both ends</text>
+  <text x="370" y="916" class="small">0.510 s → 0.516 s</text>
+  <rect x="1270" y="901" width="8" height="22" rx="3" class="runsc"/>
+  <text x="1370" y="918" class="value">+1.2%</text>
+
   <!-- Safety panel -->
-  <rect x="48" y="660" width="1504" height="335" rx="16" class="panel"/>
-  <text x="78" y="703" class="section">Safety and policy checks</text>
-  <text x="78" y="730" class="small">Pass/detection rate by check group · both runtimes scored 100% on these selected probes</text>
-  <rect x="1130" y="694" width="14" height="14" rx="3" class="runc"/>
-  <text x="1151" y="706" class="small">runc</text>
-  <rect x="1210" y="694" width="14" height="14" rx="3" class="runsc"/>
-  <text x="1231" y="706" class="small">runsc</text>
+  <rect x="48" y="975" width="1504" height="335" rx="16" class="panel"/>
+  <text x="78" y="1018" class="section">Safety and policy checks</text>
+  <text x="78" y="1045" class="small">Pass/detection rate by check group · both runtimes scored 100% on these selected probes</text>
+  <rect x="1130" y="1009" width="14" height="14" rx="3" class="runc"/>
+  <text x="1151" y="1021" class="small">runc</text>
+  <rect x="1210" y="1009" width="14" height="14" rx="3" class="runsc"/>
+  <text x="1231" y="1021" class="small">runsc</text>
 
-  <text x="80" y="790" class="label">Isolation &amp; privilege</text>
-  <text x="80" y="813" class="small">25 selected checks per runtime</text>
-  <rect x="350" y="770" width="830" height="22" rx="8" class="track"/><rect x="350" y="770" width="830" height="22" rx="8" class="runc"/>
-  <text x="1195" y="787" class="value">25/25</text>
-  <rect x="350" y="801" width="830" height="22" rx="8" class="track"/><rect x="350" y="801" width="830" height="22" rx="8" class="runsc"/>
-  <text x="1195" y="818" class="value">25/25</text>
+  <text x="80" y="1105" class="label">Isolation &amp; privilege</text>
+  <text x="80" y="1128" class="small">25 selected checks per runtime</text>
+  <rect x="350" y="1085" width="830" height="22" rx="8" class="track"/><rect x="350" y="1085" width="830" height="22" rx="8" class="runc"/>
+  <text x="1195" y="1102" class="value">25/25</text>
+  <rect x="350" y="1116" width="830" height="22" rx="8" class="track"/><rect x="350" y="1116" width="830" height="22" rx="8" class="runsc"/>
+  <text x="1195" y="1133" class="value">25/25</text>
 
-  <text x="80" y="870" class="label">HTTPS allowlist</text>
-  <text x="80" y="893" class="small">5 policy checks per runtime</text>
-  <rect x="350" y="850" width="830" height="22" rx="8" class="track"/><rect x="350" y="850" width="830" height="22" rx="8" class="runc"/>
-  <text x="1195" y="867" class="value">5/5</text>
-  <rect x="350" y="881" width="830" height="22" rx="8" class="track"/><rect x="350" y="881" width="830" height="22" rx="8" class="runsc"/>
-  <text x="1195" y="898" class="value">5/5</text>
+  <text x="80" y="1185" class="label">HTTPS allowlist</text>
+  <text x="80" y="1208" class="small">5 policy checks per runtime</text>
+  <rect x="350" y="1165" width="830" height="22" rx="8" class="track"/><rect x="350" y="1165" width="830" height="22" rx="8" class="runc"/>
+  <text x="1195" y="1182" class="value">5/5</text>
+  <rect x="350" y="1196" width="830" height="22" rx="8" class="track"/><rect x="350" y="1196" width="830" height="22" rx="8" class="runsc"/>
+  <text x="1195" y="1213" class="value">5/5</text>
 
-  <text x="80" y="950" class="label">Negative controls detected</text>
-  <text x="80" y="973" class="small">5 weakened settings per runtime</text>
-  <rect x="350" y="930" width="830" height="22" rx="8" class="track"/><rect x="350" y="930" width="830" height="22" rx="8" class="runc"/>
-  <text x="1195" y="947" class="value">5/5</text>
-  <rect x="350" y="961" width="830" height="22" rx="8" class="track"/><rect x="350" y="961" width="830" height="22" rx="8" class="runsc"/>
-  <text x="1195" y="978" class="value">5/5</text>
-  <text x="1300" y="790" class="small">100%</text>
-  <text x="1300" y="870" class="small">100%</text>
-  <text x="1300" y="950" class="small">100%</text>
+  <text x="80" y="1265" class="label">Negative controls detected</text>
+  <text x="80" y="1288" class="small">5 weakened settings per runtime</text>
+  <rect x="350" y="1245" width="830" height="22" rx="8" class="track"/><rect x="350" y="1245" width="830" height="22" rx="8" class="runc"/>
+  <text x="1195" y="1262" class="value">5/5</text>
+  <rect x="350" y="1276" width="830" height="22" rx="8" class="track"/><rect x="350" y="1276" width="830" height="22" rx="8" class="runsc"/>
+  <text x="1195" y="1293" class="value">5/5</text>
+  <text x="1300" y="1105" class="small">100%</text>
+  <text x="1300" y="1185" class="small">100%</text>
+  <text x="1300" y="1265" class="small">100%</text>
 
-  <text x="58" y="1028" class="small">Safety bars show selected regression probes and deliberate-control detection, not exploit resistance or comparative security. Sources: results/20261110T152643Z/summary.json, safety-20261110T180847Z, network-20261110T180956Z-19376, negative-20261110T185453Z-24675.</text>
+  <text x="58" y="1350" class="small">HTTP results are tiny loopback requests; TCP_NODELAY removes most of the apparent runtime gap. Safety bars are selected probes, not exploit resistance. Sources: results/20261110T152643Z/summary.json and results/20261111T094933Z/, 111816Z/, 112440Z/.</text>
 </svg>

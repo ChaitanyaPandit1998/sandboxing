@@ -1,0 +1,1864 @@
+{
+  "environment": {
+    "captured_utc": "2026-11-11T12:54:59.846841+00:00",
+    "host_kernel": "7.0.0-38-generic",
+    "host_architecture": "aarch64",
+    "image": "local/agent-session:claude-2.1.322-codex-0.167.1",
+    "trials_per_cli_runtime": 50,
+    "cli_versions": {
+      "claude": "2.1.322",
+      "codex": "0.167.1"
+    },
+    "network": "none",
+    "limits": {
+      "cpus": 1,
+      "memory": "256m",
+      "pids": 128,
+      "rootfs": "read-only",
+      "user": "10001:10001",
+      "capabilities": "all dropped",
+      "no_new_privileges": true
+    },
+    "metric": "docker run process wall time including container create, CLI version command, and removal; image already present"
+  },
+  "summary": [
+    {
+      "runtime": "runc",
+      "cli": "claude",
+      "trials": 50,
+      "successful": 50,
+      "p50_seconds": 0.084044251,
+      "p95_seconds": 0.106531991,
+      "max_seconds": 0.206174759
+    },
+    {
+      "runtime": "runc",
+      "cli": "codex",
+      "trials": 50,
+      "successful": 50,
+      "p50_seconds": 0.099242095,
+      "p95_seconds": 0.12046215,
+      "max_seconds": 0.177037047
+    },
+    {
+      "runtime": "runsc",
+      "cli": "claude",
+      "trials": 50,
+      "successful": 50,
+      "p50_seconds": 0.093469595,
+      "p95_seconds": 0.110161918,
+      "max_seconds": 0.116546927
+    },
+    {
+      "runtime": "runsc",
+      "cli": "codex",
+      "trials": 50,
+      "successful": 50,
+      "p50_seconds": 0.113594884,
+      "p95_seconds": 0.12526397,
+      "max_seconds": 0.141442785
+    }
+  ],
+  "trials": [
+    {
+      "trial": 1,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.206174759,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 1,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.139979847,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 1,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.109211863,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 1,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.12526397,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 2,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.118831918,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 2,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.10228218,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 2,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.112161989,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 2,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.09205195,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 3,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.090432593,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 3,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.112268324,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 3,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.096273094,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 3,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.10829585,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 4,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.141442785,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 4,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.116546927,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 4,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.105052761,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 4,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.090163755,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 5,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.084922139,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 5,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.100057898,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 5,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.103140026,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 5,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.118804793,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 6,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.110210794,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 6,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.092313662,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 6,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.098283372,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 6,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.084044251,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 7,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.097730573,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 7,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.094811489,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 7,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.099730726,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 7,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.115612914,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 8,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.12180267,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 8,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.113095461,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 8,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.101973134,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 8,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.083740455,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 9,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.087529259,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 9,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.106343447,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 9,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.101629504,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 9,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.117289563,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 10,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.120894281,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 10,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.107873427,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 10,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.097487111,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 10,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.088744777,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 11,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.106531991,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 11,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.105903941,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 11,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.094323399,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 11,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.113594884,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 12,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.114020599,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 12,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.092793502,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 12,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.096457013,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 12,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.095769211,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 13,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.081284253,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 13,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.099242095,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 13,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.086968793,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 13,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.112466785,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 14,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.115960294,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 14,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.092076366,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 14,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.10002494,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 14,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.08559619,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 15,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.085228559,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 15,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.100727408,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 15,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.098335582,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 15,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.109256905,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 16,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.114937237,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 16,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.096272593,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 16,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.101651713,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 16,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.082276309,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 17,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.081959346,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 17,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.106269362,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 17,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.101473335,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 17,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.11330413,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 18,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.115085906,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 18,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.097833533,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 18,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.093284801,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 18,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.080033443,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 19,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.086235908,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 19,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.092584499,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 19,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.087885431,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 19,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.107043124,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 20,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.104842967,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 20,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.09183478,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 20,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.097079939,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 20,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.077151611,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 21,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.08366562,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 21,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.09120652,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 21,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.088175727,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 21,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.100913577,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 22,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.097570946,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 22,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.100841118,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 22,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.177037047,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 22,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.143041558,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 23,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.084082876,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 23,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.106894372,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 23,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.084084002,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 23,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.115541329,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 24,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.110541633,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 24,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.084802012,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 24,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.09649993,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 24,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.086893917,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 25,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.085503481,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 25,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.093192466,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 25,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.087551927,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 25,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.108543521,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 26,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.101722338,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 26,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.090505385,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 26,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.096308928,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 26,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.07983019,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 27,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.086813624,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 27,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.097029521,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 27,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.104418919,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 27,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.112244323,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 28,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.117398439,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 28,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.081353587,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 28,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.091958657,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 28,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.082906026,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 29,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.080663536,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 29,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.096150758,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 29,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.086735206,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 29,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.11313742,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 30,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.128439057,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 30,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.091995907,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 30,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.09302088,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 30,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.081018041,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 31,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.080150737,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 31,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.088974989,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 31,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.084480841,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 31,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.104491004,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 32,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.114904445,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 32,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.091456358,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 32,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.091455316,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 32,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.082321226,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 33,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.081111792,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 33,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.097256441,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 33,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.099418181,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 33,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.10880419,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 34,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.114155684,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 34,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.080859705,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 34,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.097259524,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 34,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.080462825,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 35,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.083342241,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 35,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.103141818,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 35,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.08659258,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 35,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.104708924,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 36,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.11432227,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 36,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.089349786,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 36,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.106876497,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 36,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.080586201,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 37,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.083176406,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 37,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.093249217,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 37,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.095269162,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 37,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.113388715,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 38,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.107891427,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 38,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.093076506,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 38,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.101755464,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 38,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.087149379,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 39,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.085240685,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 39,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.12046215,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 39,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.110161918,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 39,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.122294885,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 40,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.105655854,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 40,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.098255747,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 40,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.097796657,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 40,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.079009804,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 41,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.084783345,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 41,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.097231524,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 41,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.095796087,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 41,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.111011514,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 42,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.114874403,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 42,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.088899363,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 42,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.102769853,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 42,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.082946902,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 43,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.080218821,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 43,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.100294235,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 43,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.087243131,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 43,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.10928303,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 44,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.12171746,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 44,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.084010167,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 44,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.099813812,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 44,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.083505952,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 45,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.084889597,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 45,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.104745799,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 45,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.089096282,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 45,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.117990948,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 46,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.116095087,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 46,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.094483234,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 46,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.096674183,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 46,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.089484871,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 47,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.088000808,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 47,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.105704729,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 47,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.094592028,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 47,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.110604675,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 48,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.104808091,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 48,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.093469595,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 48,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.101697714,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 48,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.082540521,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 49,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.079482685,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 49,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.094568694,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 49,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.098993508,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 49,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.117105768,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 50,
+      "runtime": "runsc",
+      "cli": "codex",
+      "wall_seconds": 0.121521041,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 50,
+      "runtime": "runsc",
+      "cli": "claude",
+      "wall_seconds": 0.09348147,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    },
+    {
+      "trial": 50,
+      "runtime": "runc",
+      "cli": "codex",
+      "wall_seconds": 0.101219289,
+      "exit_code": 0,
+      "stdout": "codex-cli 0.167.1",
+      "stderr": ""
+    },
+    {
+      "trial": 50,
+      "runtime": "runc",
+      "cli": "claude",
+      "wall_seconds": 0.084456382,
+      "exit_code": 0,
+      "stdout": "2.1.322 (Claude Code)",
+      "stderr": ""
+    }
+  ]
+}

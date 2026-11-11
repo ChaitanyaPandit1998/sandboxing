@@ -52,6 +52,21 @@ Both runtimes completed all workloads in the same ARM64 Ubuntu Lima VM with matc
 
 For a stronger performance comparison, repeat this protocol across multiple VM boots and increase workload duration to reduce timer overhead. For security evaluation, define a threat model and test specific isolation properties independently of these timings.
 
+### Keep-alive and TCP follow-up
+
+The follow-up added 200 serial HTTP/1.1 loopback requests on one persistent connection, the same case with `TCP_NODELAY` enabled on both client and server, and eight concurrent clients with 25 requests each. The runner alternated runtime and workload order. The first comparison collected 50 trials per runtime; TCP-setting and concurrency controls collected 20 trials per runtime. All used the same image, 1 CPU, 256 MiB memory, `--network=none`, and other baseline container limits. The results are in `results/20261111T094933Z/summary.json`, `results/20261111T111816Z/summary.json`, and `results/20261111T112440Z/summary.json`.
+
+| HTTP case | Trials | `runc` workload median | `runsc` workload median | `runsc` difference | `runc` container wall | `runsc` container wall |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 200 serial requests, default TCP | 50 + 20 repeat | 9,050 ms | 506 ms | −94.4% | 9,323 ms | 844 ms |
+| 200 serial requests, `TCP_NODELAY` both ends | 20 | 503 ms | 504 ms | +0.3% | 787 ms | 841 ms |
+| 8 concurrent connections, default TCP | 20 + 20 repeat | 1,510 ms | 514 ms | −66.0% | 1,787 ms | 863 ms |
+| 8 concurrent connections, `TCP_NODELAY` both ends | 20 | 510 ms | 516 ms | +1.2% | 787 ms | 854 ms |
+
+The large `runsc` advantage in the default-TCP cases disappears when `TCP_NODELAY` is enabled at both endpoints: the measured workload times are then within about 1.2%. This strongly implicates small-packet TCP behavior, such as Nagle/delayed-ACK interaction, in this loopback microbenchmark; the result is not evidence of generally faster gVisor networking. The concurrent case repeats the same pattern, and both default-TCP cases were stable across separate runs. A packet-level trace would be needed to attribute the mechanism more precisely.
+
+These workloads send tiny responses over loopback inside a single `--network=none` container; they do not measure external egress, realistic application payloads, or production HTTP throughput. The earlier fresh-connection case also uses explicit HTTP/1.1 close semantics, so it is not an exact rerun of the archived HTTP/1.0 benchmark. Treat this as evidence that protocol and socket settings can dominate a runtime comparison. Repeat representative application-shaped network tests across VM boots before making performance claims.
+
 ## Safe isolation and compatibility probes
 
 Date: 2026-11-10. The same probe image ran under both runtimes with 1 CPU, 256 MiB RAM, 128 PIDs, `--network=none`, read-only root, 64 MiB `/tmp`, UID 10001, `no-new-privileges`, and all Linux capabilities dropped. All 11 checks passed under both `runc` and `runsc`.

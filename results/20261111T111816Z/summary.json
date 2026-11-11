@@ -1,0 +1,68 @@
+[
+  {
+    "runtime": "runc",
+    "work": "http-concurrent-keepalive",
+    "trials": 20,
+    "workload_median_seconds": 1.511084159001257,
+    "workload_p25_seconds": 1.5089493492505426,
+    "workload_p75_seconds": 1.5133516287514794,
+    "container_wall_median_seconds": 1.7880664605,
+    "container_wall_p25_seconds": 1.7835703195,
+    "container_wall_p75_seconds": 1.79513264775
+  },
+  {
+    "runtime": "runc",
+    "work": "http-keepalive",
+    "trials": 20,
+    "workload_median_seconds": 9.053430468500665,
+    "workload_p25_seconds": 9.04325240649814,
+    "workload_p75_seconds": 9.055742842249856,
+    "container_wall_median_seconds": 9.33560885,
+    "container_wall_p25_seconds": 9.32628128925,
+    "container_wall_p75_seconds": 9.356935782499999
+  },
+  {
+    "runtime": "runc",
+    "work": "http-keepalive-nodelay",
+    "trials": 20,
+    "workload_median_seconds": 0.5027367829970899,
+    "workload_p25_seconds": 0.5016722214986657,
+    "workload_p75_seconds": 0.5064734752495497,
+    "container_wall_median_seconds": 0.786877733,
+    "container_wall_p25_seconds": 0.7818742830000001,
+    "container_wall_p75_seconds": 0.79699689025
+  },
+  {
+    "runtime": "runsc",
+    "work": "http-concurrent-keepalive",
+    "trials": 20,
+    "workload_median_seconds": 0.5150016645,
+    "workload_p25_seconds": 0.5131246955,
+    "workload_p75_seconds": 0.517601777,
+    "container_wall_median_seconds": 0.857179029,
+    "container_wall_p25_seconds": 0.8481136925,
+    "container_wall_p75_seconds": 0.863120753
+  },
+  {
+    "runtime": "runsc",
+    "work": "http-keepalive",
+    "trials": 20,
+    "workload_median_seconds": 0.506230681,
+    "workload_p25_seconds": 0.50493311675,
+    "workload_p75_seconds": 0.50691821175,
+    "container_wall_median_seconds": 0.8437310305,
+    "container_wall_p25_seconds": 0.83456967725,
+    "container_wall_p75_seconds": 0.853823433
+  },
+  {
+    "runtime": "runsc",
+    "work": "http-keepalive-nodelay",
+    "trials": 20,
+    "workload_median_seconds": 0.5042351425,
+    "workload_p25_seconds": 0.50305238775,
+    "workload_p75_seconds": 0.5053149987500001,
+    "container_wall_median_seconds": 0.840738924,
+    "container_wall_p25_seconds": 0.8336842477499999,
+    "container_wall_p75_seconds": 0.8524532472499999
+  }
+]

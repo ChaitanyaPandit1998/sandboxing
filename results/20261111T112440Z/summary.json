@@ -1,0 +1,46 @@
+[
+  {
+    "runtime": "runc",
+    "work": "http-concurrent-keepalive",
+    "trials": 20,
+    "workload_median_seconds": 1.5104122550019383,
+    "workload_p25_seconds": 1.5090936172500733,
+    "workload_p75_seconds": 1.5126437379985873,
+    "container_wall_median_seconds": 1.7867973405000002,
+    "container_wall_p25_seconds": 1.78407636475,
+    "container_wall_p75_seconds": 1.79442533425
+  },
+  {
+    "runtime": "runc",
+    "work": "http-concurrent-keepalive-nodelay",
+    "trials": 20,
+    "workload_median_seconds": 0.509509284998785,
+    "workload_p25_seconds": 0.5079177387488016,
+    "workload_p75_seconds": 0.5108387307491284,
+    "container_wall_median_seconds": 0.7866298525,
+    "container_wall_p25_seconds": 0.7828549407500001,
+    "container_wall_p75_seconds": 0.792716773
+  },
+  {
+    "runtime": "runsc",
+    "work": "http-concurrent-keepalive",
+    "trials": 20,
+    "workload_median_seconds": 0.5140142635,
+    "workload_p25_seconds": 0.5131840354999999,
+    "workload_p75_seconds": 0.51746897,
+    "container_wall_median_seconds": 0.8634915175,
+    "container_wall_p25_seconds": 0.84951345325,
+    "container_wall_p75_seconds": 0.8688505
+  },
+  {
+    "runtime": "runsc",
+    "work": "http-concurrent-keepalive-nodelay",
+    "trials": 20,
+    "workload_median_seconds": 0.5157880374999999,
+    "workload_p25_seconds": 0.513759404,
+    "workload_p75_seconds": 0.52814469775,
+    "container_wall_median_seconds": 0.8539817354999999,
+    "container_wall_p25_seconds": 0.8480309232500001,
+    "container_wall_p75_seconds": 0.8622714315
+  }
+]

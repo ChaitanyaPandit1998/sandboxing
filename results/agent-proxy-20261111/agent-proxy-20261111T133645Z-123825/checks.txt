@@ -1,0 +1,24 @@
+=== runc provider proxy checks ===
+host=api.anthropic.com port=443 proxy_status=200 expected=allow pass=True
+host=claude.ai port=443 proxy_status=200 expected=allow pass=True
+host=claude.com port=443 proxy_status=200 expected=allow pass=True
+host=platform.claude.com port=443 proxy_status=200 expected=allow pass=True
+host=auth.openai.com port=443 proxy_status=200 expected=allow pass=True
+host=chatgpt.com port=443 proxy_status=200 expected=allow pass=True
+host=example.org port=443 proxy_status=403 expected=deny pass=True
+host=1.1.1.1 port=443 proxy_status=403 expected=deny pass=True
+host=api.anthropic.com port=8443 proxy_status=403 expected=deny pass=True
+direct_egress=blocked error=OSError
+client_dns=blocked error=gaierror
+=== runsc provider proxy checks ===
+host=api.anthropic.com port=443 proxy_status=200 expected=allow pass=True
+host=claude.ai port=443 proxy_status=200 expected=allow pass=True
+host=claude.com port=443 proxy_status=200 expected=allow pass=True
+host=platform.claude.com port=443 proxy_status=200 expected=allow pass=True
+host=auth.openai.com port=443 proxy_status=200 expected=allow pass=True
+host=chatgpt.com port=443 proxy_status=200 expected=allow pass=True
+host=example.org port=443 proxy_status=403 expected=deny pass=True
+host=1.1.1.1 port=443 proxy_status=403 expected=deny pass=True
+host=api.anthropic.com port=8443 proxy_status=403 expected=deny pass=True
+direct_egress=blocked error=OSError
+client_dns=blocked error=gaierror
