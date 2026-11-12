@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="800" viewBox="0 0 1500 800" role="img" aria-labelledby="title desc">
+  <title id="title">POC egress path and observed TLS policy gap</title>
+  <desc id="desc">A workload container has only an internal Docker network and sends HTTPS through an egress proxy. The proxy validates the CONNECT hostname and port, resolves the hostname, rejects non-public IPs, and connects externally. Because TLS is opaque, a tunnel authorized for example.com can carry TLS SNI and HTTP Host for example.org; the probe received HTTP 200. Strict hostname enforcement needs a TLS-aware gateway or equivalent network policy.</desc>
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #172b4d; }
+      .title { font-size: 32px; font-weight: 700; }
+      .subtitle { font-size: 16px; fill: #53657d; }
+      .head { font-size: 19px; font-weight: 700; }
+      .label { font-size: 15px; font-weight: 700; }
+      .body { font-size: 14px; fill: #40536c; }
+      .small { font-size: 12px; fill: #53657d; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; fill: #334860; }
+      .panel { fill: #fff; stroke: #c8d5e4; stroke-width: 1.5; }
+      .client { fill: #edf3fb; stroke: #91a9c4; stroke-width: 1.5; }
+      .proxy { fill: #fff8e9; stroke: #dfbd64; stroke-width: 2; }
+      .upstream { fill: #eef8f4; stroke: #83c7b6; stroke-width: 1.5; }
+      .danger { fill: #fff0ef; stroke: #d8756a; stroke-width: 2; }
+      .line { fill: none; stroke: #657991; stroke-width: 2.5; marker-end: url(#arrow); }
+      .badline { fill: none; stroke: #c54e45; stroke-width: 3; stroke-dasharray: 8 6; marker-end: url(#redarrow); }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#657991"/></marker>
+    <marker id="redarrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c54e45"/></marker>
+  </defs>
+  <rect width="1500" height="800" fill="#f4f7fb"/>
+  <text x="48" y="58" class="title">Egress path: CONNECT policy and TLS hostname gap</text>
+  <text x="50" y="88" class="subtitle">Observed on 2026-11-12 under both runc and runsc-stable-20261109</text>
+
+  <rect x="45" y="135" width="390" height="370" rx="18" fill="#eaf1fa" stroke="#a9bfd8" stroke-width="2"/>
+  <text x="70" y="175" class="head">Internal-only workload network</text>
+  <rect x="80" y="220" width="320" height="170" rx="14" class="client"/>
+  <text x="105" y="258" class="label">Agent / workload container</text>
+  <text x="105" y="290" class="body">No direct external route</text>
+  <text x="105" y="321" class="mono">HTTPS_PROXY=http://proxy:3128</text>
+  <text x="105" y="354" class="small">runc or gVisor runtime; same container policy</text>
+  <text x="70" y="446" class="small">Direct IPv4, IPv6, and UDP DNS probes were blocked.</text>
+
+  <rect x="555" y="190" width="385" height="300" rx="18" class="proxy"/>
+  <text x="585" y="232" class="head">Trusted egress proxy</text>
+  <text x="585" y="278" class="label">Checks performed</text>
+  <text x="605" y="310" class="body">• CONNECT hostname and port (example.com:443)</text>
+  <text x="605" y="342" class="body">• DNS resolution and public destination IP</text>
+  <text x="605" y="374" class="body">• Logs each proxy decision</text>
+  <line x1="585" y1="397" x2="910" y2="397" stroke="#e1ca8b"/>
+  <text x="585" y="430" class="small">TLS payload remains opaque after CONNECT is accepted.</text>
+  <text x="585" y="456" class="small">Proxy sees the tunnel target, not its encrypted SNI/Host.</text>
+
+  <rect x="1080" y="215" width="350" height="145" rx="16" class="upstream"/>
+  <text x="1110" y="255" class="head">External HTTPS endpoint</text>
+  <text x="1110" y="290" class="mono">CONNECT target: example.com:443</text>
+  <text x="1110" y="322" class="body">Observed response: HTTP 200 OK</text>
+
+  <path d="M400 305 H545" class="line"/>
+  <text x="414" y="286" class="small">CONNECT example.com:443</text>
+  <path d="M940 300 H1070" class="line"/>
+  <text x="952" y="280" class="small">Proxy opens TCP tunnel</text>
+
+  <rect x="540" y="555" width="610" height="155" rx="16" class="danger"/>
+  <text x="570" y="594" class="head" fill="#a9352d">Observed policy gap</text>
+  <text x="570" y="628" class="body">Inside that allowed tunnel, the probe sent TLS SNI=example.org</text>
+  <text x="570" y="656" class="body">and HTTP Host=example.org. The upstream returned HTTP 200 OK.</text>
+  <text x="570" y="685" class="small">This demonstrates hostname-policy mismatch, not arbitrary-domain reachability.</text>
+  <path d="M770 490 V545" class="badline"/>
+
+  <rect x="1180" y="535" width="250" height="175" rx="16" class="panel"/>
+  <text x="1205" y="575" class="label">Required before strict</text>
+  <text x="1205" y="600" class="label">domain enforcement</text>
+  <text x="1205" y="638" class="body">TLS-aware gateway</text>
+  <text x="1205" y="666" class="body">or equivalent network policy</text>
+  <path d="M1150 630 H1170" class="line"/>
+
+  <text x="50" y="765" class="small">24 parser/policy checks passed per runtime; the independent SNI/Host observation is the unresolved policy gap. See expanded-network-syscall-summary.json.</text>
+</svg>

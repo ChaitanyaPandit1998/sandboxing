@@ -1,0 +1,5 @@
+{"event": "dns-listening", "target": "example.com", "public_ip": "1.1.1.1", "private_ip": "127.0.0.1", "port": 53}
+{"query": "example.com", "answer": "1.1.1.1", "sequence": 1}
+{"query": "example.com", "answer": "127.0.0.1", "sequence": 2}
+{"query": "example.com", "answer": "1.1.1.1", "sequence": 3}
+{"query": "example.com", "answer": "127.0.0.1", "sequence": 4}

@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-12",
+  "runtimes": ["runc", "runsc-stable-20261109"],
+  "network_parser_and_policy_checks": {
+    "count_per_runtime": 24,
+    "runc_passed": 24,
+    "runsc_stable_passed": 24,
+    "strict_tls_hostname_allowlist": "failed",
+    "observation": "CONNECT to example.com:443 was accepted; TLS SNI and HTTP Host example.org traversed the tunnel and received HTTP/1.1 200 OK.",
+    "interpretation": "The proxy checks CONNECT authority but does not inspect the hostname inside encrypted TLS. Strict hostname allowlisting is not achieved."
+  },
+  "syscall_compatibility": {
+    "checks_per_runtime": 9,
+    "runc_passed": 9,
+    "runsc_stable_passed": 9,
+    "added_apis": ["pidfd_open on self", "copy_file_range between temporary files"],
+    "interpretation": "Selected compatibility smoke only; not a complete syscall compatibility or security assessment."
+  },
+  "next_steps": [
+    "Enforce outbound destinations with a TLS-aware gateway or an equivalent network policy.",
+    "Rerun SNI, CONNECT, alternate protocol, and direct-egress bypass probes against the intended enforcement design.",
+    "Continue repeated session-readiness and concurrency measurements before promoting the stable runtime."
+  ],
+  "evidence": {
+    "network": "20261112-stable-20261109-network-expanded/",
+    "syscalls": "syscall-compat-20261112T105459Z-464444/"
+  }
+}

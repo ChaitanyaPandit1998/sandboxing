@@ -12,6 +12,7 @@ import ctypes
 import select
 import shutil
 import socket
+import ssl
 import subprocess
 import sys
 import tempfile
@@ -532,6 +533,65 @@ def network_probe_work():
             raw_statuses[name] = str(exc)
     observations["raw_proxy_responses"] = raw_statuses
 
+    # Exercise additional HTTP method/parser paths and authority canonicalization.
+    protocol_cases = {
+        "proxy_rejects_trace_method": ("TRACE * HTTP/1.1", "example.com"),
+        "proxy_rejects_options_absolute_form": ("OPTIONS http://example.com/ HTTP/1.1", "example.com"),
+        "proxy_rejects_https_absolute_form_without_connect": ("GET https://example.com/ HTTP/1.1", "example.com"),
+        "proxy_rejects_encoded_lookalike_host": ("CONNECT example.com%2eattacker.invalid:443 HTTP/1.1", "example.com:443"),
+        "proxy_rejects_multiple_authorities": ("CONNECT example.com:443,example.org:443 HTTP/1.1", "example.com:443"),
+    }
+    for name, (request_line, host_header) in protocol_cases.items():
+        try:
+            status, response = raw_proxy_status(request_line, host_header)
+            checks[name] = status >= 400
+            raw_statuses[name] = response
+        except (OSError, ValueError, IndexError) as exc:
+            checks[name] = False
+            raw_statuses[name] = str(exc)
+
+    authority_controls = {
+        "proxy_accepts_case_normalized_allowlisted_target": ("CONNECT EXAMPLE.COM:443 HTTP/1.1", "example.com:443"),
+        "proxy_accepts_trailing_dot_allowlisted_target": ("CONNECT example.com.:443 HTTP/1.1", "example.com.:443"),
+        "allowlist_uses_connect_authority_not_host_header": ("CONNECT example.com:443 HTTP/1.1", "example.org:443"),
+    }
+    for name, (request_line, host_header) in authority_controls.items():
+        try:
+            status, response = raw_proxy_status(request_line, host_header)
+            checks[name] = status == 200
+            raw_statuses[name] = response
+        except (OSError, ValueError, IndexError) as exc:
+            checks[name] = False
+            raw_statuses[name] = str(exc)
+
+    # CONNECT is an opaque TCP tunnel: observe whether an unlisted TLS SNI name
+    # can be sent through a tunnel authorized for the allowlisted CONNECT host.
+    # This is informative about policy limits and is not counted as a test pass.
+    sni_observation = {"connect_authority": "example.com:443", "tls_server_name": "example.org"}
+    try:
+        client = socket.create_connection((proxy_parts.hostname, proxy_parts.port or 3128), timeout=5)
+        client.settimeout(5)
+        client.sendall(b"CONNECT example.com:443 HTTP/1.1\r\nHost: example.com:443\r\nConnection: keep-alive\r\n\r\n")
+        connect_response = client.recv(4096).split(b"\r\n", 1)[0].decode("ascii", "replace")
+        sni_observation["connect_response"] = connect_response
+        if connect_response.split()[1] == "200":
+            context = ssl._create_unverified_context()
+            with context.wrap_socket(client, server_hostname="example.org") as tunnel:
+                tunnel.sendall(b"GET / HTTP/1.1\r\nHost: example.org\r\nConnection: close\r\n\r\n")
+                response = tunnel.recv(4096).split(b"\r\n", 1)[0].decode("ascii", "replace")
+            sni_observation["tls_handshake_succeeded"] = True
+            sni_observation["http_response"] = response
+            sni_observation["strict_domain_allowlist_enforced"] = False
+        else:
+            client.close()
+            sni_observation["tls_handshake_succeeded"] = False
+            sni_observation["strict_domain_allowlist_enforced"] = True
+    except Exception as exc:
+        sni_observation["tls_handshake_succeeded"] = False
+        sni_observation["strict_domain_allowlist_enforced"] = None
+        sni_observation["error"] = str(exc)
+    observations["unlisted_tls_sni_over_allowlisted_connect"] = sni_observation
+
     redirect_url = os.environ.get("POC_REDIRECT_TEST_URL")
     if redirect_url:
         checks["redirect_to_denied_domain_blocked"], observations["redirect_probe_error"] = blocked_by_proxy(
@@ -674,6 +734,31 @@ def syscall_compatibility_work():
     except (AttributeError, OSError) as exc:
         checks["memfd_mmap"] = False
         observations["memfd_error"] = str(exc)
+
+    try:
+        pidfd = os.pidfd_open(os.getpid(), 0)
+        try:
+            checks["pidfd_open_self"] = os.fstat(pidfd).st_ino > 0
+        finally:
+            os.close(pidfd)
+    except (AttributeError, OSError) as exc:
+        checks["pidfd_open_self"] = False
+        observations["pidfd_open_error"] = str(exc)
+
+    try:
+        payload = b"copy-file-range-safe-probe"
+        with tempfile.TemporaryDirectory(dir="/tmp") as temp_dir:
+            source_path = os.path.join(temp_dir, "source")
+            target_path = os.path.join(temp_dir, "target")
+            with open(source_path, "wb") as source:
+                source.write(payload)
+            with open(source_path, "rb") as source, open(target_path, "wb") as target:
+                copied = os.copy_file_range(source.fileno(), target.fileno(), len(payload))
+            with open(target_path, "rb") as target:
+                checks["copy_file_range_tmp"] = copied == len(payload) and target.read() == payload
+    except (AttributeError, OSError) as exc:
+        checks["copy_file_range_tmp"] = False
+        observations["copy_file_range_error"] = str(exc)
 
     try:
         fd = os.eventfd(0, 0)

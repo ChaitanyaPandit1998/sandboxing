@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-12",
+  "test": "outer-container boundary and cross-session isolation recheck",
+  "vm": {
+    "kernel": "Linux 7.0.0-38-generic",
+    "architecture": "aarch64",
+    "docker_engine": "29.9.3",
+    "agent_image_id": "sha256:1c699e85c4765335983513403bc9edb812ffcc88dab0f9132274406079fdee5a"
+  },
+  "runtimes": {
+    "runc": "1.5.2",
+    "runsc-next": "release-20261102.0-252-g9217bce7a9c4"
+  },
+  "boundary_checks": {
+    "uid": 10001,
+    "effective_capabilities_zero": true,
+    "no_new_privileges": true,
+    "workspace_write_allowed": true,
+    "rootfs_write_denied": true,
+    "setuid_root_denied": true,
+    "direct_egress_blocked": true
+  },
+  "cross_session_checks": {
+    "other_session_file_not_visible": true,
+    "other_session_environment_not_visible": true,
+    "synthetic_guest_host_marker_not_visible": true,
+    "temporary_test_containers_removed": true
+  },
+  "results": {
+    "runc": "passed",
+    "runsc-next": "passed"
+  },
+  "cleanup": {
+    "temporary_agent_test_containers": 0,
+    "temporary_test_networks": 0,
+    "unrelated_running_containers_left_untouched": [
+      "kind_kirch",
+      "flamboyant_kare"
+    ]
+  },
+  "limitations": [
+    "These are synthetic configuration and isolation probes, not an adversarial escape assessment.",
+    "The check does not establish that runsc is more secure than runc."
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-12",
+  "stable_release": {
+    "version": "release-20261109.0",
+    "architecture": "aarch64",
+    "archive_url": "https://storage.googleapis.com/gvisor/releases/release/20261109.0/aarch64/gvisor.tar.zstd",
+    "sha512": "a0b5d911512ef5fe70e833821e653a90c4d06c7027246ee49423f1d2fe2b2a509389a637797248958b90e49a069bb079ecde860efe1871b1d980ec0fe17e18ac",
+    "checksum_verified": true,
+    "registered_runtime": "runsc-stable-20261109",
+    "binary_path": "/opt/gvisor-poc-stable-20261109.0/runsc",
+    "existing_runtimes_preserved": ["runc", "runsc", "runsc-next"]
+  },
+  "environment": {
+    "kernel": "Linux 7.0.0-38-generic",
+    "architecture": "aarch64",
+    "docker_engine": "29.9.3",
+    "agent_image_id": "sha256:1c699e85c4765335983513403bc9edb812ffcc88dab0f9132274406079fdee5a"
+  },
+  "runtime_comparison": ["runc 1.5.2", "runsc release-20261102.0", "runsc-next release-20261102.0-252-g9217bce7a9c4", "runsc-stable-20261109 release-20261109.0"],
+  "results": {
+    "nested_bubblewrap_user_pid_network_namespaces": {
+      "command": "bwrap --unshare-user --unshare-pid --unshare-net --ro-bind / / --proc /proc --dev /dev /bin/true",
+      "seccomp_profile": "profiles/bwrap-seccomp-v29.9.3.json",
+      "apparmor_profile": "bwrap",
+      "runc": "failed with namespace creation denied by guest policy",
+      "runsc": "failed previously at loopback RTM_NEWADDR setup",
+      "runsc-next": "passed in prior run",
+      "runsc-stable-20261109": "passed"
+    },
+    "unprivileged_namespaces_and_mount": {
+      "runc": {
+        "user_pid_namespace": "denied: EPERM",
+        "user_mount_namespace": "denied: EPERM before mount attempt"
+      },
+      "runsc": {
+        "user_pid_namespace": "created",
+        "user_mount_namespace": "created",
+        "temporary_tmpfs_mount_and_unmount": "passed"
+      },
+      "runsc-next": {
+        "user_pid_namespace": "created",
+        "user_mount_namespace": "created",
+        "temporary_tmpfs_mount_and_unmount": "passed"
+      },
+      "runsc-stable-20261109": {
+        "user_pid_namespace": "created",
+        "user_mount_namespace": "created",
+        "temporary_tmpfs_mount_and_unmount": "passed"
+      }
+    },
+    "ptrace": {
+      "child_trace": {
+        "runc": "strace and child exited 0",
+        "runsc": "strace and child exited 0",
+        "runsc-next": "strace and child exited 0",
+        "runsc-stable-20261109": "strace and child exited 0"
+      },
+      "same_uid_sibling_attach": {
+        "runc": "denied: PTRACE_SEIZE EPERM",
+        "runsc": "denied: PTRACE_SEIZE EPERM",
+        "runsc-next": "denied: PTRACE_SEIZE EPERM",
+        "runsc-stable-20261109": "denied: PTRACE_SEIZE EPERM"
+      },
+      "scope": "Non-root, no capabilities, same-container synthetic processes only; temporary diagnostic image was removed."
+    },
+    "filesystem_safety": {
+      "runc": "29/29 passed",
+      "runsc-stable-20261109": "29/29 passed"
+    },
+    "exact_host_network_allowlist": {
+      "runc": "16/16 passed",
+      "runsc-stable-20261109": "16/16 passed"
+    },
+    "provider_proxy": {
+      "runc": "6 approved hosts allowed; unlisted host, IP literal, and alternate port denied; direct egress and client DNS blocked",
+      "runsc-stable-20261109": "6 approved hosts allowed; unlisted host, IP literal, and alternate port denied; direct egress and client DNS blocked",
+      "model_requests_sent": false
+    },
+    "controlled_dns_rebinding": {
+      "runc": "CONNECT 200 for public answer, then 502 for loopback answer",
+      "runsc-stable-20261109": "CONNECT 200 for public answer, then 502 for loopback answer"
+    },
+    "common_syscall_compatibility": {
+      "runc": "passed",
+      "runsc-stable-20261109": "passed"
+    },
+    "syscall_matrix": {
+      "runc": "7 outcomes recorded per profile",
+      "runsc-stable-20261109": "7 outcomes recorded per profile",
+      "profiles": ["Docker built-in", "derived POC diagnostic overlay"]
+    },
+    "authenticated_codex_workspace_write": {
+      "status": "passed",
+      "approval": "on-request",
+      "sandbox": "workspace-write",
+      "workspace_create_read_delete": "passed",
+      "outside_workspace_write": "denied with read-only filesystem error",
+      "outer_container_writable_control": "passed"
+    }
+  },
+  "evidence_directories": [
+    "20261112-stable-20261109-network/",
+    "20261112-stable-20261109-provider-proxy/",
+    "20261112-stable-20261109-dns-rebind/",
+    "20261112-stable-20261109-safety/",
+    "20261112-stable-20261109-syscall-compat/",
+    "20261112-stable-20261109-syscall-matrix/"
+  ],
+  "cleanup": {
+    "temporary_probe_containers": 0,
+    "temporary_probe_networks": 0,
+    "diagnostic_image_removed": true,
+    "unrelated_containers_left_running": ["kind_kirch", "flamboyant_kare"]
+  },
+  "limitations": [
+    "These targeted checks do not establish escape resistance or prove runsc is more secure than runc.",
+    "The checks do not replace the upstream gVisor test suite or broader adversarial testing."
+  ]
+}

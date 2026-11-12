@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-12",
+  "test": "authenticated Codex workspace-write and outside-workspace denial smoke",
+  "runtime": {
+    "docker_runtime": "runsc-stable-20261109",
+    "gvisor_version": "release-20261109.0",
+    "image_id": "sha256:1c699e85c4765335983513403bc9edb812ffcc88dab0f9132274406079fdee5a"
+  },
+  "cli": {
+    "name": "Codex",
+    "version": "0.167.1",
+    "model": "gpt-6-luna",
+    "authentication": "interactive device login completed privately; logged out after test"
+  },
+  "container": {
+    "user": "10001:10001",
+    "read_only_rootfs": true,
+    "capabilities_dropped": ["ALL"],
+    "no_new_privileges": true,
+    "host_mounts": []
+  },
+  "codex_sandbox": {
+    "mode": "workspace-write",
+    "approval": "on-request"
+  },
+  "checks": {
+    "workspace_file_created": true,
+    "workspace_exact_content_read_back": "CODEX_STABLE_LOGIN_OK",
+    "workspace_file_deleted": true,
+    "workspace_file_absent_after_task": true,
+    "outside_workspace_write_denied": true,
+    "outside_write_exit_code": 2,
+    "outside_write_error": "Read-only file system",
+    "outer_container_home_writable_control": true,
+    "outer_control_marker_created_read_and_deleted": true,
+    "outside_marker_absent_after_test": true
+  },
+  "cleanup": {
+    "codex_logged_out": true,
+    "temporary_session_container_removed": true,
+    "temporary_proxy_and_networks_removed": true,
+    "unrelated_containers_left_running": ["kind_kirch", "flamboyant_kare"]
+  },
+  "limitations": [
+    "This is a functional Codex sandbox compatibility smoke, not an escape assessment.",
+    "It does not establish that gVisor is more secure than runc."
+  ]
+}

@@ -1,0 +1,1 @@
+{"checks": {"epoll_pipe_readiness": true, "eventfd_round_trip": true, "exec_wait_child": true, "memfd_mmap": true, "openat_relative_read_write": true, "thread_clone_join": true, "unix_socketpair": true}, "observations": {"child_exit": 0, "kernel": "7.0.0-38-generic", "uid": 10001}, "passed": true, "python": "3.12.16", "work": "syscall-compatibility"}

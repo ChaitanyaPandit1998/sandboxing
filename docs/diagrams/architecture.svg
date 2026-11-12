@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
   <title id="title">Local gVisor POC architecture</title>
-  <desc id="desc">An Apple Silicon Mac uses Lima to run an isolated Ubuntu virtual machine. The experiment runner invokes Docker Engine and containerd, which runs identical pinned Python workloads using either runc or gVisor runsc. Results are collected in the guest and copied back to the host workspace.</desc>
+  <desc id="desc">An Apple Silicon Mac uses Lima to run an isolated Ubuntu virtual machine. The experiment runner invokes Docker Engine and containerd, which runs identical pinned workloads using runc, pinned runsc, a nightly candidate, or a stable candidate. The network path uses an internal workload network and an egress proxy; a separate diagram documents the observed TLS hostname policy gap.</desc>
   <defs>
     <style>
       text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #172b4d; }
@@ -107,8 +107,8 @@
   <line x1="1038" y1="576" x2="1462" y2="576" stroke="#d8cff5"/>
   <text x="1038" y="607" class="label">Same Python workloads</text>
   <text x="1038" y="632" class="body">CPU · /tmp I/O · loopback HTTP · safe probes</text>
-  <text x="1038" y="668" class="small">Docker runtime registered from official gVisor package</text>
-  <text x="1038" y="700" class="small">Only the runtime changes between paired paths</text>
+  <text x="1038" y="668" class="small">Pinned runsc plus separate nightly and stable candidates</text>
+  <text x="1038" y="700" class="small">Stable 20261109 is a candidate; pinned runsc remains unchanged</text>
 
   <rect x="535" y="750" width="910" height="82" rx="12" fill="#fff8e9" stroke="#e3c77d" stroke-width="1.5"/>
   <text x="990" y="780" text-anchor="middle" class="label">Identical container policy in both lanes</text>
@@ -126,5 +126,5 @@
   <text x="425" y="866" class="small" fill="#0d8874">copy results to Mac</text>
 
   <rect x="48" y="953" width="1504" height="1" fill="#d7e0eb"/>
-  <text x="50" y="978" class="small">Docker Desktop is installed on the host but is not the experiment daemon. Both runtime paths execute inside the same Lima VM.</text>
+  <text x="50" y="978" class="small">Docker Desktop is installed on the host but is not the experiment daemon. The separate egress design has an observed TLS hostname limitation; see network-architecture.svg.</text>
 </svg>

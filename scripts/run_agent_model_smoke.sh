@@ -11,13 +11,13 @@ PROXY=agent-session-proxy
 ALLOWED_HOSTS=api.anthropic.com,claude.ai,claude.com,platform.claude.com,auth.openai.com,chatgpt.com
 
 usage() {
-  echo "Usage: $0 start <runc|runsc|runsc-next> <claude|codex> | stop | status" >&2
+  echo "Usage: $0 start <runc|runsc|runsc-next|runsc-stable-20261109> <claude|codex> | stop | status" >&2
   exit 2
 }
 
 start() {
   local runtime="$1" cli="$2" name proxy_ip
-  [[ "$runtime" == runc || "$runtime" == runsc || "$runtime" == runsc-next ]] || usage
+  [[ "$runtime" == runc || "$runtime" == runsc || "$runtime" == runsc-next || "$runtime" == runsc-stable-20261109 ]] || usage
   [[ "$cli" == claude || "$cli" == codex ]] || usage
   name="agent-session-${runtime}-${cli}"
 
@@ -70,7 +70,7 @@ start() {
 }
 
 stop() {
-  for name in agent-session-runc-claude agent-session-runsc-claude agent-session-runsc-next-claude agent-session-runc-codex agent-session-runsc-codex agent-session-runsc-next-codex; do
+  for name in agent-session-runc-claude agent-session-runsc-claude agent-session-runsc-next-claude agent-session-runsc-stable-20261109-claude agent-session-runc-codex agent-session-runsc-codex agent-session-runsc-next-codex agent-session-runsc-stable-20261109-codex; do
     docker rm -f "$name" >/dev/null 2>&1 || true
   done
   docker rm -f "$PROXY" >/dev/null 2>&1 || true

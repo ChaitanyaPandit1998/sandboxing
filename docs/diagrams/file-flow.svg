@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120" role="img" aria-labelledby="title desc">
   <title id="title">gVisor POC repository file map</title>
-  <desc id="desc">The repository's shell runners coordinate Docker image building, workloads, shared validation, seccomp profiles, and saved results. Documentation describes the project and conclusions.</desc>
+  <desc id="desc">Shell runners prepare runtimes, execute paired workload and security probes, and save raw evidence. Documentation and diagrams explain results, including the observed TLS hostname policy gap in the demonstration egress proxy.</desc>
   <defs>
     <style>
       text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; fill: #172b4d; }
@@ -22,16 +22,16 @@
   </defs>
   <rect width="1600" height="1120" fill="#f4f7fb"/>
   <text x="48" y="58" class="title">How the POC files work together</text>
-  <text x="50" y="87" class="subtitle">Runners are entry points; shared workload and validation code produces evidence under results/.</text>
+  <text x="50" y="87" class="subtitle">Runner scripts execute paired checks; workload and proxy code produce evidence that docs and diagrams interpret.</text>
 
   <!-- Repo tree -->
   <rect x="40" y="122" width="370" height="950" rx="16" class="panel"/>
   <text x="68" y="160" class="head">Repository map</text>
-  <text x="70" y="204" class="mono">sandboxing/gvisor-poc/</text>
-  <text x="92" y="238" class="mono">├── README.md · Dockerfiles</text>
+  <text x="70" y="204" class="mono">sandboxing-upstream/</text>
+  <text x="92" y="238" class="mono">├── README.md · Dockerfile*</text>
   <text x="92" y="266" class="mono">├── docs/</text>
-  <text x="112" y="294" class="mono">│   ├── reports, summaries, plans</text>
-  <text x="112" y="322" class="mono">│   └── diagrams/*.svg</text>
+  <text x="112" y="294" class="mono">│   ├── REPORT / POC_SUMMARY / plans</text>
+  <text x="112" y="322" class="mono">│   └── diagrams/*.svg (architecture + flow)</text>
   <text x="92" y="350" class="mono">├── scripts/</text>
   <text x="112" y="378" class="mono">│   ├── test and setup runners (*.sh)</text>
   <text x="112" y="406" class="mono">│   └── generators and measures (*.py)</text>
@@ -42,10 +42,10 @@
   <text x="112" y="546" class="mono">│   └── derived test profiles + metadata</text>
   <text x="92" y="574" class="mono">└── results/</text>
   <text x="112" y="602" class="mono">    ├── benchmark runs</text>
-  <text x="112" y="630" class="mono">    ├── safety / network checks</text>
+  <text x="112" y="630" class="mono">    ├── safety / network / TLS tunnel checks</text>
   <text x="112" y="658" class="mono">    ├── negative-control evidence</text>
   <text x="112" y="686" class="mono">    ├── agent sessions</text>
-  <text x="112" y="714" class="mono">    └── syscall matrices</text>
+  <text x="112" y="714" class="mono">    └── syscall / agent session evidence</text>
 
   <rect x="68" y="870" width="314" height="156" rx="12" class="doc"/>
   <text x="88" y="902" class="label">Docs and supporting assets</text>
@@ -58,12 +58,12 @@
   <rect x="450" y="122" width="1110" height="208" rx="16" class="runner"/>
   <text x="480" y="160" class="head">1 · Prepare the VM and runtime</text>
   <rect x="490" y="190" width="250" height="100" rx="12" class="panel"/>
-  <text x="510" y="222" class="label">install_gvisor.sh</text>
+  <text x="510" y="222" class="label">scripts/install_gvisor.sh</text>
   <text x="510" y="249" class="body">Installs/registers runsc</text>
   <text x="510" y="272" class="body">inside the Linux VM</text>
   <rect x="805" y="190" width="250" height="100" rx="12" class="panel"/>
-  <text x="825" y="222" class="label">Dockerfile</text>
-  <text x="825" y="249" class="body">Builds pinned Python image</text>
+  <text x="825" y="222" class="label">Dockerfile / Dockerfile.agent</text>
+  <text x="825" y="249" class="body">Builds workload and agent images</text>
   <text x="825" y="272" class="body">.dockerignore limits build context</text>
   <rect x="1120" y="190" width="390" height="100" rx="12" class="doc"/>
   <text x="1140" y="222" class="label">README.md</text>
@@ -84,7 +84,7 @@
   <rect x="1170" y="428" width="340" height="96" rx="12" class="work"/>
   <text x="1190" y="458" class="label">Shared workload and validation</text>
   <text x="1190" y="484" class="body">workload.py · safety_validation.py</text>
-  <text x="1190" y="506" class="body">allowlist_proxy.py for HTTPS policy lane</text>
+  <text x="1190" y="506" class="body">allowlist_proxy.py; DNS rebind server for egress probes</text>
   <path d="M770 476 H795" class="line"/>
   <path d="M1135 476 H1160" class="line"/>
 
@@ -110,13 +110,13 @@
   <rect x="490" y="904" width="435" height="130" rx="12" class="panel"/>
   <text x="512" y="936" class="label">results/&lt;run-id&gt;/</text>
   <text x="512" y="964" class="body">raw JSONL / probe output · summaries · metadata</text>
-  <text x="512" y="989" class="body">Network and negative-control runs keep their own folders</text>
-  <text x="512" y="1014" class="body">Syscall runs keep matrix.jsonl and engine/profile metadata</text>
+  <text x="512" y="989" class="body">Network runs preserve proxy decisions and tunnel observations</text>
+  <text x="512" y="1014" class="body">Syscall runs preserve outcomes and engine/profile metadata</text>
   <rect x="1000" y="904" width="510" height="130" rx="12" class="doc"/>
   <text x="1022" y="936" class="label">docs/REPORT.md</text>
   <text x="1022" y="964" class="body">Summarizes results, limitations, and next evidence steps</text>
-  <text x="1022" y="989" class="body">Results are observations, not proof of security superiority</text>
-  <text x="1022" y="1014" class="body">docs/diagrams/architecture.svg shows runtime boundaries</text>
+  <text x="1022" y="989" class="body">TLS SNI/Host inside allowed CONNECT returned HTTP 200</text>
+  <text x="1022" y="1014" class="body">See architecture.svg and network-architecture.svg</text>
   <path d="M770 524 V560 H710 V640" class="softline"/>
   <path d="M990 762 V820 H710 V894" class="line"/>
   <path d="M1340 762 V820 H1255 V894" class="line"/>

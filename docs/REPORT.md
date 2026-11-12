@@ -1,5 +1,7 @@
 # Initial experiment report
 
+> **Current security note (2026-11-12):** The historical allowlist results below describe earlier checks and do not establish strict hostname isolation. The expanded tunnel probe later accepted TLS SNI/HTTP Host `example.org` through CONNECT to `example.com:443`, returning HTTP 200 under both `runc` and stable gVisor. See [the current POC summary](POC_SUMMARY.md), [network architecture diagram](diagrams/network-architecture.svg), and [raw results](../results/agent-session-20261112/stable-20261109/20261112-stable-20261109-network-expanded/).
+
 Date: 2026-11-10 (UTC)
 
 ## Environment
@@ -142,6 +144,14 @@ With the overlay, three `runc` results changed from generic `EPERM` to errors fr
 `runsc` returned the same result for each probe under both profiles. This suggests the observed outcomes are coming from its own syscall handling or another unchanged control, but the errno values alone cannot identify the exact enforcement layer. In particular, they do not prove that `runsc` is more secure. Both profile modes passed the container-policy checks, and the synthetic guest marker hash was unchanged in all four runs. Each syscall used deliberately invalid arguments or closed any descriptor immediately after creation.
 
 This is a small interface-behavior comparison, not syscall fuzzing or escape testing. Docker describes its built-in seccomp profile as an allowlist that blocks selected system calls. The profile overlay shows how changing that shared filter changes `runc` responses for some probes, while the `runsc` observations stayed constant; it does not establish comparative exploit resistance.
+
+## Latest expanded network and syscall checks
+
+Date: 2026-11-12. The expanded proxy/parser suite recorded 24 of 24 expected checks under both `runc` and stable `runsc-stable-20261109`. These cover allowed CONNECT, rejected domains and ports, IP literals, proxy parser edge cases, direct egress, and normalized allowed authorities. A separate observation was intentionally not counted as a passing allowlist check: CONNECT to `example.com:443` succeeded, after which a TLS session with SNI `example.org` and an HTTP request with Host `example.org` returned `HTTP/1.1 200 OK`. This shows the current proxy authorizes the CONNECT authority while allowing any TLS hostname within that encrypted tunnel. The observed response is a policy limitation, not proof of arbitrary-domain access. The workload network still has no direct egress route.
+
+The expanded common-syscall smoke passed nine selected checks under both runtimes, adding `pidfd_open` on self and `copy_file_range` between temporary files to the prior everyday API sample. This does not approximate the full Linux syscall surface or establish security superiority.
+
+For a strict domain policy, route agent traffic through a TLS-aware gateway or an equivalent network control that enforces the destination inside the tunnel, then repeat TLS SNI, HTTP Host, CONNECT, DNS, direct-egress, and alternate-protocol probes. Preserve the historical five-check results above as dated evidence; the expanded current evidence is stored in `../results/agent-session-20261112/stable-20261109/expanded-network-syscall-summary.json` and its linked raw directories.
 
 ### Follow-up: collect gVisor syscall traces
 
