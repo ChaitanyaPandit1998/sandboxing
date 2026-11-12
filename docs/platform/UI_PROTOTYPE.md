@@ -1,16 +1,16 @@
 # Session console UI prototype
 
-The first UI prototype is a self-contained static page in [`../ui/prototype/`](../ui/prototype/). It demonstrates the session lifecycle and the information an operator should see before operating a real agent sandbox.
+The first UI prototype is a self-contained static page in [`../../ui/prototype/`](../../ui/prototype). It demonstrates the session lifecycle and the information an operator should see before operating a real agent sandbox.
 
 ## Run locally
 
 From the repository root:
 
 ```bash
-python3 -m http.server 4173 --directory ui/prototype
+python3 -m http.server 4173 --bind 127.0.0.1
 ```
 
-Open `http://localhost:4173` in a browser. The prototype has no package dependencies, backend service, or external font/image requests.
+Open `http://127.0.0.1:4173/ui/prototype/` in a browser. Serving the repository root also makes its documentation and diagram links reachable. The prototype has no package dependencies, backend service, or external font/image requests.
 
 ## What is interactive
 
@@ -21,7 +21,7 @@ Open `http://localhost:4173` in a browser. The prototype has no package dependen
 
 Every session row and resource indicator is demo data. The buttons do not start, inspect, or stop Docker containers. The UI does not execute shell commands or expose credentials. Real session provisioning needs an authenticated backend that validates requests, applies approved OCI policy, manages credentials and workspace retention, and reports the real container state.
 
-Requirement status: session monitoring is only represented by simulated prototype data; live session telemetry and suspicious-activity detection are not implemented. See the [requirements status matrix](REQUIREMENTS_STATUS.md).
+Requirement status: session monitoring is only represented by simulated prototype data; live session telemetry and suspicious-activity detection are not implemented. See the [requirements status matrix](../REQUIREMENTS_STATUS.md).
 
 ## Current design constraints
 

@@ -69,7 +69,7 @@
               <div class="card-heading"><div><div class="card-title-line"><span class="card-icon network-icon">⌁</span><h2>Egress policy</h2></div><p>Outbound network access for agent sessions.</p></div><a href="../../docs/diagrams/network-architecture.svg" class="open-link" target="_blank" rel="noreferrer" aria-label="Open network architecture diagram">↗</a></div>
               <div class="policy-status-row"><span class="policy-badge"><i></i> ACTION REQUIRED</span><span class="policy-scope">Applies to new sessions</span></div>
               <div class="policy-alert"><div class="alert-symbol">!</div><div><strong>TLS hostnames are not enforced</strong><p>The proxy checks the CONNECT target, but an encrypted tunnel can carry a different TLS hostname. Strict domain allowlisting is not yet achieved.</p></div></div>
-              <div class="policy-bottom"><span>Recommended: TLS-aware gateway or equivalent network policy</span><a href="../../docs/SECURITY_VALIDATION_PLAN.md">View findings <b>→</b></a></div>
+              <div class="policy-bottom"><span>Recommended: TLS-aware gateway or equivalent network policy</span><a href="../../docs/validation/SECURITY_VALIDATION_PLAN.md">View findings <b>→</b></a></div>
             </section>
             <section class="activity-card" id="activity">
               <div class="card-heading"><div><div class="card-title-line"><span class="card-icon activity-icon">◷</span><h2>Recent activity</h2></div><p>Latest workspace events.</p></div><button class="more-button" aria-label="More activity options">•••</button></div>
@@ -81,7 +81,7 @@
             </section>
           </div>
 
-          <section class="runtime-strip" id="runtime"><span class="runtime-strip-icon">◇</span><span><strong>Runtime candidates</strong><small>runc baseline · runsc pinned · runsc-next nightly · runsc-stable-20261109 candidate</small></span><a href="../../docs/AGENT_SESSION_VALIDATION_PLAN.md">See validation status <b>→</b></a></section>
+          <section class="runtime-strip" id="runtime"><span class="runtime-strip-icon">◇</span><span><strong>Runtime candidates</strong><small>runc baseline · runsc pinned · runsc-next nightly · runsc-stable-20261109 candidate</small></span><a href="../../docs/validation/AGENT_SESSION_VALIDATION_PLAN.md">See validation status <b>→</b></a></section>
           <footer>Sandboxing POC <span>·</span> Local prototype <span>·</span> No production guarantees <span class="footer-right">Data shown is illustrative</span></footer>
         </div>
       </main>

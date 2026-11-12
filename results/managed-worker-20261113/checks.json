@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "checks": {
+    "idempotent_create": true,
+    "approved_runtime_policy": true,
+    "managed_workspace_only": true,
+    "ephemeral_home_and_public_ca_only": true,
+    "verified_tls_provider_path": true,
+    "hostname_mismatch_denied": true,
+    "idempotent_stop": true,
+    "workspace_persists": true,
+    "home_is_ephemeral": true,
+    "five_simultaneous_sessions": true,
+    "sixth_session_denied": true,
+    "lost_gateway_reconciled": true,
+    "interrupted_provisioning_cleaned": true,
+    "invalid_id_denied": true,
+    "foreign_resource_preserved": true,
+    "arbitrary_image_override_denied": true,
+    "lifecycle_events_recorded": true
+  },
+  "five_request_to_login_ready_seconds": [
+    1.1172047500003828,
+    2.244906951000303,
+    5.707419594000385,
+    4.534855586000049,
+    3.3925492470007157
+  ],
+  "scope": "trusted local worker CLI; cached images; unauthenticated; no browser/API/model"
+}

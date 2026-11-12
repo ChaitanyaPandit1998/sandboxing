@@ -2,9 +2,9 @@
 
 **Status:** Proposed. This is a delivery plan, not a statement that the platform capabilities below are implemented.
 
-**UI prototype:** A static local dashboard mock now lives in [`../ui/prototype/`](../ui/prototype/) with run instructions in [`UI_PROTOTYPE.md`](UI_PROTOTYPE.md). Its session lifecycle is simulated; it is not the control plane and does not launch containers.
+**UI prototype:** A static local dashboard mock now lives in [`../../ui/prototype/`](../../ui/prototype) with run instructions in [`UI_PROTOTYPE.md`](UI_PROTOTYPE.md). Its session lifecycle is simulated; it is not the control plane and does not launch containers.
 
-**Whiteboard requirement status:** See [`REQUIREMENTS_STATUS.md`](REQUIREMENTS_STATUS.md) for the current evidence matrix. The whiteboard calls for growth to 20 concurrent sessions, while the agreed first pilot starts at five. It also specifies p95 below 20 seconds, while the current pilot contract specifies below 25 seconds; resolve that target difference before acceptance.
+**Whiteboard requirement status:** See [`REQUIREMENTS_STATUS.md`](../REQUIREMENTS_STATUS.md) for the current evidence matrix. The whiteboard calls for growth to 20 concurrent sessions, while the agreed first pilot starts at five. It also specifies p95 below 20 seconds, while the current pilot contract specifies below 25 seconds; resolve that target difference before acceptance.
 
 ## Goal
 
@@ -42,7 +42,7 @@ Claude Code, Kubernetes scheduling, warm pools, snapshot/resume, broad MCP suppo
 **Acceptance**
 
 - Each requirement is marked demonstrated, missing, or not yet verified, with evidence and owner.
-- The whiteboard requirement coverage is tracked in [`REQUIREMENTS_STATUS.md`](REQUIREMENTS_STATUS.md); resolve the latency-target difference and define the 20-session scale test.
+- The whiteboard requirement coverage is tracked in [`REQUIREMENTS_STATUS.md`](../REQUIREMENTS_STATUS.md); resolve the latency-target difference and define the 20-session scale test.
 - A written adopt, extend, or build decision identifies concrete gaps and operational constraints.
 
 ### 1. Control-plane contract
@@ -108,7 +108,7 @@ Build one path from authenticated request to usable Codex session:
 
 Run the existing runtime and proxy checks through the full control-plane path, then add tests for API authorization, policy tampering, credential revocation, approval expiry, workspace retention, cleanup after crashes, and concurrent starts. Keep results tied to the exact image digest, runtime build, worker kernel, policy, and test revision.
 
-Use [AGENT_SESSION_VALIDATION_PLAN.md](AGENT_SESSION_VALIDATION_PLAN.md) for agent/runtime coverage and [SECURITY_VALIDATION_PLAN.md](SECURITY_VALIDATION_PLAN.md) for the broader threat-driven matrix. A passing suite is evidence for those tested cases; it is not a security certification.
+Use [AGENT_SESSION_VALIDATION_PLAN.md](../validation/AGENT_SESSION_VALIDATION_PLAN.md) for agent/runtime coverage and [SECURITY_VALIDATION_PLAN.md](../validation/SECURITY_VALIDATION_PLAN.md) for the broader threat-driven matrix. A passing suite is evidence for those tested cases; it is not a security certification.
 
 **Acceptance**
 
@@ -137,12 +137,4 @@ The UI mock can guide feedback on the operator workflow while the control-plane 
 
 ## Current evidence to carry forward
 
-The POC has successful targeted `runsc-next` regressions recorded in [`../results/agent-session-20261112/runsc-next-regression-summary.json`](../results/agent-session-20261112/runsc-next-regression-summary.json). The tested nightly is a candidate build, not the pinned stable runtime. Existing startup timings are CLI process-start measurements, not complete session-ready latency. Preserve these limits in any platform comparison.
-
-## Latest follow-up (2026-11-12)
-
-The [five-session sandbox readiness results](SESSION_READINESS_RESULTS.md) record 50/50 successful cached-image starts per runtime. This is a no-network container/workspace/CLI smoke; full platform request-to-ready and uptime remain unmeasured. The [strict HTTPS egress enforcement plan](EGRESS_ENFORCEMENT_PLAN.md) specifies the proposed gateway and validation cases; the existing TLS tunnel gap remains open.
-
-**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy acceptance remains open. A subsequent explicit HTTPS configuration completed three authenticated tasks without reconnect/error events; broader transport and failure testing remain open.
-
-**Authenticated gateway follow-up (reviewed 2026-11-13):** Private ChatGPT login, one synthetic workspace-write task, incremental CLI events, cancellation, and cleanup passed. The initial run used fallback after WebSocket denials; the explicit HTTPS follow-up completed three tasks with zero error events. See [evidence and remaining checks](CODEX_TLS_AUTHENTICATED_RESULTS.md). This does not measure platform session-ready p95.
+The [local worker](../runbooks/MANAGED_WORKER.md) implements lifecycle state, a persistent pilot workspace, quota, and explicit reconciliation. It passed 17 synthetic checks and one authenticated persistence check. The [Codex TLS guide](../runbooks/CODEX_TLS.md) records authenticated HTTPS tasks and cancellation; the [gateway](../security/TLS_GATEWAY.md) has selected hostname enforcement evidence. Full service identity, browser attach, background expiry, gateway acceptance, uptime, and authenticated concurrent readiness remain pending. Use the [requirements matrix](../REQUIREMENTS_STATUS.md) for current coverage and [DEVLOG](../../DEVLOG.md) for chronology.

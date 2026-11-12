@@ -1,8 +1,8 @@
 # Initial experiment report
 
-> Requirement-level coverage, including concurrency, session-ready latency, uptime, prompt-injection controls, and dashboard/telemetry status, is tracked in the [requirements status matrix](REQUIREMENTS_STATUS.md). This report's benchmark timings are not session-ready latency or uptime measurements.
+> Requirement-level coverage, including concurrency, session-ready latency, uptime, prompt-injection controls, and dashboard/telemetry status, is tracked in the [requirements status matrix](../REQUIREMENTS_STATUS.md). This report's benchmark timings are not session-ready latency or uptime measurements.
 
-> **Current security note (2026-11-12):** The historical allowlist results below describe earlier checks and do not establish strict hostname isolation. The expanded tunnel probe later accepted TLS SNI/HTTP Host `example.org` through CONNECT to `example.com:443`, returning HTTP 200 under both `runc` and stable gVisor. See [the current POC summary](POC_SUMMARY.md), [network architecture diagram](diagrams/network-architecture.svg), and [raw results](../results/agent-session-20261112/stable-20261109/20261112-stable-20261109-network-expanded/).
+> **Current security note (2026-11-12):** The historical allowlist results below describe earlier checks and do not establish strict hostname isolation. The expanded tunnel probe later accepted TLS SNI/HTTP Host `example.org` through CONNECT to `example.com:443`, returning HTTP 200 under both `runc` and stable gVisor. See [the current POC summary](../overview/POC_SUMMARY.md), [network architecture diagram](../diagrams/network-architecture.svg), and [raw results](../../results/agent-session-20261112/stable-20261109/20261112-stable-20261109-network-expanded).
 
 Date: 2026-11-10 (UTC)
 
@@ -24,11 +24,11 @@ Date: 2026-11-10 (UTC)
 | I/O: write/read 8 MiB in `/tmp` | 5.32 ms | 5.87 ms | +10.3% |
 | HTTP: 200 serial loopback requests | 546.51 ms | 703.13 ms | +28.7% |
 
-Raw samples and medians are in `../results/20261110T151337Z/`. This run used a fixed runtime order and no warm-up; the following run supersedes it for performance interpretation.
+Raw samples and medians are in `../../results/20261110T151337Z/`. This run used a fixed runtime order and no warm-up; the following run supersedes it for performance interpretation.
 
 ## Run 2: warmed, alternating 20-trial run
 
-The revised runner performs one warm-up for each runtime/workload pair, alternates which runtime runs first on each trial, reverses workload order every other trial, and captures both workload time and total `docker run` wall time. Each workload/runtime pair has 20 measured samples. Environment details are saved in `../results/20261110T152643Z/environment.json`, raw measurements in `raw.jsonl`, and quartiles/medians in `summary.json`.
+The revised runner performs one warm-up for each runtime/workload pair, alternates which runtime runs first on each trial, reverses workload order every other trial, and captures both workload time and total `docker run` wall time. Each workload/runtime pair has 20 measured samples. Environment details are saved in `../../results/20261110T152643Z/environment.json`, raw measurements in `raw.jsonl`, and quartiles/medians in `summary.json`.
 
 ### Workload time
 
@@ -46,7 +46,7 @@ The revised runner performs one warm-up for each runtime/workload pair, alternat
 | I/O | 201.43 ms | 247.37 ms | +22.8% |
 | HTTP | 774.17 ms | 973.06 ms | +25.7% |
 
-![Chart comparing median performance overhead and selected safety-check outcomes](diagrams/poc-metrics.svg)
+![Chart comparing median performance overhead and selected safety-check outcomes](../diagrams/poc-metrics.svg)
 
 In this VM and workload set, `runsc` was slower on all three workload timers and all three end-to-end timers. The P25–P75 ranges do not overlap for these samples, but this remains one machine and one run; it is not a general performance claim.
 
@@ -58,7 +58,7 @@ For a stronger performance comparison, repeat this protocol across multiple VM b
 
 ### Keep-alive and TCP follow-up
 
-The follow-up added 200 serial HTTP/1.1 loopback requests on one persistent connection, the same case with `TCP_NODELAY` enabled on both client and server, and eight concurrent clients with 25 requests each. The runner alternated runtime and workload order. The first comparison collected 50 trials per runtime; TCP-setting and concurrency controls collected 20 trials per runtime. All used the same image, 1 CPU, 256 MiB memory, `--network=none`, and other baseline container limits. The results are in `../results/20261111T094933Z/summary.json`, `../results/20261111T111816Z/summary.json`, and `../results/20261111T112440Z/summary.json`.
+The follow-up added 200 serial HTTP/1.1 loopback requests on one persistent connection, the same case with `TCP_NODELAY` enabled on both client and server, and eight concurrent clients with 25 requests each. The runner alternated runtime and workload order. The first comparison collected 50 trials per runtime; TCP-setting and concurrency controls collected 20 trials per runtime. All used the same image, 1 CPU, 256 MiB memory, `--network=none`, and other baseline container limits. The results are in `../../results/20261111T094933Z/summary.json`, `../../results/20261111T111816Z/summary.json`, and `../../results/20261111T112440Z/summary.json`.
 
 | HTTP case | Trials | `runc` workload median | `runsc` workload median | `runsc` difference | `runc` container wall | `runsc` container wall |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -85,11 +85,11 @@ Date: 2026-11-10. The same probe image ran under both runtimes with 1 CPU, 256 M
 | Procfs and syscalls | Read `/proc/1/status`, `getrandom`, anonymous `mmap`, thread create/join | Pass | Pass |
 | Networking | Loopback socket works; external connection to a documentation-only address is blocked | Pass | Pass |
 
-Raw probe output is in `../results/safety-20261110T155834Z/checks.jsonl`. These are configuration regression checks for one benign process. They do not attempt container escapes, kernel exploitation, or malicious workloads, and they do not establish that either runtime is secure.
+Raw probe output is in `../../results/safety-20261110T155834Z/checks.jsonl`. These are configuration regression checks for one benign process. They do not attempt container escapes, kernel exploitation, or malicious workloads, and they do not establish that either runtime is secure.
 
 ## Expanded boundary and egress policy checks
 
-Date: 2026-11-10. Follow-up checks used the same guest, pinned workload image, and runtime limits. The safety runner inspected Docker's saved launch configuration as well as the process's observed state. Both `runc` and `runsc` passed all 25 checks; evidence is in `../results/safety-20261110T180847Z/checks.jsonl`.
+Date: 2026-11-10. Follow-up checks used the same guest, pinned workload image, and runtime limits. The safety runner inspected Docker's saved launch configuration as well as the process's observed state. Both `runc` and `runsc` passed all 25 checks; evidence is in `../../results/safety-20261110T180847Z/checks.jsonl`.
 
 | Area | Result under both runtimes |
 | --- | --- |
@@ -101,7 +101,7 @@ Date: 2026-11-10. Follow-up checks used the same guest, pinned workload image, a
 
 The sudo result is specifically “sudo unavailable and privilege escalation probes denied”; this does not test a separately installed sudo binary. The synthetic marker is not a real sensitive file and no host home directory is mounted into the VM.
 
-The separate allowlist test uses two Docker networks: the workload joins an internal-only network, while the proxy joins that network and a bridge network. The workload has no direct egress route. The proxy allows exact host `example.com` on TCP 443, resolves the hostname and rejects non-global destination addresses, and records decisions. Both runtimes passed 5/5 checks in `../results/network-20261110T180956Z-19376/`:
+The separate allowlist test uses two Docker networks: the workload joins an internal-only network, while the proxy joins that network and a bridge network. The workload has no direct egress route. The proxy allows exact host `example.com` on TCP 443, resolves the hostname and rejects non-global destination addresses, and records decisions. Both runtimes passed 5/5 checks in `../../results/network-20261110T180956Z-19376/`:
 
 | Probe | `runc` | `runsc` |
 | --- | --- | --- |
@@ -115,7 +115,7 @@ This validates the demonstrated policy path with a public example domain. It doe
 
 ## Negative controls for probe sensitivity
 
-Date: 2026-11-11 IST (2026-11-10 UTC). Deliberately weakened, temporary containers were used to check whether the probes fail when selected controls are absent. All ten cases were detected across `runc` and `runsc`; summary evidence is in `../results/negative-20261110T185453Z-24675/negative-controls.jsonl`. After the negative run, the normal configuration passed all 25 checks on both runtimes again; see `../results/safety-20261110T185500Z/checks.jsonl`.
+Date: 2026-11-11 IST (2026-11-10 UTC). Deliberately weakened, temporary containers were used to check whether the probes fail when selected controls are absent. All ten cases were detected across `runc` and `runsc`; summary evidence is in `../../results/negative-20261110T185453Z-24675/negative-controls.jsonl`. After the negative run, the normal configuration passed all 25 checks on both runtimes again; see `../../results/safety-20261110T185500Z/checks.jsonl`.
 
 | Deliberate change | Detection signal | `runc` | `runsc` |
 | --- | --- | --- | --- |
@@ -129,7 +129,7 @@ The bind-mount control exposed a checker gap: Docker reports mounts created with
 
 ## Kernel-interface syscall matrix
 
-Date: 2026-11-11 IST (2026-11-10 UTC). Seven non-destructive probes were run under two profiles on the same ARM64 Lima guest. All runs used UID 10001, no capabilities, `no_new_privileges`, read-only root, and no network. Docker Engine 29.9.3 reported its built-in seccomp profile. The comparison also used a derived profile from the exact Moby `docker-v29.9.3` source, adding unconditional allow rules for six probe syscalls while retaining the default deny action and all original rules. The source and derived profile hashes are recorded in `../results/syscall-20261110T195338Z-29350/engine.json`; the profile is for this experiment only, not production. See [the pinned Moby profile](https://github.com/moby/moby/blob/docker-v29.9.3/vendor/github.com/moby/profiles/seccomp/default.json) and [Docker's seccomp documentation](https://docs.docker.com/engine/security/seccomp).
+Date: 2026-11-11 IST (2026-11-10 UTC). Seven non-destructive probes were run under two profiles on the same ARM64 Lima guest. All runs used UID 10001, no capabilities, `no_new_privileges`, read-only root, and no network. Docker Engine 29.9.3 reported its built-in seccomp profile. The comparison also used a derived profile from the exact Moby `docker-v29.9.3` source, adding unconditional allow rules for six probe syscalls while retaining the default deny action and all original rules. The source and derived profile hashes are recorded in `../../results/syscall-20261110T195338Z-29350/engine.json`; the profile is for this experiment only, not production. See [the pinned Moby profile](https://github.com/moby/moby/blob/docker-v29.9.3/vendor/github.com/moby/profiles/seccomp/default.json) and [Docker's seccomp documentation](https://docs.docker.com/engine/security/seccomp).
 
 | Probe | `runc` built-in | `runc` probe overlay | `runsc` built-in | `runsc` probe overlay |
 | --- | --- | --- | --- | --- |
@@ -153,16 +153,8 @@ Date: 2026-11-12. The expanded proxy/parser suite recorded 24 of 24 expected che
 
 The expanded common-syscall smoke passed nine selected checks under both runtimes, adding `pidfd_open` on self and `copy_file_range` between temporary files to the prior everyday API sample. This does not approximate the full Linux syscall surface or establish security superiority.
 
-For a strict domain policy, route agent traffic through a TLS-aware gateway or an equivalent network control that enforces the destination inside the tunnel, then repeat TLS SNI, HTTP Host, CONNECT, DNS, direct-egress, and alternate-protocol probes. Preserve the historical five-check results above as dated evidence; the expanded current evidence is stored in `../results/agent-session-20261112/stable-20261109/expanded-network-syscall-summary.json` and its linked raw directories.
+For a strict domain policy, route agent traffic through a TLS-aware gateway or an equivalent network control that enforces the destination inside the tunnel, then repeat TLS SNI, HTTP Host, CONNECT, DNS, direct-egress, and alternate-protocol probes. Preserve the historical five-check results above as dated evidence; the expanded current evidence is stored in `../../results/agent-session-20261112/stable-20261109/expanded-network-syscall-summary.json` and its linked raw directories.
 
 ### Follow-up: collect gVisor syscall traces
 
-The next evidence step is a separate, traced rerun of the syscall matrix with a dedicated `runsc-trace` Docker runtime using gVisor's `--strace` and debug-log options. The runbook is in the [root README](../README.md). It has not been run yet; the existing results above are unchanged. Tracing must stay separate from performance measurements because it adds overhead. Its purpose is to inspect gVisor's handling of application syscalls; it does not reveal the exact host-kernel seccomp decision for `runc`, and trace output alone cannot support a security-superiority claim. Creating the debug runtime changes Docker daemon configuration and requires an approved restart of the disposable VM's daemon. See [gVisor's debugging guide](https://gvisor.dev/docs/user_guide/debugging/).
-
-## Latest follow-up (2026-11-12)
-
-The [five-session sandbox readiness results](SESSION_READINESS_RESULTS.md) record 50/50 successful cached-image starts per runtime. This is a no-network container/workspace/CLI smoke; full platform request-to-ready and uptime remain unmeasured. The [strict HTTPS egress enforcement plan](EGRESS_ENFORCEMENT_PLAN.md) specifies the proposed gateway and validation cases; the existing TLS tunnel gap remains open.
-
-**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy acceptance remains open. A subsequent explicit HTTPS configuration completed three authenticated tasks without reconnect/error events; broader transport and failure testing remain open.
-
-**Authenticated gateway follow-up (reviewed 2026-11-13):** Private ChatGPT login, one synthetic workspace-write task, incremental CLI events, cancellation, and cleanup passed. The initial run used fallback after WebSocket denials; the explicit HTTPS follow-up completed three tasks with zero error events. See [evidence and remaining checks](CODEX_TLS_AUTHENTICATED_RESULTS.md). This does not measure platform session-ready p95.
+The next evidence step is a separate, traced rerun of the syscall matrix with a dedicated `runsc-trace` Docker runtime using gVisor's `--strace` and debug-log options. The runbook is in the [root README](../../README.md). It has not been run yet; the existing results above are unchanged. Tracing must stay separate from performance measurements because it adds overhead. Its purpose is to inspect gVisor's handling of application syscalls; it does not reveal the exact host-kernel seccomp decision for `runc`, and trace output alone cannot support a security-superiority claim. Creating the debug runtime changes Docker daemon configuration and requires an approved restart of the disposable VM's daemon. See [gVisor's debugging guide](https://gvisor.dev/docs/user_guide/debugging/).

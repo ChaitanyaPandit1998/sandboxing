@@ -13,7 +13,7 @@ Readiness begins immediately before `docker run` and ends when `docker exec` ver
 
 Both runtime paths were below 20 and 25 seconds for this narrow readiness definition. This establishes a five-concurrent-container smoke and cached-image lower-level timing. It does not establish 20-user capacity, authenticated Codex readiness, a usable terminal attach path, workspace persistence, queue/API latency, image pull/build latency, provider response time, or uptime. FR-1 and NFR-1 therefore become partial rather than complete.
 
-Evidence: [environment](../results/session-readiness-20261112/environment.json), [raw samples](../results/session-readiness-20261112/raw.jsonl), [summary](../results/session-readiness-20261112/summary.json). Runner: [`measure_session_readiness.py`](../scripts/measure_session_readiness.py).
+Evidence: [environment](../../results/session-readiness-20261112/environment.json), [raw samples](../../results/session-readiness-20261112/raw.jsonl), [summary](../../results/session-readiness-20261112/summary.json). Runner: [`measure_session_readiness.py`](../../scripts/measure_session_readiness.py).
 
 Run inside the dedicated Linux VM with the existing cached image and registered runtimes:
 

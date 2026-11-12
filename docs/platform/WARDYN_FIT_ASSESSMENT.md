@@ -4,7 +4,7 @@
 **Wardyn source reviewed:** local checkout `a60890b1e` (2026-11-05), version `0.10.0-rc.13`
 **Assessment type:** source and documentation review plus a disposable local runtime/session smoke. No model call, credential flow, workspace persistence, SSO, production deployment, or load test was exercised.
 
-For the POC's full functional/non-functional requirement status and the distinction between whiteboard scale goals and the agreed first-pilot target, see [REQUIREMENTS_STATUS.md](REQUIREMENTS_STATUS.md).
+For the POC's full functional/non-functional requirement status and the distinction between whiteboard scale goals and the agreed first-pilot target, see [REQUIREMENTS_STATUS.md](../REQUIREMENTS_STATUS.md).
 
 ## Summary
 
@@ -55,5 +55,5 @@ One session ran `codex --version`; no provider was configured and no model reque
 ## Reviewed source locations
 
 - Wardyn checkout: `../../wardyn` at commit `a60890b1e`, release string `0.10.0-rc.13`.
-- Wardyn docs: [`README.md`](../../wardyn/README.md), [`POLICIES.md`](../../wardyn/docs/POLICIES.md), [`OPERATIONS.md`](../../wardyn/docs/OPERATIONS.md), [`CREDENTIALS.md`](../../wardyn/docs/CREDENTIALS.md), [`TRY-IT.md`](../../wardyn/docs/TRY-IT.md), and [`VERIFY.md`](../../wardyn/docs/VERIFY.md).
-- POC agent/runtime evidence: [agent session validation plan](AGENT_SESSION_VALIDATION_PLAN.md) and [`runsc-next` regression summary](../results/agent-session-20261112/runsc-next-regression-summary.json).
+- Wardyn docs: [`README.md`](https://github.com/cjohnstoniv/wardyn/blob/a60890b1e/README.md), [`POLICIES.md`](https://github.com/cjohnstoniv/wardyn/blob/a60890b1e/docs/POLICIES.md), [`OPERATIONS.md`](https://github.com/cjohnstoniv/wardyn/blob/a60890b1e/docs/OPERATIONS.md), [`CREDENTIALS.md`](https://github.com/cjohnstoniv/wardyn/blob/a60890b1e/docs/CREDENTIALS.md), [`TRY-IT.md`](https://github.com/cjohnstoniv/wardyn/blob/a60890b1e/docs/TRY-IT.md), and [`VERIFY.md`](https://github.com/cjohnstoniv/wardyn/blob/a60890b1e/docs/VERIFY.md).
+- POC agent/runtime evidence: [agent session validation plan](../validation/AGENT_SESSION_VALIDATION_PLAN.md) and [`runsc-next` regression summary](../../results/agent-session-20261112/runsc-next-regression-summary.json).

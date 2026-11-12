@@ -113,7 +113,7 @@
   <text x="512" y="989" class="body">Network runs preserve proxy decisions and tunnel observations</text>
   <text x="512" y="1014" class="body">Syscall runs preserve outcomes and engine/profile metadata</text>
   <rect x="1000" y="904" width="510" height="130" rx="12" class="doc"/>
-  <text x="1022" y="936" class="label">docs/REPORT.md</text>
+  <text x="1022" y="936" class="label">docs/reports/REPORT.md</text>
   <text x="1022" y="964" class="body">Summarizes results, limitations, and next evidence steps</text>
   <text x="1022" y="989" class="body">TLS SNI/Host inside allowed CONNECT returned HTTP 200</text>
   <text x="1022" y="1014" class="body">See architecture.svg and network-architecture.svg</text>

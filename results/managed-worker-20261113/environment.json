@@ -1,0 +1,13 @@
+{
+  "source_sha256": {
+    "tls_gateway.py": "f0d9b3d1627117b6cde7e0461a056ed28f1138c678edaa9554eeccc88fd34b50",
+    "scripts/manage_codex_session.py": "4397c1f750c4828b3efd69e83959277ae6bb01abda1190b92b9acf02b71864ac",
+    "scripts/test_managed_worker.py": "53e78b5e628e05190d506c3f82b275e5bd6f4f117d0095cdff3ad3300a102bf4"
+  },
+  "docker": {
+    "kernel": "7.0.0-43-generic",
+    "architecture": "aarch64",
+    "engine": "29.9.3"
+  },
+  "scope": "isolated synthetic tests; persistent test volume deleted; no credentials/models; first real pilot session created separately afterward"
+}

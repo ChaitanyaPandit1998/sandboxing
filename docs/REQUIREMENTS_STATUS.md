@@ -17,10 +17,10 @@ These are status counts for the four functional and three non-functional top-lev
 
 | ID | Requirement | Status | Evidence and remaining work |
 |---|---|---|---|
-| FR-1 | Support up to 20 concurrent sessions, starting with 5 | **Partial** | A cached-image five-session sandbox smoke passed 50/50 starts per runtime, with successful workspace writes and CLI startup. Full authenticated session/platform capacity and 20-session scaling remain unverified. See [readiness results](SESSION_READINESS_RESULTS.md). |
+| FR-1 | Support up to 20 concurrent sessions, starting with 5 | **Partial** | The cached-image sandbox benchmark passed 50/50 starts per runtime. The managed local worker also held five sessions, rejected a sixth, and passed a separate single-session authenticated persistence test. Full authenticated concurrent service readiness and 20-session scaling remain unverified. See [worker results](runbooks/MANAGED_WORKER.md) and [baseline readiness](reports/SESSION_READINESS_RESULTS.md). |
 | FR-2 | Apply the required policy checks | **Partial** | The POC verifies selected configuration and network controls, but not the complete policy set. See the five subcontrols below. |
 | FR-3 | Provide a dashboard for session and suspicious-activity monitoring | **Partial** | A static UI prototype and experiment/audit outputs exist. The prototype uses simulated data; there is no live session dashboard, alerting, or suspicious-activity detection. |
-| FR-4 | Add telemetry | **Partial** | The benchmark records workload/container timings, environment metadata, and raw samples. Session lifecycle, policy-decision, and suspicious-activity telemetry are not implemented as a service. |
+| FR-4 | Add telemetry | **Partial** | Benchmark metrics, redacted gateway decisions, and local worker SQLite lifecycle events exist. Central session telemetry, organization actor attribution, monitoring, and suspicious-activity detection remain pending. |
 
 ### FR-2 policy subcontrols
 
@@ -36,7 +36,7 @@ These are status counts for the four functional and three non-functional top-lev
 
 | ID | Requirement | Status | Evidence and remaining work |
 |---|---|---|---|
-| NFR-1 | p95 latency to start a new container/session is below 20 seconds | **Partial** | Five concurrent cached-image sandbox starts measured p95 0.486s for runc and 0.444s for stable runsc, including a workspace write and CLI version command. Full request-to-session-ready p95 through a control plane, authentication and attach remain unmeasured. See [readiness results](SESSION_READINESS_RESULTS.md). The agreed first-pilot spec currently says below 25 seconds at five concurrent sessions; reconcile this with the stricter whiteboard target before acceptance. |
+| NFR-1 | p95 latency to start a new container/session is below 20 seconds | **Partial** | Baseline five-container starts measured p95 0.486s runc / 0.444s stable runsc. Five concurrent managed-worker create requests reached login-ready in 1.117–5.707s, including queueing. These are CLI/lower-level measurements; full authenticated service/attach p95 remains unmeasured. See [worker results](runbooks/MANAGED_WORKER.md). Resolve the whiteboard <20s versus agreed pilot <25s target before acceptance. |
 | NFR-2 | `runc` and `runsc` benchmark difference is below 15% | **Partial; not consistently met** | In the 20-trial workload benchmark, `runsc` median was 7.7% slower for CPU, 15.0% for `/tmp` I/O, and 28.2% for fresh-connection HTTP. End-to-end container wall time was 22.2–25.7% higher. Keep-alive results were highly sensitive to TCP settings. The target is not met across all measured workloads. |
 | NFR-3 | Container uptime is above 90% | **Not tested** | No sustained uptime/availability or soak test has been run. Short successful sessions do not measure uptime. Define the observation window and what counts as available before testing. |
 
@@ -51,14 +51,10 @@ These are status counts for the four functional and three non-functional top-lev
 
 ## Related documentation
 
-- [POC summary](POC_SUMMARY.md) and [detailed experiment report](REPORT.md) contain runtime and policy evidence.
-- [Executive summary](EXECUTIVE_SUMMARY.md) gives the leadership-level result.
-- [Platform roadmap](PLATFORM_ROADMAP.md) and [session control-plane spec](SESSION_CONTROL_PLANE_SPEC.md) describe proposed product work and the agreed pilot scope.
-- [UI prototype notes](UI_PROTOTYPE.md) explain which dashboard behavior is simulated.
-- [Wardyn fit assessment](WARDYN_FIT_ASSESSMENT.md) records the separate control-plane compatibility checks; those do not count as a POC concurrency, latency, or uptime benchmark.
+- [POC summary](overview/POC_SUMMARY.md) and [detailed experiment report](reports/REPORT.md) contain runtime and policy evidence.
+- [Executive summary](overview/EXECUTIVE_SUMMARY.md) gives the leadership-level result.
+- [Platform roadmap](platform/PLATFORM_ROADMAP.md) and [session control-plane spec](platform/SESSION_CONTROL_PLANE_SPEC.md) describe proposed product work and the agreed pilot scope.
+- [UI prototype notes](platform/UI_PROTOTYPE.md) explain which dashboard behavior is simulated.
+- [Wardyn fit assessment](platform/WARDYN_FIT_ASSESSMENT.md) records the separate control-plane compatibility checks; those do not count as a POC concurrency, latency, or uptime benchmark.
 
-The [strict HTTPS egress plan](EGRESS_ENFORCEMENT_PLAN.md) defines the gateway and acceptance cases; an initial candidate is implemented with 16 passing checks per runtime, while the full matrix and default-runner integration remain pending.
-
-**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy acceptance remains open. A subsequent explicit HTTPS configuration completed three authenticated tasks without reconnect/error events; broader transport and failure testing remain open.
-
-**Authenticated gateway follow-up (reviewed 2026-11-13):** Private ChatGPT login, one synthetic workspace-write task, incremental CLI events, cancellation, and cleanup passed. The initial run used fallback after WebSocket denials; the explicit HTTPS follow-up completed three tasks with zero error events. See [evidence and remaining checks](CODEX_TLS_AUTHENTICATED_RESULTS.md). This does not measure platform session-ready p95.
+The [strict HTTPS egress plan](security/TLS_GATEWAY.md#enforcement-design-and-remaining-acceptance) defines the gateway and acceptance cases; an initial candidate is implemented with 16 passing checks per runtime, while the full matrix and default-runner integration remain pending.

@@ -1,0 +1,11 @@
+{
+  "scope": "test-only loopback upstream routing; internal network; no model/auth; not production DNS/public-IP validation",
+  "gateway_image_id": "sha256:2711066c855659b5af8b1dbb84494ed3eff69b42ece439c60b4fe09a2db829d4",
+  "client_image_id": "sha256:43ac7d2549487849fa2650c8b4e74435c84e12075a3e8a0496e68eac3dd986cf",
+  "sources": {
+    "tls_gateway.py": "f0d9b3d1627117b6cde7e0461a056ed28f1138c678edaa9554eeccc88fd34b50",
+    "client.py": "27c8ef08f5c7f179615448d917f7c9fad962a7ddb1c885aa21edc68e37225bb2",
+    "route.py": "d1457db38010d026a7345a0bc5612e56f26bdc62ac0a92842a111db2a48df168",
+    "server.py": "48058f1b5d12cc636e4947ec2183dd57bd5408626953c8c8ed0d613b49a6845c"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "authenticated_task_exit_code": 0,
+  "task_duration_seconds": 9.871,
+  "workspace_marker_written": true,
+  "workspace_marker_survived_replacement": true,
+  "replacement_login_absent": true,
+  "error_event_count": 0,
+  "events": [
+    {
+      "seconds": 1.723,
+      "type": "thread.started",
+      "item_type": null
+    },
+    {
+      "seconds": 1.75,
+      "type": "turn.started",
+      "item_type": null
+    },
+    {
+      "seconds": 5.915,
+      "type": "item.completed",
+      "item_type": "agent_message",
+      "expected_marker": false
+    },
+    {
+      "seconds": 6.904,
+      "type": "item.started",
+      "item_type": "command_execution"
+    },
+    {
+      "seconds": 6.904,
+      "type": "item.completed",
+      "item_type": "command_execution"
+    },
+    {
+      "seconds": 9.224,
+      "type": "item.completed",
+      "item_type": "agent_message",
+      "expected_marker": true
+    },
+    {
+      "seconds": 9.371,
+      "type": "turn.completed",
+      "item_type": null
+    }
+  ],
+  "stop_state": "stopped",
+  "persistent_workspace_retained": true,
+  "scope": "single authenticated managed worker session; shared local-pilot persistent workspace; no service/browser timing"
+}

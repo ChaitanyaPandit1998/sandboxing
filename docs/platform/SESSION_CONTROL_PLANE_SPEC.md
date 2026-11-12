@@ -1,6 +1,6 @@
 # Codex session control-plane MVP contract
 
-**Status:** Draft updated 2026-11-12 with agreed pilot decisions. This describes the first real session-management slice; it does not claim these APIs or controls are implemented.
+**Status:** HTTP contract remains a draft. A [local worker CLI](../runbooks/MANAGED_WORKER.md) was implemented and tested on 2026-11-13 for lifecycle state, a persistent pilot workspace, quota, and reconciliation. The HTTP API, browser attach, organization identity, and background lifecycle services below are not implemented.
 
 ## Product outcome
 
@@ -8,23 +8,23 @@ An organization user can request an approved Codex workspace, wait for it to bec
 
 The first release targets Codex CLI and a single-user pilot, with a path to organization SSO later. Target capacity is five simultaneous sessions and request-to-ready p95 is under 25 seconds. Claude Code, arbitrary images, end-user policy authoring, Kubernetes scheduling, snapshot/resume, and broad MCP support remain out of scope unless the pilot requirements change.
 
-The [whiteboard requirement matrix](REQUIREMENTS_STATUS.md) records a longer-term capacity target of 20 concurrent sessions and a stricter p95 startup target below 20 seconds. These differ from the agreed first-pilot targets above; resolve the latency threshold and define the scale-up phase before treating either as a release gate.
+The [whiteboard requirement matrix](../REQUIREMENTS_STATUS.md) records a longer-term capacity target of 20 concurrent sessions and a stricter p95 startup target below 20 seconds. These differ from the agreed first-pilot targets above; resolve the latency threshold and define the scale-up phase before treating either as a release gate.
 
 ## MVP capabilities and current state
 
 | Capability | Required behavior | Current state |
 | --- | --- | --- |
-| Create | Request a session under a server-approved policy; reject invalid or over-quota requests | Not implemented; current script is operator-run |
-| Attach | Give the owner a session-scoped terminal/attach channel without exposing worker or Docker access | Not implemented; operator attaches with `docker exec` |
-| Inspect | Show owner, lifecycle state, selected policy/runtime, timestamps, and safe failure reason | Partially evidenced by runner outputs; no service/API |
-| Stop / expire | Stop idempotently, revoke grants, clean session home/container/network, apply workspace retention | Script can stop known demo containers; no per-session service or expiry controller |
-| Workspace | Give each user a private managed workspace that persists across session stops; apply a declared retention/deletion policy | Current smoke uses memory-backed `/workspace`; no managed persistent workspace |
+| Create | Request a session under a server-approved policy; reject invalid or over-quota requests | Local worker CLI implemented with fixed policy, idempotency and quota; HTTP service pending |
+| Attach | Give the owner a session-scoped terminal/attach channel without exposing worker or Docker access | Trusted local CLI attach implemented; browser relay/tickets and manual attach validation pending |
+| Inspect | Show owner, lifecycle state, selected policy/runtime, timestamps, and safe failure reason | Local worker metadata inspection implemented; service authorization pending |
+| Stop / expire | Stop idempotently, revoke grants, clean session home/container/network, apply workspace retention | Idempotent worker stop/cleanup tested; persistent workspace retained; expiry/grant service pending |
+| Workspace | Give each user a private managed workspace that persists across session stops; apply a declared retention/deletion policy | Retained local-pilot Docker volume tested across session replacement; multi-user isolation and retention/deletion policy pending |
 | Identity / authorization | Authenticate through organization identity and authorize owner/operator/admin actions | Not implemented |
-| Runtime policy | Select only a server-approved image, runtime, resources, mounts, and privilege profile | Test scripts use fixed flags; no versioned policy service |
-| Egress | Deny direct routes and enforce allowed destinations, including inside TLS tunnels | Direct egress probes pass; strict hostname enforcement is **not achieved** by current proxy |
+| Runtime policy | Select only a server-approved image, runtime, resources, mounts, and privilege profile | Worker uses fixed immutable image/runtime policy; remote versioned policy service pending |
+| Egress | Deny direct routes and enforce allowed destinations, including inside TLS tunnels | Worker integrates the tested TLS gateway candidate; original proxy remains limited and full egress acceptance is pending |
 | Credentials | Keep secrets out of images/workspaces/logs and scope access to a session | Current test uses normal Codex device login in a temporary home; replacement credential design is pending |
-| Audit | Record actor, action, target, outcome, timestamp, and correlation ID without prompt/secret leakage | Raw experiment evidence exists; no product audit store |
-| Quotas / workers | Bound per-user and organization capacity; detect unhealthy workers and clean orphaned sessions | Not implemented |
+| Audit | Record actor, action, target, outcome, timestamp, and correlation ID without prompt/secret leakage | Local SQLite lifecycle events implemented; organization attribution and tamper resistance pending |
+| Quotas / workers | Bound per-user and organization capacity; detect unhealthy workers and clean orphaned sessions | Five-session worker quota and explicit reconciliation tested; organization quotas, background sweeper and full health checks pending |
 
 ## Roles and authorization baseline
 
@@ -152,11 +152,3 @@ Audit session creation, denial, attach-ticket issue/use, policy resolution, stop
 4. Validate authorization, policy tampering, failures, cleanup, cross-session isolation, and egress through that API.
 5. Connect the existing UI mock to the versioned API, replacing all demo status with backend state.
 6. Add quotas, worker reconciliation, operations controls, and performance/pilot gates.
-
-## Latest follow-up (2026-11-12)
-
-The [five-session sandbox readiness results](SESSION_READINESS_RESULTS.md) record 50/50 successful cached-image starts per runtime. This is a no-network container/workspace/CLI smoke; full platform request-to-ready and uptime remain unmeasured. The [strict HTTPS egress enforcement plan](EGRESS_ENFORCEMENT_PLAN.md) specifies the proposed gateway and validation cases; the existing TLS tunnel gap remains open.
-
-**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy acceptance remains open. A subsequent explicit HTTPS configuration completed three authenticated tasks without reconnect/error events; broader transport and failure testing remain open.
-
-**Authenticated gateway follow-up (reviewed 2026-11-13):** Private ChatGPT login, one synthetic workspace-write task, incremental CLI events, cancellation, and cleanup passed. The initial run used fallback after WebSocket denials; the explicit HTTPS follow-up completed three tasks with zero error events. See [evidence and remaining checks](CODEX_TLS_AUTHENTICATED_RESULTS.md). This does not measure platform session-ready p95.

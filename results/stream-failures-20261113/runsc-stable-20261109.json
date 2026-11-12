@@ -1,0 +1,120 @@
+{
+  "passed": true,
+  "checks": {
+    "progressive_stream": true,
+    "truncated_not_complete": true,
+    "stall_timeout": true,
+    "client_cancel": true,
+    "recovery_after_cancel": true,
+    "upstream_reset_detected": true,
+    "provider_503_preserved": true,
+    "gateway_kill_interrupts_stream": true,
+    "recovery_after_restart": true,
+    "unavailable_fails_closed": true,
+    "recovery_after_resume": true
+  },
+  "suite": {
+    "passed": true,
+    "checks": {
+      "progressive_stream": true,
+      "truncated_not_complete": true,
+      "stall_timeout": true,
+      "client_cancel": true,
+      "recovery_after_cancel": true,
+      "upstream_reset_detected": true,
+      "provider_503_preserved": true
+    },
+    "observations": {
+      "normal": {
+        "status": 200,
+        "done": true,
+        "events": [
+          0.059,
+          0.219,
+          0.422
+        ],
+        "error": null
+      },
+      "truncated": {
+        "status": 200,
+        "done": false,
+        "events": [
+          0.021
+        ],
+        "error": null
+      },
+      "stalled": {
+        "status": 200,
+        "done": false,
+        "events": [
+          0.055
+        ],
+        "error": "TimeoutError"
+      },
+      "client_cancel": {
+        "status": 200,
+        "done": false,
+        "events": [
+          0.067
+        ],
+        "error": null
+      },
+      "after_client_cancel": {
+        "status": 200,
+        "done": true,
+        "events": [
+          0.057,
+          0.23,
+          0.43
+        ],
+        "error": null
+      },
+      "reset": {
+        "status": 502,
+        "done": false,
+        "events": [],
+        "error": null
+      },
+      "provider_503": {
+        "status": 503,
+        "done": false,
+        "events": [],
+        "error": null
+      }
+    }
+  },
+  "interrupted": {
+    "status": 200,
+    "done": false,
+    "events": [
+      0.058
+    ],
+    "error": null
+  },
+  "restart_recovery": {
+    "status": 200,
+    "done": true,
+    "events": [
+      0.06,
+      0.217,
+      0.422
+    ],
+    "error": null
+  },
+  "unavailable": {
+    "status": null,
+    "done": false,
+    "events": [],
+    "error": "TimeoutError"
+  },
+  "resume_recovery": {
+    "status": 200,
+    "done": true,
+    "events": [
+      0.055,
+      0.214,
+      0.421
+    ],
+    "error": null
+  }
+}
