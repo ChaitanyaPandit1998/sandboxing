@@ -4,6 +4,8 @@
 **Wardyn source reviewed:** local checkout `a60890b1e` (2026-11-05), version `0.10.0-rc.13`
 **Assessment type:** source and documentation review plus a disposable local runtime/session smoke. No model call, credential flow, workspace persistence, SSO, production deployment, or load test was exercised.
 
+For the POC's full functional/non-functional requirement status and the distinction between whiteboard scale goals and the agreed first-pilot target, see [REQUIREMENTS_STATUS.md](REQUIREMENTS_STATUS.md).
+
 ## Summary
 
 Wardyn's current source describes a broad session-governance control plane that overlaps substantially with the platform layer proposed for this POC: users and roles, policy-driven run creation, workspace handling, egress proxying, approvals, credential brokering, audit, attach, and stop/kill flows. The POC's comparative value is its independent, evidence-backed validation of the Codex container and `runsc-next` behavior in the Lima VM.

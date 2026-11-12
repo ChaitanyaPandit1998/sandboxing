@@ -2,6 +2,10 @@
 
 **Status:** Proposed. This is a delivery plan, not a statement that the platform capabilities below are implemented.
 
+**UI prototype:** A static local dashboard mock now lives in [`../ui/prototype/`](../ui/prototype/) with run instructions in [`UI_PROTOTYPE.md`](UI_PROTOTYPE.md). Its session lifecycle is simulated; it is not the control plane and does not launch containers.
+
+**Whiteboard requirement status:** See [`REQUIREMENTS_STATUS.md`](REQUIREMENTS_STATUS.md) for the current evidence matrix. The whiteboard calls for growth to 20 concurrent sessions, while the agreed first pilot starts at five. It also specifies p95 below 20 seconds, while the current pilot contract specifies below 25 seconds; resolve that target difference before acceptance.
+
 ## Goal
 
 Provide organization-managed Codex sessions that start quickly, keep work isolated, constrain network and credential access, and leave an auditable record. The existing POC validates parts of the worker runtime and policy boundary; this roadmap adds the session-management product around it.
@@ -13,10 +17,12 @@ Evaluate Wardyn against the requirements before building equivalent control-plan
 ## Initial scope
 
 - Codex CLI sessions only.
-- One organization and a small pilot group.
+- One local operator for the first pilot; loopback-only service. Add organization SSO before remote or multi-user access.
 - One approved, digest-pinned agent image and one worker runtime policy.
-- Per-session resource limits, workspace, expiry, and cleanup.
-- Default-deny network access through the existing allowlist proxy path.
+- Five simultaneous sessions; target request-to-ready p95 below 25 seconds under an agreed cold/warm mix.
+- Per-user managed workspaces persist across session stops; session homes and CLI credentials remain temporary for the initial pilot.
+- Per-session resource limits, expiry, workspace retention, and cleanup.
+- Default-deny direct egress. Strict hostname allowlisting remains a release gate because the current proxy permits a TLS hostname mismatch inside an allowed CONNECT tunnel.
 - No long-lived provider or source-control secrets inside the image.
 - Session create, attach, stop, inspect, and audit flows.
 
@@ -36,11 +42,12 @@ Claude Code, Kubernetes scheduling, warm pools, snapshot/resume, broad MCP suppo
 **Acceptance**
 
 - Each requirement is marked demonstrated, missing, or not yet verified, with evidence and owner.
+- The whiteboard requirement coverage is tracked in [`REQUIREMENTS_STATUS.md`](REQUIREMENTS_STATUS.md); resolve the latency-target difference and define the 20-session scale test.
 - A written adopt, extend, or build decision identifies concrete gaps and operational constraints.
 
 ### 1. Control-plane contract
 
-Define the API and persisted records before wiring session creation to Docker. Minimum entities:
+The draft v1 API, lifecycle, policy boundary, audit model, and acceptance criteria are in [`SESSION_CONTROL_PLANE_SPEC.md`](SESSION_CONTROL_PLANE_SPEC.md). Close its owner decisions and update the contract before wiring session creation to Docker. Minimum entities:
 
 - **Principal:** user, team, and role.
 - **Policy:** approved image digest, runtime class, resource limits, writable paths, egress rules, credential grants, expiry, and retention.
@@ -121,10 +128,12 @@ Measure request-to-session-ready, attach-to-terminal-ready, first model response
 
 ## Immediate sequence
 
-1. Agree on initial scope and measurable pilot targets.
-2. Complete Milestone 0 using the current Codex image and the POC regression suite.
-3. Decide whether to adopt, extend, or build before implementing duplicate identity, approval, audit, or workspace features.
-4. Deliver Milestone 2 as the first code milestone; defer broadening the agent/runtime matrix until that path is repeatable.
+1. Preserve the agreed pilot scope: local single-operator access, managed per-user workspace persistence, five concurrent sessions, and request-to-ready p95 below 25 seconds. Resolve the stricter whiteboard p95-below-20-seconds target and define when the scale target grows to 20. Set the remaining workspace-retention, session-lifetime, and cold/warm measurement details.
+2. Complete Milestone 0 using the current Codex image and POC regression suite; finish Wardyn checks for persistent workspace behavior, Codex device-login compatibility, cleanup/recovery, and performance before deciding whether to adopt, extend, or build.
+3. Resolve the strict-egress gap and choose the exact runtime/image policy for the pilot. Keep the initial service loopback-only until SSO and multi-user authorization exist.
+4. Implement one authenticated create/ready/attach/stop backend slice with cleanup and audit; connect the UI after this API is stable.
+
+The UI mock can guide feedback on the operator workflow while the control-plane contract is designed. Connect it to real lifecycle APIs only after authorization, policy enforcement, egress, audit, and cleanup behavior are defined.
 
 ## Current evidence to carry forward
 

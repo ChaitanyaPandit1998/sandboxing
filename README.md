@@ -3,9 +3,12 @@
 Compare Docker's default `runc` runtime with gVisor's `runsc` runtime on the same Lima Linux VM. This is a local engineering experiment, not a security certification.
 
 See [the POC summary](docs/POC_SUMMARY.md) for a 13-point overview of the design, findings, limitations, and next steps.
+The whiteboard functional and non-functional requirements, evidence, and remaining work are tracked in the [requirements status matrix](docs/REQUIREMENTS_STATUS.md).
 For a concise shareable brief, see the [executive summary](docs/EXECUTIVE_SUMMARY.md).
+The [session console UI prototype](docs/UI_PROTOTYPE.md) shows the proposed operator workflow; its session rows and actions are simulated.
 The detailed threat model, prioritized security test matrix, and evidence criteria are in the [security validation plan](docs/SECURITY_VALIDATION_PLAN.md).
 The real Claude Code and Codex CLI validation matrix, initial results, and remaining cases are in the [agent validation plan](docs/AGENT_SESSION_VALIDATION_PLAN.md).
+The proposed session API, lifecycle, policy boundary, and MVP acceptance criteria are in the [session control-plane spec](docs/SESSION_CONTROL_PLANE_SPEC.md).
 
 ![Architecture diagram showing the Mac host, Lima Linux VM, paired Docker runtime paths, and saved experiment results](docs/diagrams/architecture.svg)
 
@@ -55,6 +58,7 @@ The authenticated Codex CLI `workspace-write` smoke then succeeded under `runsc-
 
 ## Files
 
+- `docs/UI_PROTOTYPE.md`, `ui/prototype/`: local static dashboard prototype and how to run it.
 - `docs/diagrams/architecture.svg`: host, VM, runtime, workload, and results flow.
 - `docs/diagrams/network-architecture.svg`: internal workload network, egress proxy, TLS tunnel behavior, and the hostname policy gap found in testing.
 - `docs/diagrams/file-flow.svg`: repository file map and how the runners connect to code and evidence.

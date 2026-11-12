@@ -1,5 +1,7 @@
 # Initial experiment report
 
+> Requirement-level coverage, including concurrency, session-ready latency, uptime, prompt-injection controls, and dashboard/telemetry status, is tracked in the [requirements status matrix](REQUIREMENTS_STATUS.md). This report's benchmark timings are not session-ready latency or uptime measurements.
+
 > **Current security note (2026-11-12):** The historical allowlist results below describe earlier checks and do not establish strict hostname isolation. The expanded tunnel probe later accepted TLS SNI/HTTP Host `example.org` through CONNECT to `example.com:443`, returning HTTP 200 under both `runc` and stable gVisor. See [the current POC summary](POC_SUMMARY.md), [network architecture diagram](diagrams/network-architecture.svg), and [raw results](../results/agent-session-20261112/stable-20261109/20261112-stable-20261109-network-expanded/).
 
 Date: 2026-11-10 (UTC)

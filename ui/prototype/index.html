@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7fb" />
+    <title>Sandbox Console · POC</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="#overview" aria-label="Sandbox Console home">
+          <span class="brand-mark"><span></span><span></span><span></span></span>
+          <span>Sandbox<span class="brand-light">Console</span></span>
+        </a>
+        <div class="workspace-switcher">
+          <span class="workspace-icon">C</span>
+          <span class="workspace-copy"><strong>Sandbox POC</strong><small>Personal workspace</small></span>
+          <span class="chevron">⌄</span>
+        </div>
+        <nav aria-label="Main navigation">
+          <p class="nav-label">WORKSPACE</p>
+          <a class="nav-item active" href="#overview"><span class="nav-icon">▦</span>Overview</a>
+          <a class="nav-item" href="#sessions"><span class="nav-icon">◫</span>Sessions <span class="nav-count" id="session-count">2</span></a>
+          <a class="nav-item" href="#activity"><span class="nav-icon">◷</span>Activity</a>
+          <p class="nav-label nav-label-spaced">CONFIGURATION</p>
+          <a class="nav-item" href="#runtime"><span class="nav-icon">◇</span>Runtime policy</a>
+          <a class="nav-item" href="#network"><span class="nav-icon">⌁</span>Network policy <span class="warning-dot" title="Review required"></span></a>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="operator"><div class="avatar">CP</div><div><strong>Chaitanya</strong><small>POC operator</small></div><span class="more">•••</span></div>
+          <div class="vm-status"><span class="status-dot"></span><span><strong>gvisor-poc</strong><small>Lima VM · connected</small></span><span class="live-pill">LIVE</span></div>
+          <div class="sidebar-foot">SANDBOX POC <span>v0.1</span></div>
+        </div>
+      </aside>
+
+      <main id="overview">
+        <header class="topbar">
+          <div class="breadcrumb"><span>Workspace</span><b>/</b><strong>Overview</strong></div>
+          <div class="top-actions"><span class="demo-tag"><i></i> PROTOTYPE · SAMPLE DATA</span><button class="icon-button" aria-label="Notifications">♧<span class="notification"></span></button><div class="top-avatar">CP</div></div>
+        </header>
+
+        <div class="content">
+          <section class="intro">
+            <div><p class="eyebrow">THURSDAY, NOVEMBER 12, 2026 <span class="eyebrow-dot"></span> LOCAL ENVIRONMENT</p><h1>Sandbox overview</h1><p class="intro-copy">A clear view of your isolated agent sessions and the policies around them.</p></div>
+            <button class="primary-button" id="open-create"><span>＋</span> New session</button>
+          </section>
+
+          <section class="prototype-note" aria-label="Prototype notice">
+            <div class="note-icon">i</div><div><strong>Interactive prototype</strong><p>Session rows are sample data. Create and stop simulate the lifecycle; they do not start or stop containers.</p></div><span class="prototype-chip">LOCAL DEMO</span>
+          </section>
+
+          <section class="metrics-grid" aria-label="Workspace summary">
+            <article class="metric-card"><div class="metric-heading"><span>Active sessions</span><span class="metric-icon purple">◫</span></div><div class="metric-value" id="active-total">1 <span class="metric-trend">+1 today</span></div><div class="metric-foot"><span class="metric-dot purple-dot"></span>1 Codex session running</div></article>
+            <article class="metric-card"><div class="metric-heading"><span>Runtime in use</span><span class="metric-icon blue">◇</span></div><div class="metric-value metric-runtime">runsc <span class="runtime-version">stable candidate</span></div><div class="metric-foot">release-20261109.0 · ARM64</div></article>
+            <article class="metric-card"><div class="metric-heading"><span>Resource limits</span><span class="metric-icon green">⌁</span></div><div class="metric-value">1 <small>CPU</small> <span class="metric-separator">·</span> 1 <small>GiB</small></div><div class="metric-foot">128 PIDs · read-only root</div></article>
+            <article class="metric-card"><div class="metric-heading"><span>Policy status</span><span class="metric-icon amber">!</span></div><div class="metric-value policy-value"><span class="policy-indicator"></span>Needs review</div><div class="metric-foot">TLS hostname enforcement gap</div></article>
+          </section>
+
+          <section class="session-section" id="sessions">
+            <div class="section-heading"><div><div class="section-title-row"><h2>Sessions</h2><span class="subtle-count" id="table-count">02</span></div><p>Agent workspaces running in isolated containers.</p></div><div class="section-tools"><button class="filter-button">◉ <span>All sessions</span><b>⌄</b></button><button class="secondary-button" id="refresh-sessions">↻ Refresh</button></div></div>
+            <div class="table-wrap"><table><thead><tr><th>SESSION</th><th>STATUS</th><th>RUNTIME</th><th>WORKSPACE</th><th>CREATED</th><th></th></tr></thead><tbody id="session-rows"></tbody></table><div class="empty-state" id="empty-state" hidden><div>◫</div><strong>No sessions yet</strong><span>Create a session to start a new isolated workspace.</span><button class="text-button" id="empty-create">Create a session →</button></div></div>
+            <div class="table-footer"><span>Showing <strong id="shown-count">2</strong> sessions <span class="footer-demo">· Demo data</span></span><button class="text-button" id="view-all">View all sessions <span>→</span></button></div>
+          </section>
+
+          <div class="lower-grid">
+            <section class="policy-card" id="network">
+              <div class="card-heading"><div><div class="card-title-line"><span class="card-icon network-icon">⌁</span><h2>Egress policy</h2></div><p>Outbound network access for agent sessions.</p></div><a href="../../docs/diagrams/network-architecture.svg" class="open-link" target="_blank" rel="noreferrer" aria-label="Open network architecture diagram">↗</a></div>
+              <div class="policy-status-row"><span class="policy-badge"><i></i> ACTION REQUIRED</span><span class="policy-scope">Applies to new sessions</span></div>
+              <div class="policy-alert"><div class="alert-symbol">!</div><div><strong>TLS hostnames are not enforced</strong><p>The proxy checks the CONNECT target, but an encrypted tunnel can carry a different TLS hostname. Strict domain allowlisting is not yet achieved.</p></div></div>
+              <div class="policy-bottom"><span>Recommended: TLS-aware gateway or equivalent network policy</span><a href="../../docs/SECURITY_VALIDATION_PLAN.md">View findings <b>→</b></a></div>
+            </section>
+            <section class="activity-card" id="activity">
+              <div class="card-heading"><div><div class="card-title-line"><span class="card-icon activity-icon">◷</span><h2>Recent activity</h2></div><p>Latest workspace events.</p></div><button class="more-button" aria-label="More activity options">•••</button></div>
+              <div class="activity-list" id="activity-list">
+                <div class="activity-item"><span class="activity-symbol created">＋</span><span class="activity-content"><strong>Codex session started</strong><small>codex-stable-01 · runsc stable</small></span><time>12m ago</time></div>
+                <div class="activity-item"><span class="activity-symbol notice">!</span><span class="activity-content"><strong>Policy finding recorded</strong><small>TLS SNI mismatch returned HTTP 200</small></span><time>2h ago</time></div>
+                <div class="activity-item"><span class="activity-symbol stopped">✓</span><span class="activity-content"><strong>Codex session stopped</strong><small>codex-runc-02 · workspace cleared</small></span><time>Yesterday</time></div>
+              </div>
+            </section>
+          </div>
+
+          <section class="runtime-strip" id="runtime"><span class="runtime-strip-icon">◇</span><span><strong>Runtime candidates</strong><small>runc baseline · runsc pinned · runsc-next nightly · runsc-stable-20261109 candidate</small></span><a href="../../docs/AGENT_SESSION_VALIDATION_PLAN.md">See validation status <b>→</b></a></section>
+          <footer>Sandboxing POC <span>·</span> Local prototype <span>·</span> No production guarantees <span class="footer-right">Data shown is illustrative</span></footer>
+        </div>
+      </main>
+    </div>
+
+    <dialog id="create-dialog" class="create-dialog">
+      <form method="dialog" id="create-form">
+        <div class="dialog-header"><div><p class="eyebrow">NEW ISOLATED WORKSPACE</p><h2>Create a session</h2></div><button class="close-button" value="cancel" aria-label="Close dialog">×</button></div>
+        <p class="dialog-copy">Choose a runtime for a Codex CLI session. This prototype generates the matching command for your Lima VM.</p>
+        <label class="field-label" for="session-name">Session label</label><input id="session-name" name="session-name" value="codex-session-03" maxlength="40" required /><small class="field-help">Display label for this demo. The current shell script derives its container name from runtime and CLI.</small>
+        <label class="field-label" for="runtime-select">Runtime</label><select id="runtime-select" name="runtime"><option value="runsc-stable-20261109">gVisor · stable candidate</option><option value="runsc">gVisor · pinned</option><option value="runsc-next">gVisor · nightly</option><option value="runc">runc · baseline</option></select>
+        <label class="field-label" for="cli-select">Agent CLI</label><select id="cli-select" name="cli"><option value="codex">Codex</option></select>
+        <div class="dialog-warning"><span>!</span><p><strong>Network policy needs review.</strong> The current demonstration proxy does not enforce TLS hostnames inside CONNECT tunnels.</p></div>
+        <div class="command-preview"><div><span>COMMAND PREVIEW</span><button type="button" id="copy-command" class="copy-button">Copy</button></div><code id="command-preview"></code></div>
+        <div class="dialog-actions"><button class="secondary-button" value="cancel">Cancel</button><button class="primary-button" id="create-session" value="default">Add demo session <span>→</span></button></div>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

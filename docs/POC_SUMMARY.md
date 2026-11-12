@@ -4,6 +4,8 @@
 
 ![Egress proxy architecture and the observed TLS hostname enforcement gap](diagrams/network-architecture.svg)
 
+The whiteboard requirements and their evidence-based status are summarized in the [requirements status matrix](REQUIREMENTS_STATUS.md): 0/4 functional and 0/3 non-functional top-level requirements are fully demonstrated; 3 functional and 1 non-functional are partial, while 1 functional and 2 non-functional remain untested.
+
 1. **Objective:** Compare Docker's default `runc` runtime with gVisor's `runsc` for synthetic performance, runtime compatibility, and selected sandbox policy checks. This POC is an engineering evaluation, not a security certification.
 2. **Environment:** Apple Silicon Mac running a dedicated Lima ARM64 Ubuntu VM, Docker Engine 29.9.3, the original pinned gVisor `release-20261102.0`, and a separately registered stable `release-20261109.0` candidate; the POC also retains the previously evaluated `runsc-next` nightly.
 3. **Matched container policy:** Both runtime paths use the same image and limits: 1 CPU, 256 MiB RAM, 128 PIDs, non-root UID 10001, all capabilities dropped, `no_new_privileges`, read-only root filesystem, writable 64 MiB `/tmp`, and no network for baseline tests.

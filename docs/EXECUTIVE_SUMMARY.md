@@ -6,6 +6,8 @@ The POC demonstrated that gVisor (`runsc`) can run the same bounded workloads as
 
 ## Evidence
 
+- Against the whiteboard requirements, **0 of 4 functional** and **0 of 3 non-functional** top-level requirements are fully demonstrated. Three functional items and the runtime performance target are partial; concurrency, session-ready p95, and uptime remain untested. See the [requirements status matrix](REQUIREMENTS_STATUS.md).
+
 - Both runtimes passed **25 selected isolation and privilege checks**. The expanded proxy/parser suite passed **24 checks per runtime**, but strict hostname isolation failed the separate TLS tunnel observation described below.
 - Follow-up outer-container probes passed under both runtimes: writes worked only in the intended workspace/tmp paths; writes through a symlink to `/etc` and to rootfs locations were blocked; and each session had a private process view. A second session could not see the first session's file, process environment, or a synthetic host marker.
 - The expanded egress suite checked raw CONNECT/parser edge cases, host normalization, IP literals, alternate ports, DNS, and direct egress. In a separate tunnel probe, CONNECT to `example.com:443` carried TLS SNI and HTTP Host `example.org` and received `HTTP 200 OK` under both runtimes. The proxy validates CONNECT authority but cannot inspect the encrypted hostname. Thus strict hostname allowlisting is **not achieved**. The controlled DNS-rebinding sequence did reject a changed loopback answer.
