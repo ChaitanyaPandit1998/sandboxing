@@ -1,0 +1,18 @@
+{
+  "runc": {
+    "attempts": 50,
+    "successes": 50,
+    "cleanup_failures": 0,
+    "p50_seconds": 0.2281293949999963,
+    "p95_seconds": 0.48575826100000086,
+    "max_seconds": 0.48616880099999094
+  },
+  "runsc-stable-20261109": {
+    "attempts": 50,
+    "successes": 50,
+    "cleanup_failures": 0,
+    "p50_seconds": 0.3070671069999946,
+    "p95_seconds": 0.4438765949999919,
+    "max_seconds": 0.4787022259999958
+  }
+}

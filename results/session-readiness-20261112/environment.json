@@ -1,0 +1,14 @@
+{
+  "image_id": "sha256:1c699e85c4765335983513403bc9edb812ffcc88dab0f9132274406079fdee5a",
+  "concurrency": 5,
+  "rounds": 10,
+  "kernel": "7.0.0-43-generic",
+  "cpus": 4,
+  "memory_bytes": 6189182976,
+  "scope": "cached image; network=none; container start + exec + workspace write + codex --version; no auth/model/API/attach",
+  "limits": {
+    "cpus": 1,
+    "memory": "1g",
+    "pids": 128
+  }
+}

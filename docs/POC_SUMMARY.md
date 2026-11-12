@@ -4,7 +4,7 @@
 
 ![Egress proxy architecture and the observed TLS hostname enforcement gap](diagrams/network-architecture.svg)
 
-The whiteboard requirements and their evidence-based status are summarized in the [requirements status matrix](REQUIREMENTS_STATUS.md): 0/4 functional and 0/3 non-functional top-level requirements are fully demonstrated; 3 functional and 1 non-functional are partial, while 1 functional and 2 non-functional remain untested.
+The whiteboard requirements and their evidence-based status are summarized in the [requirements status matrix](REQUIREMENTS_STATUS.md): 0/4 functional and 0/3 non-functional top-level requirements are fully demonstrated; all 4 functional and 2 non-functional are partial, while uptime remains untested. A [five-session cached-image smoke](SESSION_READINESS_RESULTS.md) passed 50/50 starts per runtime; full platform readiness remains unmeasured.
 
 1. **Objective:** Compare Docker's default `runc` runtime with gVisor's `runsc` for synthetic performance, runtime compatibility, and selected sandbox policy checks. This POC is an engineering evaluation, not a security certification.
 2. **Environment:** Apple Silicon Mac running a dedicated Lima ARM64 Ubuntu VM, Docker Engine 29.9.3, the original pinned gVisor `release-20261102.0`, and a separately registered stable `release-20261109.0` candidate; the POC also retains the previously evaluated `runsc-next` nightly.
@@ -21,3 +21,5 @@ The whiteboard requirements and their evidence-based status are summarized in th
 13. **Next steps:** The latest stable release passes focused Bubblewrap, boundary, filesystem, DNS, syscall, namespace/mount, ptrace, and authenticated Codex workspace-write checks. First add TLS-aware egress enforcement or an equivalent network policy and rerun tunnel bypass cases; then measure full session readiness and concurrency before deciding whether to promote the stable candidate. Keep conclusions bounded to the tests actually run.
 
 For a concise leadership brief, see [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md). Detailed data, methods, and limitations are in [REPORT.md](REPORT.md). Setup and commands are in the [root README](../README.md). The `runsc-trace` procedure has been documented but **has not yet been run**; no new trace evidence is included in the findings above.
+
+**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy and authenticated Codex acceptance remain open.

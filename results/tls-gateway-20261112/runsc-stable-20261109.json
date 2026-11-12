@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "checks": {
+    "approved_https": {
+      "passed": true,
+      "http_status": 200
+    },
+    "mismatched_sni": {
+      "passed": true,
+      "http_status": 403
+    },
+    "encrypted_host_mismatch": {
+      "passed": true,
+      "http_status": 403
+    },
+    "connect_host_mismatch": {
+      "passed": true,
+      "http_status": 403
+    },
+    "unlisted_connect": {
+      "passed": true,
+      "http_status": 403
+    },
+    "ip_literal": {
+      "passed": true,
+      "http_status": 403
+    },
+    "alternate_port": {
+      "passed": true,
+      "http_status": 403
+    },
+    "metadata_destination": {
+      "passed": true,
+      "http_status": 403
+    },
+    "missing_sni": {
+      "passed": true,
+      "http_status": 403
+    },
+    "plaintext_in_connect": {
+      "passed": true,
+      "http_status": 403
+    },
+    "duplicate_host": {
+      "passed": true,
+      "http_status": 403
+    },
+    "upgrade_denied": {
+      "passed": true,
+      "http_status": 403
+    },
+    "host_port_mismatch": {
+      "passed": true,
+      "http_status": 403
+    },
+    "untrusted_ca": {
+      "passed": true,
+      "exception": "SSLCertVerificationError"
+    },
+    "provider_without_credentials": {
+      "passed": true,
+      "http_status": 401
+    },
+    "direct_egress": {
+      "passed": true
+    }
+  }
+}

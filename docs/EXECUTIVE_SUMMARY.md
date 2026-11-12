@@ -6,7 +6,7 @@ The POC demonstrated that gVisor (`runsc`) can run the same bounded workloads as
 
 ## Evidence
 
-- Against the whiteboard requirements, **0 of 4 functional** and **0 of 3 non-functional** top-level requirements are fully demonstrated. Three functional items and the runtime performance target are partial; concurrency, session-ready p95, and uptime remain untested. See the [requirements status matrix](REQUIREMENTS_STATUS.md).
+- Against the whiteboard requirements, **0 of 4 functional** and **0 of 3 non-functional** top-level requirements are fully demonstrated. All four functional items and two non-functional targets are partial; uptime remains untested. A [five-session cached-image sandbox smoke](SESSION_READINESS_RESULTS.md) passed 50/50 starts per runtime (p95 0.486s runc / 0.444s stable runsc), while full platform session readiness remains unmeasured. See the [requirements status matrix](REQUIREMENTS_STATUS.md).
 
 - Both runtimes passed **25 selected isolation and privilege checks**. The expanded proxy/parser suite passed **24 checks per runtime**, but strict hostname isolation failed the separate TLS tunnel observation described below.
 - Follow-up outer-container probes passed under both runtimes: writes worked only in the intended workspace/tmp paths; writes through a symlink to `/etc` and to rootfs locations were blocked; and each session had a private process view. A second session could not see the first session's file, process environment, or a synthetic host marker.
@@ -25,3 +25,5 @@ First replace or augment the demonstration proxy with a TLS-aware gateway or equ
 **Decision boundary:** The POC supports continued evaluation; it does not yet support a production security claim or prove that `runsc` is more secure than `runc`. The checks above are targeted configuration probes; a broader adversarial security assessment and remaining planned cases are still outstanding. Evidence and scope are tracked in [AGENT_SESSION_VALIDATION_PLAN.md](AGENT_SESSION_VALIDATION_PLAN.md).
 
 Detailed methodology and results are in [REPORT.md](REPORT.md); the full project overview is in [POC_SUMMARY.md](POC_SUMMARY.md). See the [runtime architecture](diagrams/architecture.svg), [egress path and TLS limitation](diagrams/network-architecture.svg), and [repository file flow](diagrams/file-flow.svg).
+
+**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy and authenticated Codex acceptance remain open.

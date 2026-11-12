@@ -158,3 +158,9 @@ For a strict domain policy, route agent traffic through a TLS-aware gateway or a
 ### Follow-up: collect gVisor syscall traces
 
 The next evidence step is a separate, traced rerun of the syscall matrix with a dedicated `runsc-trace` Docker runtime using gVisor's `--strace` and debug-log options. The runbook is in the [root README](../README.md). It has not been run yet; the existing results above are unchanged. Tracing must stay separate from performance measurements because it adds overhead. Its purpose is to inspect gVisor's handling of application syscalls; it does not reveal the exact host-kernel seccomp decision for `runc`, and trace output alone cannot support a security-superiority claim. Creating the debug runtime changes Docker daemon configuration and requires an approved restart of the disposable VM's daemon. See [gVisor's debugging guide](https://gvisor.dev/docs/user_guide/debugging/).
+
+## Latest follow-up (2026-11-12)
+
+The [five-session sandbox readiness results](SESSION_READINESS_RESULTS.md) record 50/50 successful cached-image starts per runtime. This is a no-network container/workspace/CLI smoke; full platform request-to-ready and uptime remain unmeasured. The [strict HTTPS egress enforcement plan](EGRESS_ENFORCEMENT_PLAN.md) specifies the proposed gateway and validation cases; the existing TLS tunnel gap remains open.
+
+**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy and authenticated Codex acceptance remain open.

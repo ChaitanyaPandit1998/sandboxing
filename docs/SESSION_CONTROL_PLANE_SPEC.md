@@ -152,3 +152,9 @@ Audit session creation, denial, attach-ticket issue/use, policy resolution, stop
 4. Validate authorization, policy tampering, failures, cleanup, cross-session isolation, and egress through that API.
 5. Connect the existing UI mock to the versioned API, replacing all demo status with backend state.
 6. Add quotas, worker reconciliation, operations controls, and performance/pilot gates.
+
+## Latest follow-up (2026-11-12)
+
+The [five-session sandbox readiness results](SESSION_READINESS_RESULTS.md) record 50/50 successful cached-image starts per runtime. This is a no-network container/workspace/CLI smoke; full platform request-to-ready and uptime remain unmeasured. The [strict HTTPS egress enforcement plan](EGRESS_ENFORCEMENT_PLAN.md) specifies the proposed gateway and validation cases; the existing TLS tunnel gap remains open.
+
+**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy and authenticated Codex acceptance remain open.

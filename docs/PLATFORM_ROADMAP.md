@@ -138,3 +138,9 @@ The UI mock can guide feedback on the operator workflow while the control-plane 
 ## Current evidence to carry forward
 
 The POC has successful targeted `runsc-next` regressions recorded in [`../results/agent-session-20261112/runsc-next-regression-summary.json`](../results/agent-session-20261112/runsc-next-regression-summary.json). The tested nightly is a candidate build, not the pinned stable runtime. Existing startup timings are CLI process-start measurements, not complete session-ready latency. Preserve these limits in any platform comparison.
+
+## Latest follow-up (2026-11-12)
+
+The [five-session sandbox readiness results](SESSION_READINESS_RESULTS.md) record 50/50 successful cached-image starts per runtime. This is a no-network container/workspace/CLI smoke; full platform request-to-ready and uptime remain unmeasured. The [strict HTTPS egress enforcement plan](EGRESS_ENFORCEMENT_PLAN.md) specifies the proposed gateway and validation cases; the existing TLS tunnel gap remains open.
+
+**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy and authenticated Codex acceptance remain open.
