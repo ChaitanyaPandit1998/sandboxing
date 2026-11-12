@@ -138,3 +138,7 @@ The UI mock can guide feedback on the operator workflow while the control-plane 
 ## Current evidence to carry forward
 
 The [local worker](../runbooks/MANAGED_WORKER.md) implements lifecycle state, a persistent pilot workspace, quota, and explicit reconciliation. It passed 17 synthetic checks and one authenticated persistence check. The [Codex TLS guide](../runbooks/CODEX_TLS.md) records authenticated HTTPS tasks and cancellation; the [gateway](../security/TLS_GATEWAY.md) has selected hostname enforcement evidence. Full service identity, browser attach, background expiry, gateway acceptance, uptime, and authenticated concurrent readiness remain pending. Use the [requirements matrix](../REQUIREMENTS_STATUS.md) for current coverage and [DEVLOG](../../DEVLOG.md) for chronology.
+
+**Local console update (2026-11-13):** The [loopback console/API](../runbooks/LOCAL_CONSOLE.md) now manages real worker sessions and lifecycle events, with private Mac Terminal login/attach handoff. Organization identity, browser terminal relay, automatic expiry, and full authenticated service readiness remain pending.
+
+**Expiry follow-up (2026-11-13):** One-hour deadlines for new sessions and 30-second console-background cleanup are implemented and tested; existing sessions retain null deadlines. A supervised resident VM service now reconciles independently of the Mac backend. VM/Mac sleep or downtime still pauses cleanup; VM restart and uptime validation remain pending.

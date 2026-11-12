@@ -9,7 +9,7 @@
 - One Docker workspace volume per local pilot/state namespace. All sessions for that local pilot share it. Stop retains workspace data; session homes and gateway CA keys are temporary. No credentials are automatically copied to the workspace or replacement sessions.
 - Durable private SQLite metadata and redacted lifecycle events in `~/.local/state/gvisor-poc-worker` (directory mode 0700; database 0600).
 - Create idempotency via a hashed request key, idempotent stop, and a five-active-session quota. Creation is serialized by a local process lock, so simultaneous requests include queue time.
-- Ownership labels checked before deleting containers/networks. Reconcile cleans interrupted provisioning and lost-container sessions. It runs before create/login/attach and through an explicit command; there is no background reconciler or expiry scheduler yet.
+- Ownership labels checked before deleting containers/networks. Reconcile cleans interrupted provisioning and lost-container sessions. It runs before create/login/attach and through an explicit command; new sessions have a one-hour deadline. The installed systemd user service reconciles every 30 seconds independently of the Mac console; the console provides a fallback sweep.
 
 ## Use inside the VM
 
@@ -26,7 +26,9 @@ python3 scripts/manage_codex_session.py stop SESSION_ID
 python3 scripts/manage_codex_session.py reconcile
 ```
 
-Use an actual returned ID in place of `SESSION_ID`. A key identifies one create request permanently; use a new key for a new session after stop. Login and attach require an interactive terminal and relay directly to the approved container's Codex CLI. Device login stays private in that terminal. Interactive model attach is implemented but has not yet been manually exercised through this manager; managed device login has been exercised.
+Use an actual returned ID in place of `SESSION_ID`. A key identifies one create request permanently; use a new key for a new session after stop. Login and attach require an interactive terminal and relay directly to the approved container's Codex CLI. Device login stays private in that terminal. A native terminal launch displayed Codex and its sign-in menu and exited cleanly; an authenticated interactive task through attach remains unverified. Managed device login and noninteractive authenticated tasks have been exercised.
+
+The [local console](LOCAL_CONSOLE.md) now provides real create/list/inspect/stop/events over this worker. Its Login and Open Codex actions hand off fixed commands to Mac Terminal rather than exposing a browser terminal.
 
 The staged pilot copy is `~/gvisor-managed-pilot/scripts/manage_codex_session.py` inside the VM. From Mac Terminal:
 
@@ -48,6 +50,30 @@ An authenticated follow-up through the provisioned pilot session also passed: pr
 
 ## Remaining boundaries
 
-The CLI trusts the local OS operator, who already has Docker access. It has no remote authentication, cross-user authorization, browser attach tickets, automatic grant revocation, tamper-resistant audit, API idempotency semantics, background expiry, or service uptime monitoring. Persistent workspace deletion/retention, backup, and byte quotas remain open. Loss of gateway CA/tmpfs after container/VM restart may require session replacement; current reconciliation checks container running state rather than complete TLS health. Do not expose this CLI as an unauthenticated remote command endpoint.
+The CLI trusts the local OS operator, who already has Docker access. It has no remote authentication, cross-user authorization, browser attach tickets, automatic grant revocation, tamper-resistant audit, organization API/authorization or service uptime monitoring. Resident VM reconciliation is implemented; it pauses during VM/Mac suspension or downtime and is not a hard deadline guarantee. Persistent workspace deletion/retention, backup, and byte quotas remain open. Loss of gateway CA/tmpfs after container/VM restart may require session replacement; current reconciliation checks container running state rather than complete TLS health. Do not expose this CLI as an unauthenticated remote command endpoint.
 
 Next connect the worker to the selected control plane, validate authorization and cleanup through that service, and measure authenticated concurrent readiness and attach latency. Keep the top-level requirements partial until those gates pass.
+
+## Session expiry
+
+New creates set `expires = created + 3600`; idempotent retries preserve that deadline. Existing database rows migrate with null deadlines and are not retroactively expired. Reconciliation records `expiry_reached`, stops overdue sessions with `stop_reason=expired`, and retains their workspace volume. It runs before create/login/attach, explicitly on command, and in the console's background loop.
+
+The [expanded worker suite](../../results/session-expiry-20261113/worker.json) passed 22 checks, including expired-resource cleanup, persistent workspace, unchanged retry deadline, and legacy no-deadline behavior. The [API background check](../../results/session-expiry-20261113/api-background.json) also passed. Resident reconciliation now removes the Mac-backend dependency; VM downtime and suspension still delay polling.
+
+
+## Resident cleanup service
+
+The pilot now runs `gvisor-poc-reconciler.service` in the existing VM user's systemd manager. It reconciles every 30 seconds, restarts on process failure, and writes atomic private health metadata. Existing user lingering was already enabled, allowing it to run after logout. It has no network listener or model calls. Legacy sessions keep their null deadlines; workspaces survive expiry.
+
+To install/update, copy this repository's service sources into the VM and run `bash scripts/install_worker_reconciler.sh` there. The installer requires existing user lingering and does not change global AppArmor, user-namespace settings, Docker daemon policy, or session isolation. From Mac Terminal:
+
+```bash
+limactl shell gvisor-poc -- systemctl --user status gvisor-poc-reconciler.service
+limactl shell gvisor-poc -- python3 /home/chaitanya.guest/gvisor-managed-pilot/scripts/manage_codex_session.py health
+```
+
+`systemctl --user restart gvisor-poc-reconciler.service` restarts the supervisor unit inside the VM. Stopping/disabling it pauses resident cleanup; the console sweep is only a fallback while its backend runs.
+
+[Eleven isolated checks](../../results/resident-cleanup-20261113/service.json) passed: service startup/private health, injected overdue expiry without console requests, expiry reason, temporary-container removal, volume/data retention, killed-process restart, and a test-only Docker-socket failure/recovery. [Fourteen API tests](../../results/resident-cleanup-20261113/api-tests.txt) passed, and the real console reports [healthy resident status](../../results/resident-cleanup-20261113/live-health.json). No model calls, VM reboot, one-hour soak, or clock-jump tests were performed.
+
+The first unit failed at systemd's CAPABILITIES step with mount/device namespace sandboxing in this unprivileged user manager. The tested unit uses `NoNewPrivileges`, an AF_UNIX address-family restriction and a private umask; it does not sandbox the trusted worker's filesystem. The worker already has powerful Docker socket access. Container protections remain unchanged. This is a single trusted operator boundary, not an organizational control plane or an uptime SLO.

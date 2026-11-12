@@ -19,6 +19,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 AGENT = 'sha256:1c699e85c4765335983513403bc9edb812ffcc88dab0f9132274406079fdee5a'
 GATEWAY = 'mitmproxy/mitmproxy:12.3.1@sha256:2711066c855659b5af8b1dbb84494ed3eff69b42ece439c60b4fe09a2db829d4'
 RUNTIME = 'runsc-stable-20261109'
+SESSION_LIFETIME_SECONDS = 3600
 CONFIG = '''model_provider = "poc_https"
 [model_providers.poc_https]
 name = "OpenAI HTTPS through POC gateway"
@@ -44,9 +45,14 @@ class Worker:
         self.db = sqlite3.connect(self.root / 'sessions.sqlite', timeout=120)
         os.chmod(self.root / 'sessions.sqlite', 0o600)
         self.db.row_factory = sqlite3.Row
-        self.db.execute('CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, request_key TEXT UNIQUE, state TEXT, created REAL, ready REAL, stopped REAL, failure TEXT)')
-        self.db.execute('CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY, session_id TEXT, action TEXT, state TEXT, at REAL)')
-        self.db.commit()
+        with self.locked():
+            self.db.execute('CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, request_key TEXT UNIQUE, state TEXT, created REAL, ready REAL, stopped REAL, failure TEXT)')
+            columns = {row[1] for row in self.db.execute('PRAGMA table_info(sessions)')}
+            for name, kind in [('expires', 'REAL'), ('stop_reason', 'TEXT')]:
+                if name not in columns:
+                    self.db.execute(f'ALTER TABLE sessions ADD COLUMN {name} {kind}')
+            self.db.execute('CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY, session_id TEXT, action TEXT, state TEXT, at REAL)')
+            self.db.commit()
 
     @contextlib.contextmanager
     def locked(self):
@@ -119,10 +125,11 @@ class Worker:
                 self.docker('network', 'rm', names[key])
         shutil.rmtree(self.root / sid, ignore_errors=True)
 
-    def stop(self, sid):
+    def stop(self, sid, reason='operator'):
         if self.get(sid)['state'] == 'stopped':
             self.cleanup(sid)
             return self.public(self.get(sid))
+        self.db.execute('UPDATE sessions SET stop_reason=? WHERE id=?', (reason, sid))
         self.transition(sid, 'stopping')
         try:
             self.cleanup(sid)
@@ -141,6 +148,10 @@ class Worker:
                 self.transition(sid, 'stopped' if row['state'] == 'stopping' else 'failed',
                                 None if row['state'] == 'stopping' else 'interrupted_provisioning')
             else:
+                if row['expires'] is not None and row['expires'] <= time.time():
+                    self.event(sid, 'expiry_reached', row['state'])
+                    self.stop(sid, reason='expired')
+                    continue
                 names = self.names(sid)
                 agent = self.exists('container', names['agent'])
                 gateway = self.exists('container', names['gateway'])
@@ -149,7 +160,7 @@ class Worker:
                     self.transition(sid, 'failed', 'resource_lost')
 
     def public(self, row):
-        return {key: row[key] for key in ('id', 'state', 'created', 'ready', 'stopped', 'failure')} | {
+        return {key: row[key] for key in ('id', 'state', 'created', 'ready', 'stopped', 'failure', 'expires', 'stop_reason')} | {
             'owner': 'local-pilot', 'policy': 'codex-tls-pilot-v1', 'runtime': RUNTIME,
             'readiness': 'cli_and_gateway_ready_login_required' if row['state'] == 'ready' else 'not_ready',
             'workspace': 'shared-per-local-pilot'}
@@ -173,7 +184,9 @@ class Worker:
         else:
             self.docker('volume', 'create', '--label', self.label, self.volume)
         sid = uuid.uuid4().hex
-        self.db.execute('INSERT INTO sessions(id,request_key,state,created) VALUES(?,?,?,?)', (sid, request_key, 'provisioning', time.time()))
+        created = time.time()
+        self.db.execute('INSERT INTO sessions(id,request_key,state,created,expires) VALUES(?,?,?,?,?)',
+                        (sid, request_key, 'provisioning', created, created + SESSION_LIFETIME_SECONDS))
         self.event(sid, 'create', 'provisioning')
         try:
             self.provision(sid)
@@ -252,16 +265,38 @@ class Worker:
         cmd += ['login', '--device-auth'] if login else ['--no-daemon', '--sandbox', 'workspace-write', '--ask-for-approval', 'on-request']
         return subprocess.call(cmd)
 
+    def health(self):
+        result = {'active': False, 'stale': True, 'interval_seconds': 30,
+                  'last_attempt': None, 'last_success': None, 'error': 'health_unavailable'}
+        try:
+            data = json.loads((self.root / 'reconciler-health.json').read_text())
+            for key in ('last_attempt', 'last_success', 'interval_seconds'):
+                if data.get(key) is not None and not isinstance(data[key], (int, float)):
+                    raise ValueError()
+                result[key] = data.get(key)
+            result['error'] = None if data.get('error') is None else 'worker_unavailable_or_cleanup_failed'
+            result['stale'] = not result['last_attempt'] or time.time() - result['last_attempt'] > max(90, 3 * (result['interval_seconds'] or 30))
+            default = pathlib.Path('~/.local/state/gvisor-poc-worker').expanduser().resolve()
+            if self.root == default:
+                status = subprocess.run(['systemctl', '--user', 'is-active', 'gvisor-poc-reconciler.service'], capture_output=True, text=True, timeout=5)
+                result['active'] = status.returncode == 0 and status.stdout.strip() == 'active'
+        except (OSError, ValueError, subprocess.SubprocessError):
+            pass
+        return result
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state-dir', default='~/.local/state/gvisor-poc-worker')
-    parser.add_argument('action', choices=['create', 'list', 'inspect', 'stop', 'reconcile', 'login', 'attach', 'events'])
+    parser.add_argument('action', choices=['create', 'list', 'inspect', 'stop', 'reconcile', 'health', 'login', 'attach', 'events'])
     parser.add_argument('id', nargs='?')
     parser.add_argument('--key', default=None)
     args = parser.parse_args()
     try:
         worker = Worker(args.state_dir)
+        if args.action == 'health':
+            print(json.dumps(worker.health()))
+            return
         if args.action in ('login', 'attach'):
             raise SystemExit(worker.interactive(args.id or '', args.action == 'login'))
         with worker.locked():

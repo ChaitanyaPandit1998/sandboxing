@@ -1,0 +1,18 @@
+[Unit]
+Description=Local gVisor POC worker reconciler
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/gvisor-managed-pilot/scripts/run_worker_reconciler.py
+Environment=DOCKER_HOST=unix:///var/run/docker.sock
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=15
+# Mount/device namespace sandboxing is unavailable in this VM user manager.
+# This trusted worker already controls Docker; isolation is enforced on sessions.
+NoNewPrivileges=true
+RestrictAddressFamilies=AF_UNIX
+UMask=0077
+
+[Install]
+WantedBy=default.target

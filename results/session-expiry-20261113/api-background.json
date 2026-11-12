@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "tests_run": 13,
+  "failures": 0,
+  "errors": 0,
+  "live_checks": [
+    {
+      "created_login_ready": true,
+      "idempotent_create": true,
+      "listed": true,
+      "inspect": true,
+      "events": true,
+      "terminal_handoff": true,
+      "background_expired_session": true,
+      "background_sweep_recorded": true,
+      "stopped": true,
+      "repeat_stop": true
+    }
+  ],
+  "source_sha256": {
+    "scripts/manage_codex_session.py": "be1c97ed3d778c9f4e196d91f9eb956a986fd44f7c967f2331ce2527cf439948",
+    "scripts/test_managed_worker.py": "d1fc0cc36d8290d01c24e2ae7e38504a318d50b91dfff80f19ddd65055ab7948",
+    "scripts/serve_session_console.py": "81ff38da2bca926155d7382203cfd305447be9d0e7e7de6686c6f3dada98dec6",
+    "tests/test_session_console.py": "0dd48afb59fed4923f9f95e3750fd595a5e0cfb4e4018f443d3e0fb738e7daaf",
+    "ui/console/app.js": "91d3149ba5e3333d2d156e7fe031dac70d2d92fac569adc11920bb6226b7dcb1",
+    "ui/console/index.html": "f89af8fa74ffac92a5ad0d002a698591aaaaef93e0f34145809fcd2d74ba6dda"
+  },
+  "scope": "expiry timestamp injected into a synthetic session; actual background cleanup; no model calls or user session expiry"
+}

@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "resident_cleanup": {
+    "active": true,
+    "stale": false,
+    "interval_seconds": 30,
+    "last_attempt": 1794514091.5294423,
+    "last_success": 1794514091.5848436,
+    "error": null
+  },
+  "session_states": [
+    {
+      "id": "79e53ca84eec477e879fe9a6baca2c2b",
+      "state": "stopped",
+      "expires": null,
+      "stop_reason": null
+    },
+    {
+      "id": "5c1b50edf13a45c3a310ecb2b33e02a6",
+      "state": "stopped",
+      "expires": null,
+      "stop_reason": null
+    },
+    {
+      "id": "05322f65706b4e7891de99b30e1cdfb5",
+      "state": "stopped",
+      "expires": null,
+      "stop_reason": null
+    },
+    {
+      "id": "f06e0423782341239ca39b5a730662e1",
+      "state": "stopped",
+      "expires": null,
+      "stop_reason": null
+    },
+    {
+      "id": "4baaa489268f4f119f0fd51994ec3486",
+      "state": "stopped",
+      "expires": null,
+      "stop_reason": "operator"
+    }
+  ]
+}

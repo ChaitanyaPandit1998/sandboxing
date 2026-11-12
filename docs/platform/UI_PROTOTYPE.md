@@ -1,5 +1,7 @@
 # Session console UI prototype
 
+This is the retained static design prototype. The separate [live local console](../runbooks/LOCAL_CONSOLE.md) now manages real worker sessions through a loopback API. Its login/attach path uses private Mac Terminal handoff; browser terminal relay remains pending.
+
 The first UI prototype is a self-contained static page in [`../../ui/prototype/`](../../ui/prototype). It demonstrates the session lifecycle and the information an operator should see before operating a real agent sandbox.
 
 ## Run locally

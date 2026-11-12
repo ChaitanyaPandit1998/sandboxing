@@ -1,0 +1,18 @@
+{
+  "recorded_at": "2026-11-13T01:22:34+05:30",
+  "lifetime_seconds": 3600,
+  "background_success_observed": true,
+  "cleanup_error": null,
+  "existing_active_session_preserved": true,
+  "browser_review": {
+    "live_state": true,
+    "inspect_and_close": true,
+    "expiry_column": true,
+    "cleanup_health": true,
+    "action_buttons_visible_after_responsive_fix": true,
+    "graphical_create_stop_not_exercised": true
+  },
+  "source_sha256": {
+    "ui/console/console.css": "efd4dec1219536b7f2e7e1b90404f3e323a5e3bd4819b0921881392cc4428af4"
+  }
+}

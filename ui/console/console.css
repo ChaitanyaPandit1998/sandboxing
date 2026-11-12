@@ -1,0 +1,14 @@
+[hidden] { display: none !important; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; overflow: auto; max-height: 300px; padding: 14px; border-radius: 8px; background: #f6f8fc; color: #465365; font-size: 11px; line-height: 1.6; }
+button:disabled { cursor: not-allowed; opacity: .5; }
+td .text-button { margin: 4px; padding: 5px; }
+.table-wrap table { table-layout: fixed; }
+.table-wrap th, .table-wrap td { white-space: normal; overflow-wrap: anywhere; }
+.table-wrap th:nth-child(1) { width: 16%; }
+.table-wrap th:nth-child(2) { width: 13%; }
+.table-wrap th:nth-child(3) { width: 21%; }
+.table-wrap th:nth-child(4) { width: 20%; }
+.table-wrap th:nth-child(5) { width: 30%; }
+td .text-button { margin: 2px; padding: 4px 2px; }
+.activity-card { margin-bottom: 18px; }
+.create-dialog pre { max-height: 45vh; }

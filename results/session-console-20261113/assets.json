@@ -1,0 +1,18 @@
+{
+  "http_status": {
+    "/": 200,
+    "/app.js": 200,
+    "/styles.css": 200,
+    "/console.css": 200,
+    "/docs/README.md": 200
+  },
+  "javascript_syntax": "passed",
+  "dom_id_references": "passed",
+  "graphical_browser_review": false,
+  "source_sha256": {
+    "ui/console/index.html": "b441949395e77996fb2a3efbeac919c296cfa0b82fbbf6ded3d6324fee8c630e",
+    "ui/console/app.js": "df14fc979e5114b152450d54cd87e5d617c02711d98f8980349161f71c494a52",
+    "ui/console/console.css": "0d4cfa7afc7bec87af618e6c213e82b791fe23a8b1134de5a6c816b00fb7e5b7",
+    "scripts/serve_session_console.py": "d5eb94fedf41962671ba647e7172ec0444850e6c8f669e7157e129fa2ee88eba"
+  }
+}

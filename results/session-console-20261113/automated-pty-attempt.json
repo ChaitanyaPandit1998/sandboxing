@@ -1,0 +1,7 @@
+{
+  "terminal_output_received": true,
+  "codex_screen_seen": false,
+  "sign_in_or_welcome_seen": false,
+  "raw_terminal_saved": false,
+  "scope": "unauthenticated managed attach PTY launch only"
+}

@@ -19,7 +19,7 @@ These are status counts for the four functional and three non-functional top-lev
 |---|---|---|---|
 | FR-1 | Support up to 20 concurrent sessions, starting with 5 | **Partial** | The cached-image sandbox benchmark passed 50/50 starts per runtime. The managed local worker also held five sessions, rejected a sixth, and passed a separate single-session authenticated persistence test. Full authenticated concurrent service readiness and 20-session scaling remain unverified. See [worker results](runbooks/MANAGED_WORKER.md) and [baseline readiness](reports/SESSION_READINESS_RESULTS.md). |
 | FR-2 | Apply the required policy checks | **Partial** | The POC verifies selected configuration and network controls, but not the complete policy set. See the five subcontrols below. |
-| FR-3 | Provide a dashboard for session and suspicious-activity monitoring | **Partial** | A static UI prototype and experiment/audit outputs exist. The prototype uses simulated data; there is no live session dashboard, alerting, or suspicious-activity detection. |
+| FR-3 | Provide a dashboard for session and suspicious-activity monitoring | **Partial** | A [live local console](runbooks/LOCAL_CONSOLE.md) manages real worker create/list/inspect/stop state and lifecycle events. Login/attach use Mac Terminal handoff. Browser terminal relay, organization access, suspicious-activity detection, and alerts remain pending. |
 | FR-4 | Add telemetry | **Partial** | Benchmark metrics, redacted gateway decisions, and local worker SQLite lifecycle events exist. Central session telemetry, organization actor attribution, monitoring, and suspicious-activity detection remain pending. |
 
 ### FR-2 policy subcontrols
@@ -58,3 +58,5 @@ These are status counts for the four functional and three non-functional top-lev
 - [Wardyn fit assessment](platform/WARDYN_FIT_ASSESSMENT.md) records the separate control-plane compatibility checks; those do not count as a POC concurrency, latency, or uptime benchmark.
 
 The [strict HTTPS egress plan](security/TLS_GATEWAY.md#enforcement-design-and-remaining-acceptance) defines the gateway and acceptance cases; an initial candidate is implemented with 16 passing checks per runtime, while the full matrix and default-runner integration remain pending.
+
+**Expiry/UI follow-up (2026-11-13):** New sessions receive the agreed one-hour deadline; legacy sessions remain unchanged. Twenty-two worker checks and thirteen API/background tests passed, including injected overdue-session cleanup and workspace retention. The UI displays deadlines and sweep health, and live Inspect/layout were reviewed. Resident cleanup now runs under a supervised VM user service independently of the Mac backend (11 isolated service checks and 14 API tests passed). Alerts, SSO, full authenticated concurrent readiness, VM restart validation and uptime remain pending.

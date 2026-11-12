@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "tests_run": 12,
+  "successes": [
+    "test_session_console.ConsoleTests.test_authentication_required",
+    "test_session_console.ConsoleTests.test_cookie_is_private_and_no_store",
+    "test_session_console.ConsoleTests.test_create_and_stop",
+    "test_session_console.ConsoleTests.test_create_requires_idempotency",
+    "test_session_console.ConsoleTests.test_cross_origin_and_cross_site_denied",
+    "test_session_console.ConsoleTests.test_csrf_required",
+    "test_session_console.ConsoleTests.test_host_rebinding_denied",
+    "test_session_console.ConsoleTests.test_invalid_session_and_path_traversal",
+    "test_session_console.ConsoleTests.test_policy_tampering_rejected",
+    "test_session_console.ConsoleTests.test_static_assets_and_frame_policy",
+    "test_session_console.ConsoleTests.test_terminal_handoff_is_fixed",
+    "test_session_console.LiveConsoleTests.test_live_worker_lifecycle"
+  ],
+  "failure_count": 0,
+  "error_count": 0,
+  "live_worker_checks": [
+    {
+      "created_login_ready": true,
+      "idempotent_create": true,
+      "listed": true,
+      "inspect": true,
+      "events": true,
+      "terminal_handoff": true,
+      "stopped": true,
+      "repeat_stop": true
+    }
+  ],
+  "source_sha256": {
+    "scripts/serve_session_console.py": "d5eb94fedf41962671ba647e7172ec0444850e6c8f669e7157e129fa2ee88eba",
+    "tests/test_session_console.py": "974e6a9b5e802cef82c5d665c9c74c40eba74035ac60bdc5065ffd04b75ff83d",
+    "ui/console/index.html": "b441949395e77996fb2a3efbeac919c296cfa0b82fbbf6ded3d6324fee8c630e",
+    "ui/console/app.js": "f8734f1c86e1b7d496bbd9e71840cd7ff748cfc181015f7d959d31ddd0c1f681",
+    "ui/console/console.css": "0d4cfa7afc7bec87af618e6c213e82b791fe23a8b1134de5a6c816b00fb7e5b7"
+  },
+  "scope": "11 local HTTP boundary/static tests and one live worker lifecycle with 8 assertions; no graphical browser validation"
+}

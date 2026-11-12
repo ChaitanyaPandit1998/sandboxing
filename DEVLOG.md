@@ -4,6 +4,45 @@ Changes are recorded newest first. All timestamps use **Asia/Kolkata (IST, UTC+0
 
 Historical commit timestamps below are exact Git **author timestamps**, not test execution or push times. Entries marked **date only** have no independently recorded wall-clock execution time; no time has been invented. Entries without an explicit SHA may refer to the consolidation commit that contains them; use Git history for its exact ID. Relative test timings measure durations, not time of day.
 
+
+
+
+
+## 2026-11-13T01:41:44+05:30 — Commit console, expiry and resident cleanup
+
+- **Scope:** Consolidated the live local console, one-hour session expiry, supervised VM reconciliation, runbooks and sanitized validation evidence for commit and push at the user's request. Earlier uncommitted-state notes describe their batch-time state.
+- **Checks:** Reviewed tracked/untracked paths, Git whitespace validation and targeted credential-pattern scan; no credentials found. Existing evidence records 22 worker checks, 11 resident service checks and 14 API tests passing. No new runtime tests were needed for this commit-only operation.
+- **Next:** Validate VM restart/suspend recovery, authenticated interactive attach and five-session readiness. Git history and the remote record the resulting commit/push status.
+
+
+## 2026-11-13T01:39:25+05:30 — Supervised resident VM cleanup
+
+- **Changed:** Installed/enabled a systemd user reconciler in the Lima VM, checking every 30 seconds independently of the Mac console. Added private atomic health metadata, sanitized worker health action, and console resident/fallback status. Existing lingering was already enabled. Updated current runbooks, requirements and platform summaries.
+- **Validation:** Eleven isolated service checks passed: injected expiry without console activity, supervised restart after SIGKILL, test-only Docker connection failure/recovery, and workspace retention. Fourteen API tests passed including live synthetic lifecycle/background expiry and resident-health response; JS/shell syntax passed. Live console reported active, fresh resident health with successful sweep; browser review confirmed the healthy indicator and zero active sessions. [Evidence](results/resident-cleanup-20261113/).
+- **Failures/corrections:** Initial namespace-hardened user unit failed at CAPABILITIES with EPERM; revised to supported user-service controls without changing global kernel/AppArmor or container policy. Initial API test needed socket escalation; subsequent live test exposed a health-update assertion race, fixed by waiting for both expiry and completed sweep. Evidence copy initially used a missing destination and was retried successfully.
+- **Limits:** Worker is trusted and has Docker access; no filesystem namespace sandbox on this unit. No reboot/suspend, one-hour soak, clock-jump or uptime SLO validation. The previously referenced session was already stopped with operator reason before installation; no user session was stopped by this batch. Synthetic test resources were cleaned; retained pilot workspace unchanged.
+- **Status / next:** Changes are uncommitted and unpushed. Next validate VM restart/suspend recovery and authenticated interactive attach, then five-session authenticated readiness against the agreed p95 target.
+
+
+## 2026-11-13T01:22:34+05:30 — One-hour expiry, background cleanup and UI review
+
+- **Changed:** Added persisted session deadlines and stop reasons with a locked SQLite migration. The user selected a one-hour default for new sessions. Idempotent retries do not extend expiry; legacy sessions keep null deadlines. The console reconciles every 30 seconds while its backend is running, and displays deadlines and cleanup health.
+- **Validation:** Twenty-two worker checks and thirteen API/background tests passed. A synthetic past deadline triggered cleanup without a browser request; workspace data survived. The real existing active session remained ready with no deadline. Native browser review verified live rows, Inspect/close, event display, expiry and sweep health; a responsive fix kept all action buttons visible.
+- **Limits:** Tests injected an elapsed timestamp, not a one-hour soak. Backend/VM downtime or Mac sleep pauses cleanup; this is not hard expiry or an uptime SLO. Existing user sessions were not stopped or retroactively timed out. Browser create/stop was not clicked against the user's active session; those actions have HTTP integration coverage.
+- **Evidence:** [Worker](results/session-expiry-20261113/worker.json), [background API](results/session-expiry-20261113/api-background.json), [live/browser review](results/session-expiry-20261113/live-review.json), [console runbook](docs/runbooks/LOCAL_CONSOLE.md).
+- **State:** Uncommitted. The owned loopback backend was restarted to enable the sweeper and remains running for the pilot.
+- **Next:** Move expiry enforcement to a resident worker service, validate authenticated interactive attach and concurrent readiness, and complete organization identity/browser relay gates.
+
+## 2026-11-13T01:06:37+05:30 — Real local console and managed terminal handoff
+
+- **Changed:** Added `serve_session_console.py` and `ui/console/` with real worker create/list/inspect/stop/events, fixed policy/idempotency, explicit unavailable states, and private login/attach command handoff. Retained the static prototype separately and ignored generated Python bytecode.
+- **Boundary:** Loopback-only binding; Host/Origin/Fetch Metadata checks, HttpOnly/SameSite browser session and CSRF checks, bounded JSON, fixed actions, sanitized errors, and limited static routes. This trusts local processes/operators and is not organization authentication or browser terminal relay.
+- **Validation:** Twelve tests passed (11 HTTP/static boundary tests plus a live synthetic worker lifecycle with eight assertions). Live assets, JavaScript syntax, and DOM IDs were checked. A native attach displayed Codex 0.167.1/sign-in menu and exited on Ctrl+C. Diagnostic sessions were stopped; synthetic test volumes were removed and the pilot workspace retained.
+- **Failure / limits:** The initial automated pseudo-terminal screen detector did not recognize the UI; native terminal validation confirmed startup. No graphical browser layout/click test was performed. Authenticated interactive attach, browser relay, expiry, multi-user authorization, and full readiness SLO remain pending. Closing the page/server does not stop sessions.
+- **Evidence:** [Console runbook](docs/runbooks/LOCAL_CONSOLE.md), [API results](results/session-console-20261113/api-checks.json), [terminal check](results/session-console-20261113/terminal-attach.json), [assets](results/session-console-20261113/assets.json).
+- **State:** Uncommitted; local preview running for operator handoff.
+- **Next:** Review the browser workflow, implement expiry/background reconciliation and the eventual authorized terminal/control-plane path.
+
 ## 2026-11-13T00:47:02+05:30 — Consolidate documentation and record completed worker validation
 
 - **Changed:** Added `docs/README.md` as the navigation index; grouped content into overview, runbooks, security, reports, validation, platform, and diagrams. Merged three Codex TLS/login/transport files into one guide and gateway design/results into one security document. Removed superseded originals and duplicate dated progress paragraphs, preserving unique findings and raw evidence.

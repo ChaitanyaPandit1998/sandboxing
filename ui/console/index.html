@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Sandbox Console · Local pilot</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/console.css"><script src="/app.js" defer></script></head>
+<body><div class="shell">
+<aside class="sidebar">
+  <a class="brand" href="#overview"><span class="brand-mark"><span></span><span></span><span></span></span><span>Sandbox<span class="brand-light">Console</span></span></a>
+  <div class="workspace-switcher"><span class="workspace-icon">C</span><span class="workspace-copy"><strong>Local pilot</strong><small>Managed persistent workspace</small></span></div>
+  <nav aria-label="Main navigation"><p class="nav-label">WORKSPACE</p><a class="nav-item active" href="#overview">Overview</a><a class="nav-item" href="#sessions">Sessions <span class="nav-count" id="session-count">—</span></a><a class="nav-item" href="#activity">Lifecycle events</a><p class="nav-label nav-label-spaced">DOCUMENTATION</p><a class="nav-item" href="/docs/README.md" target="_blank" rel="noreferrer">Documentation index ↗</a></nav>
+  <div class="sidebar-bottom"><div class="operator"><div class="avatar">LP</div><div><strong>Local operator</strong><small>Single-user pilot</small></div></div><div class="vm-status"><span class="status-dot"></span><span><strong>gvisor-poc</strong><small id="connection-status">Connecting…</small></span></div></div>
+</aside>
+<main id="overview"><header class="topbar"><div class="breadcrumb"><span>Local pilot</span><b>/</b><strong>Overview</strong></div><div class="top-actions"><span class="demo-tag">REAL WORKER STATE</span></div></header>
+<div class="content">
+  <section class="intro"><div><p class="eyebrow" id="date-label">LOCAL ENVIRONMENT</p><h1>Sandbox overview</h1><p class="intro-copy">Create isolated Codex sessions. Keep your workspace across stops.</p></div><button class="primary-button" id="create-session" disabled>＋ New session</button></section>
+  <section class="prototype-note" aria-live="polite"><div class="note-icon">i</div><div><strong id="notice-title">Connecting to the worker</strong><p id="notice-text">Session data and actions are provided by the local backend.</p></div><span class="prototype-chip">LOCAL PILOT</span></section>
+  <section class="metrics-grid" aria-label="Pilot summary">
+    <article class="metric-card"><div class="metric-heading">Active sessions</div><div class="metric-value" id="active-total">—</div><div class="metric-foot">Five-session worker quota</div></article>
+    <article class="metric-card"><div class="metric-heading">Runtime policy</div><div class="metric-value metric-runtime">runsc <span class="runtime-version">stable candidate</span></div><div class="metric-foot">release-20261109.0</div></article>
+    <article class="metric-card"><div class="metric-heading">Session limits</div><div class="metric-value">1 <small>CPU</small> · 1 <small>GiB</small></div><div class="metric-foot">128 PIDs · read-only root</div></article>
+    <article class="metric-card"><div class="metric-heading">Workspace retention</div><div class="metric-value policy-value">Persistent</div><div class="metric-foot">Login homes stay temporary</div></article>
+  </section>
+  <section class="session-section" id="sessions"><div class="section-heading"><div><h2>Managed sessions</h2><p>New sessions expire after one hour. Workspace data is retained.</p></div><button class="secondary-button" id="refresh-sessions">↻ Refresh</button></div><div class="table-wrap"><table><thead><tr><th>SESSION</th><th>STATE</th><th>RUNTIME</th><th>EXPIRES</th><th>ACTIONS</th></tr></thead><tbody id="session-rows"></tbody></table><div class="empty-state" id="empty-state" hidden><strong>No managed sessions</strong><span>Create your first session to get started.</span></div></div></section>
+  <section class="activity-card" id="activity"><div class="card-heading"><div><h2>Lifecycle events</h2><p>Choose Inspect on a session to load its recorded events.</p></div></div><pre id="event-output">No session selected.</pre></section>
+  <section class="runtime-strip"><span class="runtime-strip-icon">◇</span><span><strong>TLS gateway candidate</strong><small>Exact-host checks and explicit HTTPS provider. Broader security acceptance remains open.</small></span><a href="/docs/security/TLS_GATEWAY.md" target="_blank" rel="noreferrer">Evidence ↗</a></section>
+  <footer>Sandboxing POC · Local pilot · No remote access or browser terminal relay</footer>
+</div></main></div>
+<dialog id="details-dialog" class="create-dialog"><div class="dialog-header"><h2 id="dialog-title">Session details</h2><button class="close-button" id="close-dialog" aria-label="Close">×</button></div><p id="dialog-description" class="dialog-copy"></p><pre id="dialog-content"></pre><button class="secondary-button" id="copy-command" hidden>Copy command</button></dialog>
+<div class="toast" id="toast" role="status"></div>
+</body></html>

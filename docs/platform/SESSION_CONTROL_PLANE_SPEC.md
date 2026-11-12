@@ -1,6 +1,6 @@
 # Codex session control-plane MVP contract
 
-**Status:** HTTP contract remains a draft. A [local worker CLI](../runbooks/MANAGED_WORKER.md) was implemented and tested on 2026-11-13 for lifecycle state, a persistent pilot workspace, quota, and reconciliation. The HTTP API, browser attach, organization identity, and background lifecycle services below are not implemented.
+**Status:** Organization HTTP contract remains a draft. The [local worker CLI](../runbooks/MANAGED_WORKER.md) and [local console API](../runbooks/LOCAL_CONSOLE.md) now implement a single-operator pilot subset. The console uses synchronous `/api/sessions` operations, a loopback browser session/CSRF boundary, and private terminal handoff. It does not implement the proposed asynchronous `/v1` API, organization authorization, or browser terminal relay/tickets. A supervised worker-resident reconciliation service now runs independently of the Mac backend.
 
 ## Product outcome
 
@@ -14,17 +14,17 @@ The [whiteboard requirement matrix](../REQUIREMENTS_STATUS.md) records a longer-
 
 | Capability | Required behavior | Current state |
 | --- | --- | --- |
-| Create | Request a session under a server-approved policy; reject invalid or over-quota requests | Local worker CLI implemented with fixed policy, idempotency and quota; HTTP service pending |
-| Attach | Give the owner a session-scoped terminal/attach channel without exposing worker or Docker access | Trusted local CLI attach implemented; browser relay/tickets and manual attach validation pending |
-| Inspect | Show owner, lifecycle state, selected policy/runtime, timestamps, and safe failure reason | Local worker metadata inspection implemented; service authorization pending |
-| Stop / expire | Stop idempotently, revoke grants, clean session home/container/network, apply workspace retention | Idempotent worker stop/cleanup tested; persistent workspace retained; expiry/grant service pending |
+| Create | Request a session under a server-approved policy; reject invalid or over-quota requests | Local worker and loopback API implemented with fixed policy, idempotency and quota; organization API/authorization pending |
+| Attach | Give the owner a session-scoped terminal/attach channel without exposing worker or Docker access | Native terminal launch displayed the Codex sign-in screen. Console provides local command handoff; browser relay/tickets and authenticated interactive task validation pending |
+| Inspect | Show owner, lifecycle state, selected policy/runtime, timestamps, and safe failure reason | Real metadata/events exposed in the local console/API; organization authorization pending |
+| Stop / expire | Stop idempotently, revoke grants, clean session home/container/network, apply workspace retention | Idempotent worker stop/cleanup tested; persistent workspace retained; one-hour expiry and console background cleanup tested; resident service tested; provider-grant revocation pending |
 | Workspace | Give each user a private managed workspace that persists across session stops; apply a declared retention/deletion policy | Retained local-pilot Docker volume tested across session replacement; multi-user isolation and retention/deletion policy pending |
 | Identity / authorization | Authenticate through organization identity and authorize owner/operator/admin actions | Not implemented |
 | Runtime policy | Select only a server-approved image, runtime, resources, mounts, and privilege profile | Worker uses fixed immutable image/runtime policy; remote versioned policy service pending |
 | Egress | Deny direct routes and enforce allowed destinations, including inside TLS tunnels | Worker integrates the tested TLS gateway candidate; original proxy remains limited and full egress acceptance is pending |
 | Credentials | Keep secrets out of images/workspaces/logs and scope access to a session | Current test uses normal Codex device login in a temporary home; replacement credential design is pending |
 | Audit | Record actor, action, target, outcome, timestamp, and correlation ID without prompt/secret leakage | Local SQLite lifecycle events implemented; organization attribution and tamper resistance pending |
-| Quotas / workers | Bound per-user and organization capacity; detect unhealthy workers and clean orphaned sessions | Five-session worker quota and explicit reconciliation tested; organization quotas, background sweeper and full health checks pending |
+| Quotas / workers | Bound per-user and organization capacity; detect unhealthy workers and clean orphaned sessions | Five-session worker quota and explicit reconciliation tested; console background sweep implemented; resident sweeper tested; organization quotas and full health checks pending |
 
 ## Roles and authorization baseline
 
@@ -140,7 +140,7 @@ Audit session creation, denial, attach-ticket issue/use, policy resolution, stop
 | Platform login | Single local operator, loopback-only; add SSO before network exposure | Agreed for first pilot |
 | Codex credentials | Current manual Codex device login in a session-only home; replace with brokered short-lived credentials later | Agreed as interim path based on prior decision |
 | Network | Default deny; no strict host allowlist until TLS enforcement is proven | Which provider/source-control destinations are essential? |
-| Session lifetime | Fixed maximum plus idle expiry | Maximum duration and idle timeout still need values |
+| Session lifetime | One hour for new sessions; legacy deadlines unchanged | Agreed maximum; resident polling implemented; idle expiry and VM restart validation remain pending |
 | Capacity / speed | Queue above five concurrent sessions; request-to-ready p95 below 25 seconds | Agreed target; define cold/warm measurement mix |
 | Wardyn | Complete requirement-to-evidence comparison before duplicating control-plane work | Who owns deployment/security acceptance? |
 

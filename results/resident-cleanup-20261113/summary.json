@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "service_checks": 11,
+  "api_tests": 14,
+  "live_console_resident_health": true,
+  "browser_status": "Resident cleanup is healthy; 0 / 5 active; legacy sessions stopped with no expiry",
+  "limitations": [
+    "No VM reboot/suspend or one-hour soak test",
+    "No model calls",
+    "User service filesystem namespace sandbox unavailable; trusted Docker operator boundary"
+  ],
+  "source_sha256": {
+    "scripts/manage_codex_session.py": "e64d465b61fc77d19d9abd1b5f97653eec0fb5966174daa4eb0079528988e6b3",
+    "scripts/run_worker_reconciler.py": "a1dd100d00e0dd569fd849641921b784b87c04580fee27d397cd55dcca68c115",
+    "scripts/install_worker_reconciler.sh": "9a161bd6fb85ac4de8d2d404719edf2eae136b6c5a52ec91bc0739b451e0d21c",
+    "scripts/test_worker_reconciler.py": "60361a1b7a2aa39dedd2122a965f05294a5d341dbf152913d551e14e98006e04",
+    "deploy/systemd/gvisor-poc-reconciler.service": "f85a6754e358de39e3ace25d9f6442f054ff6618a6eb1b31bd564e6f1ab16f00",
+    "scripts/serve_session_console.py": "4100b9fea91e7473fdb416f1f047e3e1a6b0560721a670add49ef5394fe454c4",
+    "tests/test_session_console.py": "e9bdf1116d9cf6dd9b404d62eb78de0de274f03cfa0783ee0eeff14679ae6f5f",
+    "ui/console/app.js": "d7b5dacdd6e841b904e84fa245858c8eba297a38639f39c22f75dfcb6083ae7e"
+  }
+}

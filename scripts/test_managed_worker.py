@@ -24,6 +24,8 @@ def main():
             first = worker.create('persistence-first')
             again = worker.create('persistence-first')
         checks['idempotent_create'] = first['id'] == again['id']
+        checks['idempotency_preserves_deadline'] = first['expires'] == again['expires']
+        checks['one_hour_default'] = abs(first['expires'] - first['created'] - 3600) < 1
         agent = worker.names(first['id'])['agent']
         worker.docker('exec', agent, 'sh', '-c', 'printf PERSISTED > /workspace/worker-test-marker; printf TEMPORARY > /home/agent/home-marker')
         obj = worker.exists('container', agent)
@@ -112,6 +114,25 @@ s.setTimeout(10000,()=>{s.destroy();resolve(0);});s.once('data',b=>{resolve(Numb
         denied = subprocess.run(['python3', str(ROOT / 'scripts/manage_codex_session.py'), '--state-dir', state,
                                  'create', '--image', 'unapproved'], capture_output=True)
         checks['arbitrary_image_override_denied'] = denied.returncode == 2
+        with worker.locked():
+            expiring = worker.create('expiry-test')
+            worker.db.execute('UPDATE sessions SET expires=? WHERE id=?', (time.time() - 1, expiring['id']))
+            worker.db.commit()
+            worker.reconcile()
+        expired = worker.get(expiring['id'])
+        checks['expired_session_cleaned'] = (expired['state'] == 'stopped' and expired['stop_reason'] == 'expired'
+                                            and worker.exists('container', worker.names(expired['id'])['agent']) is None
+                                            and worker.exists('container', worker.names(expired['id'])['gateway']) is None)
+        with worker.locked():
+            replacement = worker.create('after-expiry')
+        checks['workspace_survives_expiry'] = worker.docker('exec', worker.names(replacement['id'])['agent'], 'cat', '/workspace/worker-test-marker') == 'PERSISTED'
+        with worker.locked():
+            worker.db.execute('UPDATE sessions SET expires=NULL WHERE id=?', (replacement['id'],))
+            worker.db.commit()
+            worker.reconcile()
+        checks['legacy_no_deadline_preserved'] = worker.get(replacement['id'])['state'] == 'ready'
+        with worker.locked():
+            worker.stop(replacement['id'])
         events = worker.db.execute('SELECT action,state FROM events').fetchall()
         checks['lifecycle_events_recorded'] = bool(events) and any(r['action'] == 'create' for r in events)
     finally:

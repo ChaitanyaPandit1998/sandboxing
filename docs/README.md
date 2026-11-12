@@ -10,6 +10,7 @@ Start with the [POC overview](overview/POC_SUMMARY.md). For the current implemen
 | Design, findings, and limits | [POC overview](overview/POC_SUMMARY.md) |
 | What is complete or still pending | [Requirements status](REQUIREMENTS_STATUS.md) |
 | Create/manage a local pilot session | [Managed worker runbook](runbooks/MANAGED_WORKER.md) |
+| Manage real sessions from the local UI | [Local console runbook](runbooks/LOCAL_CONSOLE.md) |
 | Private Codex login, CA trust, HTTPS transport, cleanup, and authentication results | [Codex TLS guide](runbooks/CODEX_TLS.md) |
 | Gateway implementation, tested policy cases, and remaining acceptance criteria | [TLS gateway](security/TLS_GATEWAY.md) |
 | Detailed runtime benchmarks and historical security probes | [Experiment report](reports/REPORT.md) |
