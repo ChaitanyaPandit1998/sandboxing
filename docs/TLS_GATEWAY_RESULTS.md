@@ -24,7 +24,9 @@ Evidence is in [`results/tls-gateway-20261112/`](../results/tls-gateway-20261112
 
 ## Remaining gates
 
-The original `allowlist_proxy.py`, its published results, and the default agent runner remain unchanged. The new candidate closes the two tested hostname mismatch cases in this HTTP/1.1 setup; it does not yet establish the full strict-egress acceptance matrix or authenticated Codex compatibility.
+An [isolated Codex session](CODEX_TLS_SESSION.md) subsequently passed private device login, a synthetic workspace-write task, incremental CLI event delivery, and cancellation after WebSocket denial and fallback. A further [explicit HTTPS transport run](CODEX_HTTPS_TRANSPORT.md) passed three authenticated tasks with zero error events, cancellation, and live hostname-policy probes. Both sessions were logged out and removed.
+
+The original `allowlist_proxy.py`, its published results, and the default agent runner remain unchanged. The new candidate closes the two tested hostname mismatch cases in this HTTP/1.1 setup and supports the demonstrated authenticated HTTPS tasks without reconnect errors. It does not yet establish the full strict-egress acceptance matrix or production transport reliability.
 
 Still validate controlled DNS rebinding and mixed DNS answers, invalid upstream certificates, redirects/reused connections, malformed/fragmented requests, ECH, HTTP/2 refusal, UDP/QUIC paths, approval denial/expiry, streaming/cancellation, and cleanup on failures. HTTP/2 is disabled, raw TCP tunneling is disabled, and Upgrade is refused. Before promotion, repeat these checks with the exact agent image, supported certificate-trust settings, and the intended device-login/provider flow. Keep FR-2 partial until the complete path is verified.
 

@@ -1,0 +1,43 @@
+{
+  "code": 1,
+  "signal": null,
+  "cancel_sent": true,
+  "cancellation_seconds": 0.379,
+  "post_cancel_marker_exists": false,
+  "events": [
+    {
+      "seconds": 0.092,
+      "type": "thread.started"
+    },
+    {
+      "seconds": 0.458,
+      "type": "turn.started"
+    },
+    {
+      "seconds": 3.68,
+      "type": "error"
+    },
+    {
+      "seconds": 4.074,
+      "type": "error"
+    },
+    {
+      "seconds": 4.84,
+      "type": "error"
+    },
+    {
+      "seconds": 6.526,
+      "type": "error"
+    },
+    {
+      "seconds": 10.034,
+      "type": "item.completed",
+      "item_type": "error"
+    },
+    {
+      "seconds": 13.097,
+      "type": "item.completed",
+      "item_type": "agent_message"
+    }
+  ]
+}

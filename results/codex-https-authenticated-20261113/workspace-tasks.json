@@ -1,0 +1,140 @@
+[
+  {
+    "trial": 0,
+    "exit_code": 0,
+    "duration_seconds": 11.362,
+    "workspace_marker_correct": true,
+    "error_event_count": 0,
+    "events": [
+      {
+        "seconds": 3.541,
+        "type": "thread.started",
+        "item_type": null
+      },
+      {
+        "seconds": 3.551,
+        "type": "turn.started",
+        "item_type": null
+      },
+      {
+        "seconds": 7.561,
+        "type": "item.completed",
+        "item_type": "agent_message",
+        "expected_marker_in_message": false
+      },
+      {
+        "seconds": 8.569,
+        "type": "item.started",
+        "item_type": "command_execution"
+      },
+      {
+        "seconds": 8.569,
+        "type": "item.completed",
+        "item_type": "command_execution"
+      },
+      {
+        "seconds": 10.734,
+        "type": "item.completed",
+        "item_type": "agent_message",
+        "expected_marker_in_message": true
+      },
+      {
+        "seconds": 10.736,
+        "type": "turn.completed",
+        "item_type": null
+      }
+    ]
+  },
+  {
+    "trial": 1,
+    "exit_code": 0,
+    "duration_seconds": 7.584,
+    "workspace_marker_correct": true,
+    "error_event_count": 0,
+    "events": [
+      {
+        "seconds": 0.092,
+        "type": "thread.started",
+        "item_type": null
+      },
+      {
+        "seconds": 0.17,
+        "type": "turn.started",
+        "item_type": null
+      },
+      {
+        "seconds": 3.342,
+        "type": "item.completed",
+        "item_type": "agent_message",
+        "expected_marker_in_message": false
+      },
+      {
+        "seconds": 4.413,
+        "type": "item.started",
+        "item_type": "command_execution"
+      },
+      {
+        "seconds": 4.413,
+        "type": "item.completed",
+        "item_type": "command_execution"
+      },
+      {
+        "seconds": 6.891,
+        "type": "item.completed",
+        "item_type": "agent_message",
+        "expected_marker_in_message": true
+      },
+      {
+        "seconds": 6.894,
+        "type": "turn.completed",
+        "item_type": null
+      }
+    ]
+  },
+  {
+    "trial": 2,
+    "exit_code": 0,
+    "duration_seconds": 8.626,
+    "workspace_marker_correct": true,
+    "error_event_count": 0,
+    "events": [
+      {
+        "seconds": 0.098,
+        "type": "thread.started",
+        "item_type": null
+      },
+      {
+        "seconds": 0.111,
+        "type": "turn.started",
+        "item_type": null
+      },
+      {
+        "seconds": 3.844,
+        "type": "item.completed",
+        "item_type": "agent_message",
+        "expected_marker_in_message": false
+      },
+      {
+        "seconds": 4.824,
+        "type": "item.started",
+        "item_type": "command_execution"
+      },
+      {
+        "seconds": 4.824,
+        "type": "item.completed",
+        "item_type": "command_execution"
+      },
+      {
+        "seconds": 8.09,
+        "type": "item.completed",
+        "item_type": "agent_message",
+        "expected_marker_in_message": true
+      },
+      {
+        "seconds": 8.09,
+        "type": "turn.completed",
+        "item_type": null
+      }
+    ]
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "code": 1,
+  "signal": null,
+  "cancel_sent": true,
+  "cancellation_seconds": 0.396,
+  "post_cancel_marker_exists": false,
+  "error_event_count": 0,
+  "events": [
+    {
+      "seconds": 0.109,
+      "type": "thread.started"
+    },
+    {
+      "seconds": 0.122,
+      "type": "turn.started"
+    },
+    {
+      "seconds": 6.792,
+      "type": "item.completed",
+      "item_type": "agent_message"
+    },
+    {
+      "seconds": 7.793,
+      "type": "item.started",
+      "item_type": "command_execution"
+    }
+  ]
+}

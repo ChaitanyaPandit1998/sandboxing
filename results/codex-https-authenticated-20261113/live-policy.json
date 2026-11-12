@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "approved_chatgpt",
+      "status": 200,
+      "expected": 200,
+      "passed": true
+    },
+    {
+      "name": "sni_mismatch",
+      "status": 403,
+      "expected": 403,
+      "passed": true
+    },
+    {
+      "name": "encrypted_host_mismatch",
+      "status": 403,
+      "expected": 403,
+      "passed": true
+    },
+    {
+      "name": "unlisted_connect",
+      "status": 403,
+      "expected": 403,
+      "passed": true
+    }
+  ]
+}

@@ -9,6 +9,8 @@ The [session console UI prototype](docs/UI_PROTOTYPE.md) shows the proposed oper
 The detailed threat model, prioritized security test matrix, and evidence criteria are in the [security validation plan](docs/SECURITY_VALIDATION_PLAN.md).
 The real Claude Code and Codex CLI validation matrix, initial results, and remaining cases are in the [agent validation plan](docs/AGENT_SESSION_VALIDATION_PLAN.md).
 The proposed session API, lifecycle, policy boundary, and MVP acceptance criteria are in the [session control-plane spec](docs/SESSION_CONTROL_PLANE_SPEC.md).
+The [Codex TLS session runbook](docs/CODEX_TLS_SESSION.md) covers private device login and cleanup for the experimental gateway candidate.
+The [explicit HTTPS transport candidate](docs/CODEX_HTTPS_TRANSPORT.md) records the configuration intended to avoid the observed WebSocket retries and its current validation status.
 
 ![Architecture diagram showing the Mac host, Lima Linux VM, paired Docker runtime paths, and saved experiment results](docs/diagrams/architecture.svg)
 
@@ -178,4 +180,6 @@ Do not compare results from Docker Desktop with results from the Lima VM. The ex
 
 The [five-session sandbox readiness results](docs/SESSION_READINESS_RESULTS.md) record 50/50 successful cached-image starts per runtime. This is a no-network container/workspace/CLI smoke; full platform request-to-ready and uptime remain unmeasured. The [strict HTTPS egress enforcement plan](docs/EGRESS_ENFORCEMENT_PLAN.md) specifies the proposed gateway and validation cases; the existing TLS tunnel gap remains open.
 
-**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](docs/TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy and authenticated Codex acceptance remain open.
+**TLS gateway candidate update (2026-11-12):** A separate TLS-terminating gateway passed 16 selected checks under each runtime, including the previously observed SNI mismatch and a decrypted HTTP Host mismatch. See [candidate results and remaining gates](docs/TLS_GATEWAY_RESULTS.md). The default agent proxy is unchanged; full egress-policy acceptance remains open. A subsequent explicit HTTPS configuration completed three authenticated tasks without reconnect/error events; broader transport and failure testing remain open.
+
+**Authenticated gateway follow-up (reviewed 2026-11-13):** Private ChatGPT login, one synthetic workspace-write task, incremental CLI events, cancellation, and cleanup passed. The initial run used fallback after WebSocket denials; the explicit HTTPS follow-up completed three tasks with zero error events. See [evidence and remaining checks](docs/CODEX_TLS_AUTHENTICATED_RESULTS.md). This does not measure platform session-ready p95.

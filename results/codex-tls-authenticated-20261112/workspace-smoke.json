@@ -1,0 +1,74 @@
+{
+  "exit_code": 0,
+  "duration_seconds": 16.083,
+  "events": [
+    {
+      "seconds": 3.241,
+      "type": "thread.started",
+      "item_type": null
+    },
+    {
+      "seconds": 3.292,
+      "type": "turn.started",
+      "item_type": null
+    },
+    {
+      "seconds": 4.651,
+      "type": "error",
+      "item_type": null,
+      "message": "Reconnecting... 2/5 (unexpected status 403 Forbidden: Unknown error, url: wss://chatgpt.com/backend-api/codex/responses)"
+    },
+    {
+      "seconds": 5.112,
+      "type": "error",
+      "item_type": null,
+      "message": "Reconnecting... 3/5 (unexpected status 403 Forbidden: Unknown error, url: wss://chatgpt.com/backend-api/codex/responses)"
+    },
+    {
+      "seconds": 6.012,
+      "type": "error",
+      "item_type": null,
+      "message": "Reconnecting... 4/5 (unexpected status 403 Forbidden: Unknown error, url: wss://chatgpt.com/backend-api/codex/responses)"
+    },
+    {
+      "seconds": 7.594,
+      "type": "error",
+      "item_type": null,
+      "message": "Reconnecting... 5/5 (unexpected status 403 Forbidden: Unknown error, url: wss://chatgpt.com/backend-api/codex/responses)"
+    },
+    {
+      "seconds": 11.08,
+      "type": "item.completed",
+      "item_type": "error"
+    },
+    {
+      "seconds": 12.966,
+      "type": "item.completed",
+      "item_type": "agent_message",
+      "expected_marker_in_message": false
+    },
+    {
+      "seconds": 13.931,
+      "type": "item.started",
+      "item_type": "command_execution"
+    },
+    {
+      "seconds": 13.931,
+      "type": "item.completed",
+      "item_type": "command_execution"
+    },
+    {
+      "seconds": 15.569,
+      "type": "item.completed",
+      "item_type": "agent_message",
+      "expected_marker_in_message": true
+    },
+    {
+      "seconds": 15.642,
+      "type": "turn.completed",
+      "item_type": null
+    }
+  ],
+  "scope": "authenticated ChatGPT account; workspace-write; no-daemon; synthetic task only",
+  "workspace_marker_correct": true
+}
