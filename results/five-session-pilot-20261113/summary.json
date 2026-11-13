@@ -1,0 +1,21 @@
+{
+  "recorded_at": "2026-11-13T13:01:43+05:30",
+  "passed": true,
+  "authenticated_sessions": 5,
+  "distinct_accounts": 1,
+  "successes": 5,
+  "error_events": 0,
+  "response_seconds": {
+    "min": 36.284,
+    "median": 37.648,
+    "max": 38.69
+  },
+  "manual_login_excluded": true,
+  "provisioning_excluded": true,
+  "p95_slo_established": false,
+  "raw_auth_or_model_output_saved": false,
+  "source_sha256": {
+    "scripts/manage_codex_session.py": "0a937986f72b7be353a71fde93f4db63468598de1f0322f13b0e89f5d80eb756",
+    "scripts/check_five_session_pilot.py": "bb9f256c27ed52c7a46a1ffb127f5eb547e1d46a9607e0205ac01e005280383d"
+  }
+}

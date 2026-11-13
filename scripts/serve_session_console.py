@@ -13,10 +13,25 @@ import threading
 import time
 from http.cookies import CookieError, SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 POLICY = 'codex-tls-pilot-v1'
+
+
+def recorded_timings():
+    try:
+        data = json.loads((ROOT / 'results/coding-task-20261113/summary.json').read_text())
+        fields = {'First response': 'first_response_seconds', 'First tool': 'first_tool_seconds', 'Completion': 'process_completed_seconds'}
+        result = []
+        for label, key in fields.items():
+            value = data[key]
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 <= value <= 3600:
+                return []
+            result.append({'label': label, 'seconds': value})
+        return result
+    except (OSError, ValueError, KeyError, TypeError):
+        return []
 
 
 class Adapter:
@@ -154,6 +169,34 @@ class Handler(BaseHTTPRequestHandler):
 
     def api(self, path, body):
         try:
+            if path == '/api/alerts' and body is None:
+                return self.reply(200, self.server.adapter.run('alerts'))
+            if path == '/api/security-events' and body is None:
+                query = parse_qs(urlsplit(self.path).query, keep_blank_values=True)
+                if set(query) - {'before', 'kind'} or any(len(v) != 1 for v in query.values()):
+                    return self.reply(400, {'error': 'invalid_history_query'})
+                args = ['security-events']
+                if 'before' in query:
+                    if not re.fullmatch(r'[1-9][0-9]{0,17}', query['before'][0]):
+                        return self.reply(400, {'error': 'invalid_history_cursor'})
+                    args.extend(['--before', query['before'][0]])
+                if 'kind' in query:
+                    if query['kind'][0] not in ('lifecycle', 'lifecycle_failure', 'egress_denied', 'policy_drift'):
+                        return self.reply(400, {'error': 'invalid_history_kind'})
+                    args.extend(['--kind', query['kind'][0]])
+                return self.reply(200, self.server.adapter.run(*args))
+            alert = re.fullmatch(r'/api/alerts/([a-f0-9]{32})/(acknowledge|resolve)', path)
+            if alert:
+                if body is None:
+                    return self.reply(405, {'error': 'post_required'})
+                if body:
+                    return self.reply(400, {'error': 'invalid_alert_action'})
+                aid, operation = alert.groups()
+                return self.reply(200, self.server.adapter.run(operation + '-alert', aid))
+            if path == '/api/monitor' and body is None:
+                data = self.server.adapter.run('monitor')
+                data['recorded_timings'] = recorded_timings()
+                return self.reply(200, data)
             if path == '/api/sessions' and body is None:
                 self.server.adapter.run('reconcile')
                 return self.reply(200, {'sessions': self.server.adapter.run('list'), 'policy_id': POLICY,
@@ -191,7 +234,7 @@ class Handler(BaseHTTPRequestHandler):
             return self.reply(200, self.server.adapter.run('events' if action == 'events' else 'inspect', sid))
         except (RuntimeError, subprocess.SubprocessError, OSError, ValueError) as exc:
             code = str(exc) if isinstance(exc, RuntimeError) else 'worker_unavailable'
-            status = 409 if code == 'quota_five_sessions' else 404 if code == 'session_not_found' else 503
+            status = 409 if code in ('quota_five_sessions', 'alert_already_resolved') else 404 if code in ('session_not_found', 'alert_not_found') else 503
             return self.reply(status, {'error': code})
 
 

@@ -1,0 +1,10 @@
+{
+  "recorded_at": "2026-11-13T13:09:10+05:30",
+  "session_id": "d6a07841ec02471987bb53e8443320e9",
+  "state": "ready",
+  "private_login_verified": false,
+  "model_task_run": false,
+  "python_syntax_passed": true,
+  "source_sha256": "34374200343ab98f4f9d19055b7f80fba5aa6b5ae89f54011554184e386305d9",
+  "scope": "prepared only; awaiting private sign-in; no coding result or latency claim"
+}

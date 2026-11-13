@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "session_id": "d3cd68ea60c543098be4515cf6977ebe",
+  "alert_id": "b432217d2a854e068964c5bb2a7dd893",
+  "resident_open_observed": true,
+  "acknowledged": true,
+  "resolved": true,
+  "event_history_retained": true,
+  "scope": "actual default-pilot disposable session; in-memory cookie/CSRF only; no credentials saved",
+  "reopened_on_new_resident_evidence": true,
+  "event_count_after_new_flow": 2,
+  "collector_restart_preserved_count": true,
+  "console_restart_preserved_state_and_history": true,
+  "browser_acknowledge_and_resolve": true,
+  "browser_history_filter_count": 2,
+  "browser_audit_action_count": 6,
+  "final_status": "resolved",
+  "resolved_at_recorded": true,
+  "disposable_session_stopped": true,
+  "workspace_retained": true,
+  "browser_console_errors": 0
+}

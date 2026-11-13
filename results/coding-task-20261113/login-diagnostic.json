@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-11-13T13:13:34+05:30",
+  "session_ready": true,
+  "login_saved": false,
+  "codex_process_observed": true,
+  "gateway_running": true,
+  "gateway_oom": false,
+  "sampled_policy_allows": 9,
+  "sampled_policy_denies": 0,
+  "explicit_http_error_in_non_json_gateway_logs": false,
+  "login_log_present": true,
+  "login_log_bytes": 84,
+  "known_login_error_indicators": false,
+  "scope": "sanitized presence/category checks only; absence of logs does not establish absence of upstream failures; browser final authorization confirmation requested; no model task run"
+}

@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-11-13T13:20:32+05:30",
+  "passed": true,
+  "runtime": "Node.js v22.23.4",
+  "generated_tests": 5,
+  "independent_tests_exit_code": 0,
+  "first_response_seconds": 4.233,
+  "first_tool_seconds": 5.121,
+  "process_completed_seconds": 22.099,
+  "intermediate_failed_command_events": 1,
+  "intermediate_failure_cause": "not retained/classified by this harness",
+  "initial_attempt_failure": "Python task could not run because the image has no python3",
+  "session_left_ready_until_existing_deadline": true,
+  "deadline_extended": false,
+  "expires": 1794559045.51943,
+  "raw_model_or_auth_data_saved": false,
+  "source_sha256": {
+    "scripts/manage_codex_session.py": "0a937986f72b7be353a71fde93f4db63468598de1f0322f13b0e89f5d80eb756",
+    "scripts/test_managed_coding_task.py": "14350e27662c5a70de223c29fa7da8be67dce7804a38498cb7c90c438425875d"
+  },
+  "scope": "one Node coding task after login; existing session; first-response event observation, not token-level TTFT; no p95/uptime claim"
+}

@@ -1,0 +1,30 @@
+{
+  "session_id": "d6a07841ec02471987bb53e8443320e9",
+  "task_directory": "/workspace/poc-coding-check-09a4f19599fa",
+  "timings_seconds": {
+    "first_event": 1.286,
+    "first_response": 6.123,
+    "first_tool": 6.813,
+    "turn_completed": 29.636,
+    "process_completed": 30.283
+  },
+  "error_events": 0,
+  "successful_command_events": 1,
+  "failed_command_events": 3,
+  "tool_events": 10,
+  "timed_out": false,
+  "exit_code": 0,
+  "independent_code_and_tests_passed": false,
+  "passed": false,
+  "scope": "one authenticated coding task; existing logged-in session; event-observation timings, not token-level TTFT; excludes provisioning/manual login; no p95 or uptime claim",
+  "harness_sha256": "34374200343ab98f4f9d19055b7f80fba5aa6b5ae89f54011554184e386305d9",
+  "diagnosis": {
+    "python3_available": false,
+    "node_version": "v22.23.4",
+    "generated_files": [
+      "solution.py",
+      "test_solution.py"
+    ],
+    "classification": "task_image_runtime_mismatch"
+  }
+}

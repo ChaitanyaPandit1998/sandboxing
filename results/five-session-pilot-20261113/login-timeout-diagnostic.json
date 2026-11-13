@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-11-13T12:28:02+05:30",
+  "login_verified": 1,
+  "login_pending": 4,
+  "historical_failure": "device authorization returned HTTP 504; origin not conclusively established",
+  "gateway_checks": [
+    {
+      "session_index": 1,
+      "running": true,
+      "oom_killed": false,
+      "policy_allow": 19,
+      "policy_deny": 0,
+      "device_page_status": 302,
+      "tls_verified": true,
+      "seconds": 0.069
+    },
+    {
+      "session_index": 2,
+      "running": true,
+      "oom_killed": false,
+      "policy_allow": 8,
+      "policy_deny": 0,
+      "device_page_status": 302,
+      "tls_verified": true,
+      "seconds": 0.088
+    }
+  ],
+  "scope": "current public device page reachability and policy counts; no auth payloads or raw logs saved; cannot reproduce historical 504 from these probes"
+}

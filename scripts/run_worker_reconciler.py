@@ -46,6 +46,8 @@ def main():
             worker.docker('info', '--format', '{{.ServerVersion}}')
             with worker.locked():
                 worker.reconcile()
+            from security_history import collect
+            collect(worker)
             health.update(last_success=time.time(), error=None)
         except Exception:
             health['error'] = 'worker_unavailable_or_cleanup_failed'

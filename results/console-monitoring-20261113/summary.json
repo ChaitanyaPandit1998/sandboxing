@@ -1,0 +1,28 @@
+{
+  "recorded_at": "2026-11-13T13:52:05+05:30",
+  "api_tests_passed": 14,
+  "live_lifecycle_test_skipped": true,
+  "sanitization_policy_tests_passed": 3,
+  "weakened_configuration_cases": 7,
+  "live_selected_checks_passed": 9,
+  "browser_review": [
+    "desktop and narrow layout",
+    "active/history session filters",
+    "allowed and default-denied hostname lookup",
+    "lookalike hostname denied",
+    "review-signal filter",
+    "recorded timing bars",
+    "no console errors"
+  ],
+  "scope": "read-only single-operator sampled monitoring; no model calls; no user session mutations; no attack-detection or uptime claim",
+  "source_sha256": {
+    "scripts/console_observability.py": "dbe40b16b589687993eb9ea236cf55d508e25c17ba1431fdcf934618731808a2",
+    "scripts/manage_codex_session.py": "d873f5bf01d169fb7afbf17a5d6be4e0f5d0fea090980a03709ce3387e873ea2",
+    "scripts/serve_session_console.py": "891baa506cc78204ce960a1efe23e3a38ed81493bc62ffaffb18b21cb3f57a9f",
+    "ui/console/index.html": "02d4b2695ef5c4f3c61c5ba54be1813f828d60aded093f21b2b340491791d736",
+    "ui/console/app.js": "c69e2b7f86ae6df3baccfc52b2c800dc5ed79ad4ff8c66001517c5bb92b33373",
+    "ui/console/console.css": "a31c0d7648813935389e883f82785f2e83e2e0d4e96d2598999dbf5665f4dd8e",
+    "tests/test_console_observability.py": "b673aa66c3a836f7698749f136c042897ff3b1f95233d7a70fa3441f13fa049e",
+    "tests/test_session_console.py": "ae6070dfd3d1cfafc61cd1ec49b2f7c765ad48f6e2c09fc9687c035ae124c0d9"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "probes": [
+    {
+      "id": "7221c857bc9549889bf654755262b7d7",
+      "passed": true,
+      "error_events": 0,
+      "turn_completed": true,
+      "expected_reply": true,
+      "exit_code": 0,
+      "seconds": 38.69
+    },
+    {
+      "id": "ddda005b17f2463895d475b1e27e2eb9",
+      "passed": true,
+      "error_events": 0,
+      "turn_completed": true,
+      "expected_reply": true,
+      "exit_code": 0,
+      "seconds": 36.856
+    },
+    {
+      "id": "fac88577f5ab4492a362c3785363b392",
+      "passed": true,
+      "error_events": 0,
+      "turn_completed": true,
+      "expected_reply": true,
+      "exit_code": 0,
+      "seconds": 37.648
+    },
+    {
+      "id": "e9856bc1b0d242aaa17228608c26f017",
+      "passed": true,
+      "error_events": 0,
+      "turn_completed": true,
+      "expected_reply": true,
+      "exit_code": 0,
+      "seconds": 37.852
+    },
+    {
+      "id": "9b55b9f4cf77431697682585a0cd6c74",
+      "passed": true,
+      "error_events": 0,
+      "turn_completed": true,
+      "expected_reply": true,
+      "exit_code": 0,
+      "seconds": 36.284
+    }
+  ],
+  "batch_seconds": 38.693,
+  "scope": "five concurrent sessions on one account; fixed reply-only model task after manual login; excludes provisioning and human login; five observations are not a reliable p95 estimate"
+}

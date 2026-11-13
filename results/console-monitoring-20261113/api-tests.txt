@@ -1,0 +1,20 @@
+test_authentication_required (test_session_console.ConsoleTests.test_authentication_required) ... ok
+test_background_sweep_without_page_request (test_session_console.ConsoleTests.test_background_sweep_without_page_request) ... ok
+test_cookie_is_private_and_no_store (test_session_console.ConsoleTests.test_cookie_is_private_and_no_store) ... ok
+test_create_and_stop (test_session_console.ConsoleTests.test_create_and_stop) ... ok
+test_create_requires_idempotency (test_session_console.ConsoleTests.test_create_requires_idempotency) ... ok
+test_cross_origin_and_cross_site_denied (test_session_console.ConsoleTests.test_cross_origin_and_cross_site_denied) ... ok
+test_csrf_required (test_session_console.ConsoleTests.test_csrf_required) ... ok
+test_host_rebinding_denied (test_session_console.ConsoleTests.test_host_rebinding_denied) ... ok
+test_invalid_session_and_path_traversal (test_session_console.ConsoleTests.test_invalid_session_and_path_traversal) ... ok
+test_monitor_requires_auth_and_is_read_only (test_session_console.ConsoleTests.test_monitor_requires_auth_and_is_read_only) ... ok
+test_policy_tampering_rejected (test_session_console.ConsoleTests.test_policy_tampering_rejected) ... ok
+test_resident_health_is_returned (test_session_console.ConsoleTests.test_resident_health_is_returned) ... ok
+test_static_assets_and_frame_policy (test_session_console.ConsoleTests.test_static_assets_and_frame_policy) ... ok
+test_terminal_handoff_is_fixed (test_session_console.ConsoleTests.test_terminal_handoff_is_fixed) ... ok
+test_live_worker_lifecycle (test_session_console.LiveConsoleTests.test_live_worker_lifecycle) ... skipped 'live Lima test explicitly enabled separately'
+
+----------------------------------------------------------------------
+Ran 15 tests in 7.096s
+
+OK (skipped=1)

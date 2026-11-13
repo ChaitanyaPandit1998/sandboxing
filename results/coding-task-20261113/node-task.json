@@ -1,0 +1,20 @@
+{
+  "session_id": "d6a07841ec02471987bb53e8443320e9",
+  "task_directory": "/workspace/poc-coding-check-dda5d3b4e4ea",
+  "timings_seconds": {
+    "first_event": 0.098,
+    "first_response": 4.233,
+    "first_tool": 5.121,
+    "turn_completed": 21.206,
+    "process_completed": 22.099
+  },
+  "error_events": 0,
+  "successful_command_events": 1,
+  "failed_command_events": 1,
+  "tool_events": 6,
+  "timed_out": false,
+  "exit_code": 0,
+  "independent_code_and_tests_passed": true,
+  "passed": true,
+  "scope": "one authenticated coding task; existing logged-in session; event-observation timings, not token-level TTFT; excludes provisioning/manual login; no p95 or uptime claim"
+}

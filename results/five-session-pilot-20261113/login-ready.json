@@ -1,0 +1,36 @@
+{
+  "login_ready": true,
+  "sessions": [
+    {
+      "id": "7221c857bc9549889bf654755262b7d7",
+      "state": "ready",
+      "expires": 1794556336.0792413,
+      "seconds": 2.626
+    },
+    {
+      "id": "ddda005b17f2463895d475b1e27e2eb9",
+      "state": "ready",
+      "expires": 1794556334.236861,
+      "seconds": 0.788
+    },
+    {
+      "id": "fac88577f5ab4492a362c3785363b392",
+      "state": "ready",
+      "expires": 1794556337.699217,
+      "seconds": 4.259
+    },
+    {
+      "id": "e9856bc1b0d242aaa17228608c26f017",
+      "state": "ready",
+      "expires": 1794556334.9975283,
+      "seconds": 1.846
+    },
+    {
+      "id": "9b55b9f4cf77431697682585a0cd6c74",
+      "state": "ready",
+      "expires": 1794556336.875653,
+      "seconds": 3.431
+    }
+  ],
+  "scope": "one batch; cached images; CLI request-to-login-ready includes queue; no authentication/model readiness or reliable p95 estimate"
+}

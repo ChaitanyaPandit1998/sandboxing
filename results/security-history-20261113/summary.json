@@ -1,0 +1,24 @@
+{
+  "recorded_at": "2026-11-13T15:21:49+05:30",
+  "journal_tests_passed": 6,
+  "sanitization_policy_tests_passed": 4,
+  "api_tests_passed": 16,
+  "separate_live_lifecycle_test_skipped": true,
+  "isolated_service_checks_passed": 11,
+  "live_workflow": "actual resident collection, API + browser acknowledge/resolve, new-flow reopen, dedup and restart persistence",
+  "disposable_session_removed": true,
+  "workspace_retained": true,
+  "external_notifications_sent": false,
+  "scope": "trusted local operator; sampled sanitized history; no attack-detection or completeness guarantee",
+  "source_sha256": {
+    "scripts/security_history.py": "58bef718b71ee1ce251a3a4b659947227a5b12938a6f01e9f6f3784c6ba0ca7e",
+    "scripts/console_observability.py": "ccbb0e66c128a7256bb6f0aa442ac7443174a24cd3db1b89fcf0b519b4ecf58d",
+    "scripts/manage_codex_session.py": "91b821c174279ee2d03726e01dbaa19a4669711ca6cf9b459706480175a8e837",
+    "scripts/run_worker_reconciler.py": "8d919c28144403f2e6a17b36834c146b7faeec47fe601f094089441c1f240154",
+    "scripts/serve_session_console.py": "0ded428721213db81a8a2fe8063ca0f41aa31d5bdb42d5f8d27aa4686d6bebc6",
+    "ui/console/app.js": "5ebc01c88a58bf83039d6c0d6611aaec3854b0964b8a7dca150c5447604703f7",
+    "ui/console/index.html": "fa794ac855feadcb5761b7eb37be7304051797728cbe7bb2a25c7a1b9bcf3228",
+    "tests/test_security_history.py": "db1e755f69538c315ba324b90d2426455561771e3a4c636a437b203a89b64ee2",
+    "tests/test_session_console.py": "f4f387f1600336037b385749f3f6847917e310aa39667cea59d2f861c5b716f7"
+  }
+}

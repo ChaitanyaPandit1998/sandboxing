@@ -152,3 +152,6 @@ Audit session creation, denial, attach-ticket issue/use, policy resolution, stop
 4. Validate authorization, policy tampering, failures, cleanup, cross-session isolation, and egress through that API.
 5. Connect the existing UI mock to the versioned API, replacing all demo status with backend state.
 6. Add quotas, worker reconciliation, operations controls, and performance/pilot gates.
+
+
+**Local review workflow follow-up (2026-11-13):** The pilot adds resident-collected sanitized security/lifecycle history and local acknowledge/resolve/reopen alerts under `/api/alerts` and `/api/security-events`. State changes require the loopback session and CSRF protection and record a fixed local actor label. This does not implement organization RBAC, `/v1` incident contracts, external delivery or tamper-resistant audit. See [scope, retention and evidence](../runbooks/LOCAL_CONSOLE.md#durable-history-and-local-alerts-2026-11-13).

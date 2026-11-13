@@ -77,3 +77,44 @@ limactl shell gvisor-poc -- python3 /home/chaitanya.guest/gvisor-managed-pilot/s
 [Eleven isolated checks](../../results/resident-cleanup-20261113/service.json) passed: service startup/private health, injected overdue expiry without console requests, expiry reason, temporary-container removal, volume/data retention, killed-process restart, and a test-only Docker-socket failure/recovery. [Fourteen API tests](../../results/resident-cleanup-20261113/api-tests.txt) passed, and the real console reports [healthy resident status](../../results/resident-cleanup-20261113/live-health.json). No model calls, VM reboot, one-hour soak, or clock-jump tests were performed.
 
 The first unit failed at systemd's CAPABILITIES step with mount/device namespace sandboxing in this unprivileged user manager. The tested unit uses `NoNewPrivileges`, an AF_UNIX address-family restriction and a private umask; it does not sandbox the trusted worker's filesystem. The worker already has powerful Docker socket access. Container protections remain unchanged. This is a single trusted operator boundary, not an organizational control plane or an uptime SLO.
+
+
+## VM restart and five-session follow-up (2026-11-13)
+
+A real Lima stop/start passed [nine recovery checks](../../results/vm-recovery-20261113/restart.json): both user services started automatically, successful reconciliation resumed, an injected overdue session expired, an unexpired but stopped container session became `resource_lost`, temporary resources were removed, and workspace data survived replacement. The replacement had no saved login. The test used an isolated namespace/unit/volume, all removed afterward; production workspace data was not changed.
+
+This validates cleanup/replacement after one VM restart, not transparent resumption of a logged-in session. Mac sleep, long downtime, clock jumps and sustained uptime remain untested. `scripts/test_worker_vm_recovery.py` has explicit prepare/verify/cleanup phases; run only in an idle disposable VM because the operator must stop/start the VM between phases.
+
+A new [five-session batch](../../results/five-session-pilot-20261113/login-ready.json) reached login-ready in **0.788–4.259 seconds**, including CLI queue time with cached images. All five were simultaneously ready. This is five observations from one batch, not proof of the p95 SLO or authenticated readiness. Initial sign-in checks found no login in the new sessions; subsequent private logins and all five concurrent model probes passed. See the authenticated follow-up below.
+
+Managed login now runs with `--no-daemon` to keep device authorization in the foreground; the retry subsequently verified sessions 4–5 and enabled the successful concurrent probes. The private helper `scripts/check_five_session_pilot.py login` checks each session independently and verifies login before continuing. `probe` requires all five ready/logged in, then runs a fixed reply-only task concurrently and stores sanitized timing/outcome metadata. It uses one account in five sessions, not five distinct users, and excludes manual login time. `stop` removes just these test sessions and retains the pilot workspace; ordinary one-hour expiry remains enabled.
+
+
+## Five authenticated concurrent probes (2026-11-13)
+
+All **five concurrent fixed reply-only model requests passed** after independent private device sign-in into each session. Each returned the expected marker, exit 0 and a completed turn, with zero recorded error events. [Raw sanitized outcomes](../../results/five-session-pilot-20261113/authenticated.json), [summary/source hashes](../../results/five-session-pilot-20261113/summary.json).
+
+Post-login CLI invocation to completed reply took **36.284–38.690 seconds**, median **37.648 seconds**; the whole concurrent batch took **38.693 seconds**. Provisioning separately took 0.788–4.259 seconds. Human sign-in time is excluded from both measurements. These five observations use one account across five sessions; they do not establish a statistically reliable p95, five-user behavior, authenticated browser attach, tool execution, or sustained uptime. The reply-only response times exceed 25 seconds if that threshold is applied to completed model response; the agreed startup target still requires a precise readiness definition and repeated measurement.
+
+Device login experienced an earlier 504 and a later wait with no observed live Codex login process. Gateways were healthy with no sampled policy denials; the historical 504 cause remains unresolved. Foreground `--no-daemon` login was followed by successful retries, but this does not establish causality or long-term login reliability.
+
+The five test sessions were stopped after the run, removing temporary login homes/gateway keys/networks while retaining the pilot workspace. Next measure authenticated interactive tool execution and repeated readiness with separate queue, provisioning, login, first-response and completed-task timings. Mac sleep, clock jumps and uptime soak remain open.
+
+
+## Authenticated coding/tool task (2026-11-13)
+
+A fresh privately authenticated session completed a fixed Node.js implementation/test task under `workspace-write` with `--no-daemon`. Codex wrote `solution.cjs` and `test_solution.test.cjs`; all **five generated tests passed**, and independent assertions checked empty, mixed, negative, odd-only and generator inputs. [Outcome](../../results/coding-task-20261113/node-task.json), [summary](../../results/coding-task-20261113/summary.json). Test files remain in the pilot workspace under the result's task directory.
+
+| Observed stage from CLI launch | Seconds |
+|---|---:|
+| First JSON event | 0.098 |
+| First message event with text | 4.233 |
+| First tool event | 5.121 |
+| Completed turn | 21.206 |
+| CLI process exit | 22.099 |
+
+This measures one authenticated CLI coding task after login. It excludes provisioning/manual sign-in and is not interactive browser/terminal attach, token-level first-token latency, a p95 distribution, or an uptime measurement. One intermediate command failed; the agent subsequently completed the task and independent validation passed. The harness retains only outcome counters, so that intermediate command's cause is unclassified.
+
+The [initial Python attempt](../../results/coding-task-20261113/attempt-1.json) failed because this agent image has Node.js 22.23.4 but no `python3`; the model created Python files but could not execute their tests. The follow-up used Node's built-in test runner without changing the image, network policy or sandbox permissions. The harness now preflights Node availability. Python support needs an explicitly built/validated image if required; it has not been added.
+
+The coding session remains ready with its original one-hour deadline so further authorized checks can reuse the private login; expiry was not extended. Temporary credentials are still removed on stop/expiry while task files remain in managed workspace storage. Next repeat coding measurements, classify intermediate tool failures, test an interactive attach task, and define image/runtime requirements before accepting the readiness SLO.

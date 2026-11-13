@@ -1,0 +1,11 @@
+test_dedup_ack_resolve_reopen_and_private_audit (test_security_history.JournalTests.test_dedup_ack_resolve_reopen_and_private_audit) ... ok
+test_journal_and_alert_state_survive_db_reopen (test_security_history.JournalTests.test_journal_and_alert_state_survive_db_reopen) ... ok
+test_lifecycle_cursor_and_unknown_values_do_not_leak (test_security_history.JournalTests.test_lifecycle_cursor_and_unknown_values_do_not_leak) ... ok
+test_pagination_filter_retention_and_invalid_actions (test_security_history.JournalTests.test_pagination_filter_retention_and_invalid_actions) ... ok
+test_policy_drift_reopens_only_after_verified_recovery (test_security_history.JournalTests.test_policy_drift_reopens_only_after_verified_recovery) ... ok
+test_unresolved_alert_retained_and_resolved_retention_starts_on_resolution (test_security_history.JournalTests.test_unresolved_alert_retained_and_resolved_retention_starts_on_resolution) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.024s
+
+OK

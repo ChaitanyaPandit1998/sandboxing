@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": {
+    "vm_boot_changed": true,
+    "test_service_started_on_boot": true,
+    "pilot_service_started_on_boot": true,
+    "fresh_successful_sweep": true,
+    "overdue_cleaned_after_boot": true,
+    "unexpired_stopped_container_invalidated": true,
+    "test_resources_removed": true,
+    "workspace_data_survives_vm_restart": true,
+    "replacement_has_no_login_home": true
+  },
+  "scope": "actual Lima VM stop/start; isolated synthetic sessions; no model calls; no Mac sleep test"
+}

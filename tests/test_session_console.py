@@ -20,12 +20,18 @@ SID = 'a' * 32
 class FakeAdapter:
     def __init__(self):
         self.reconciles = 0
+        self.calls = []
 
     def run(self, action, *args):
+        self.calls.append((action, args))
         if action == 'reconcile':
             self.reconciles += 1
         row = {'id': SID, 'state': 'ready', 'runtime': 'runsc-stable-20261109', 'created': 1}
         return {'health': {'active': True, 'stale': False, 'last_success': 1, 'error': None},
+                'monitor': {'sampled_at': 1, 'allowed_hosts': ['auth.openai.com'], 'sessions': [], 'signals': []},
+                'alerts': {'alerts': [], 'counts': {'open':0,'acknowledged':0,'resolved':0},'last_collection':None,'collection_errors':0,'audit':[]},
+                'security-events': {'events': [], 'next_before':None,'retention_days':30,'max_events':10000},
+                'acknowledge-alert': {'id': SID, 'status':'acknowledged'}, 'resolve-alert': {'id': SID, 'status':'resolved'},
                 'reconcile': {}, 'list': [row], 'create': row, 'stop': row,
                 'inspect': row, 'events': [{'sequence': 1, 'action': 'create', 'state': 'ready', 'at': 1}]}[action]
 
@@ -121,6 +127,36 @@ class ConsoleTests(unittest.TestCase):
         self.assertIn(b'REAL WORKER STATE', data)
         for path in ['/app.js', '/styles.css', '/console.css', '/docs/README.md']:
             self.assertEqual(self.request(path)[0], 200)
+
+    def test_alert_actions_require_auth_csrf_and_fixed_body(self):
+        self.assertEqual(self.request('/api/alerts')[0],401)
+        self.assertEqual(self.request('/api/security-events')[0],401)
+        self.bootstrap()
+        self.assertEqual(self.request('/api/alerts')[0],200)
+        for operation in ['acknowledge','resolve']:
+            path = f'/api/alerts/{SID}/{operation}'
+            self.assertEqual(self.request(path)[0],405)
+            self.assertEqual(self.request(path,'POST',{}, {'X-POC-CSRF':'wrong'})[0],403)
+            self.assertEqual(self.request(path,'POST',{'actor':'admin'})[0],400)
+            self.assertEqual(self.request(path,'POST',{})[0],200)
+        self.assertEqual(self.request('/api/alerts/not-id/resolve','POST',{})[0],404)
+
+    def test_history_query_is_bounded_and_forwarded_as_arguments(self):
+        self.bootstrap()
+        self.assertEqual(self.request('/api/security-events?before=100&kind=egress_denied')[0],200)
+        self.assertIn(('security-events',('--before','100','--kind','egress_denied')),self.server.adapter.calls)
+        for query in ['before=-1','before=1%3Bwhoami','before=','before=1&before=2','kind=secret','limit=99999']:
+            self.assertEqual(self.request('/api/security-events?'+query)[0],400)
+
+    def test_monitor_requires_auth_and_is_read_only(self):
+        self.assertEqual(self.request('/api/monitor')[0], 401)
+        self.bootstrap()
+        status, _, data = self.request('/api/monitor')
+        self.assertEqual(status, 200)
+        snapshot = json.loads(data)
+        self.assertEqual(snapshot['sessions'], [])
+        self.assertIn('recorded_timings', snapshot)
+        self.assertEqual(self.request('/api/monitor', 'POST', {})[0], 404)
 
     def test_resident_health_is_returned(self):
         self.bootstrap()

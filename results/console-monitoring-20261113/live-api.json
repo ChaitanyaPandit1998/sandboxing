@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "sampled_at": 1794556987.793344,
+  "active_samples": 1,
+  "all_selected_checks_pass": true,
+  "recorded_timing_count": 3,
+  "domain_mode": "default_deny",
+  "policy_edit_exposed": false
+}

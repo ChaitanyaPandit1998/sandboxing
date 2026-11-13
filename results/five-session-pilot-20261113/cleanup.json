@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "checks": {
+    "all_test_sessions_stopped": true,
+    "temporary_resources_removed": true,
+    "session_material_removed": true,
+    "workspace_retained": true
+  }
+}

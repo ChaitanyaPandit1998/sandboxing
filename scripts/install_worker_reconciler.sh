@@ -14,6 +14,8 @@ fi
 mkdir -p "$HOME/gvisor-managed-pilot/scripts" "$HOME/.config/systemd/user" "$HOME/.local/state/gvisor-poc-worker"
 chmod 700 "$HOME/.local/state/gvisor-poc-worker"
 install -m 644 "$ROOT/scripts/manage_codex_session.py" "$HOME/gvisor-managed-pilot/scripts/"
+install -m 644 "$ROOT/scripts/security_history.py" "$HOME/gvisor-managed-pilot/scripts/"
+install -m 644 "$ROOT/scripts/console_observability.py" "$HOME/gvisor-managed-pilot/scripts/"
 install -m 644 "$ROOT/scripts/run_worker_reconciler.py" "$HOME/gvisor-managed-pilot/scripts/"
 install -m 644 "$ROOT/tls_gateway.py" "$HOME/gvisor-managed-pilot/"
 install -m 644 "$ROOT/deploy/systemd/gvisor-poc-reconciler.service" "$UNIT"

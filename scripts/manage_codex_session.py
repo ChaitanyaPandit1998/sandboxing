@@ -53,6 +53,8 @@ class Worker:
                     self.db.execute(f'ALTER TABLE sessions ADD COLUMN {name} {kind}')
             self.db.execute('CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY, session_id TEXT, action TEXT, state TEXT, at REAL)')
             self.db.commit()
+            from security_history import initialize
+            initialize(self.db)
 
     @contextlib.contextmanager
     def locked(self):
@@ -261,8 +263,8 @@ class Worker:
             obj = self.exists('container', self.names(sid)['agent'])
             self.ensure_owned(obj, sid)
             self.event(sid, 'login_requested' if login else 'attach_requested', 'ready')
-        cmd = ['docker', 'exec', '-it', self.names(sid)['agent'], 'codex']
-        cmd += ['login', '--device-auth'] if login else ['--no-daemon', '--sandbox', 'workspace-write', '--ask-for-approval', 'on-request']
+        cmd = ['docker', 'exec', '-it', self.names(sid)['agent'], 'codex', '--no-daemon']
+        cmd += ['login', '--device-auth'] if login else ['--sandbox', 'workspace-write', '--ask-for-approval', 'on-request']
         return subprocess.call(cmd)
 
     def health(self):
@@ -288,19 +290,35 @@ class Worker:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state-dir', default='~/.local/state/gvisor-poc-worker')
-    parser.add_argument('action', choices=['create', 'list', 'inspect', 'stop', 'reconcile', 'health', 'login', 'attach', 'events'])
+    parser.add_argument('action', choices=['create', 'list', 'inspect', 'stop', 'reconcile', 'health', 'monitor', 'collect-security', 'security-events', 'alerts', 'acknowledge-alert', 'resolve-alert', 'login', 'attach', 'events'])
     parser.add_argument('id', nargs='?')
     parser.add_argument('--key', default=None)
+    parser.add_argument('--before', type=int)
+    parser.add_argument('--kind', choices=['lifecycle', 'lifecycle_failure', 'egress_denied', 'policy_drift'])
     args = parser.parse_args()
     try:
         worker = Worker(args.state_dir)
         if args.action == 'health':
             print(json.dumps(worker.health()))
             return
+        if args.action == 'monitor':
+            from console_observability import snapshot
+            print(json.dumps(snapshot(worker)))
+            return
+        if args.action == 'collect-security':
+            from security_history import collect
+            print(json.dumps(collect(worker)))
+            return
         if args.action in ('login', 'attach'):
             raise SystemExit(worker.interactive(args.id or '', args.action == 'login'))
         with worker.locked():
-            if args.action == 'create':
+            if args.action in ('alerts', 'security-events', 'acknowledge-alert', 'resolve-alert'):
+                from security_history import alerts, history, transition
+                try:
+                    result = alerts(worker) if args.action == 'alerts' else history(worker, args.before, args.kind) if args.action == 'security-events' else transition(worker, args.id or '', 'acknowledge' if args.action == 'acknowledge-alert' else 'resolve')
+                except ValueError as exc:
+                    raise WorkerError(str(exc)) from None
+            elif args.action == 'create':
                 result = worker.create(args.key or uuid.uuid4().hex)
             elif args.action == 'list':
                 result = [worker.public(dict(r)) for r in worker.db.execute('SELECT * FROM sessions ORDER BY created')]

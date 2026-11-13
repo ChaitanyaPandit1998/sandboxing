@@ -8,6 +8,86 @@ Historical commit timestamps below are exact Git **author timestamps**, not test
 
 
 
+
+
+## 2026-11-13T15:30:01+05:30 — Commit monitoring UI, durable alerts and validation evidence
+
+- **Scope:** Consolidated the policy/telemetry/site-policy UI, resident security journal, local alert review workflow, foreground login adjustment, recovery/concurrency/coding validators, sanitized evidence and documentation for commit/push at the user's request. Earlier uncommitted-state entries reflect their batch-time status.
+- **Checks:** Git whitespace validation, JavaScript/shell syntax, AST parsing of 13 Python files and JSON validation of 17 evidence files passed. Targeted credential-pattern scan found no candidates. Existing evidence records six journal tests, four sanitization/policy tests, 16 API tests (one separate live lifecycle test skipped), 11 isolated service checks and the actual denied-flow/browser/restart workflow. Historical failed Python-task evidence is intentionally retained alongside the successful Node follow-up. No additional model calls or runtime changes were made for this commit-only step.
+- **Next:** Define detection thresholds/review criteria and expand signal coverage, then reviewed delivery and organization authorization. Git history and the remote record the resulting commit/push status.
+
+
+## 2026-11-13T15:21:49+05:30 — Durable security history and local alert review
+
+- **Changed:** Added private SQLite journal/alert/audit tables with additive idempotent schema setup; resident collection outside the Mac console; flow-stage deduplication, lifecycle cursor, drift episodes, local acknowledgement/resolution, reopen on new evidence, validated history pagination and UI filters/action trail. Journal retains up to 10,000 events/30 days; resolved alerts retain 30 days from resolution, unresolved alerts remain. Updated installer/dependency copies and deployed the collector/API/UI. No external messages or notifications.
+- **Validation:** Six journal tests, four sanitization/policy tests and 16 API tests passed; one separate live lifecycle test skipped. Updated resident service passed 11 isolated checks. A disposable pilot session generated two actual denied CONNECT flows; resident collection independently opened/reopened the same alert, count stayed two after resampling/restart, and API/browser acknowledge/resolve succeeded. Browser verified two filtered history entries and six actor-labeled actions with no console errors. State/history survived collector and Mac console restarts. [Evidence](results/security-history-20261113/).
+- **Corrections:** Fixed a placeholder-count error before tests; caught a resolved-retention edge case and added explicit resolution time plus a regression test so old unresolved items do not disappear immediately upon review. One browser selector missed the summary element; selected its visible text and completed the audit review. No user data or policy protections were relaxed.
+- **Limits / cleanup:** Journal is local and not tamper-resistant; actor is a fixed trusted-operator label. Polling can miss bursts/removed gateway logs/downtime gaps; no blocked-hostname history, prompt-injection/malware detection, historical utilization or external delivery. No credentials, codes, raw URLs, headers, bodies or model outputs stored. Disposable session stopped with workspace retained; its resolved validation alert/history intentionally retained. Existing coding session had already expired under its original deadline before this validation.
+- **State / next:** Loopback backend and resident service running. Preview saved to /private/tmp/sandbox-console-alert-history.png. Docs updated; changes remain uncommitted/unpushed. Next define detection thresholds/review criteria and expand signal coverage, followed by reviewed delivery and organization authorization.
+
+
+## 2026-11-13T13:52:05+05:30 — Policy, telemetry, review signals and blocked-site UI
+
+- **Changed:** Added four real console sections, compact/desktop navigation, session-state filters, current agent resource samples, nine selected policy-configuration checks, evidence-based timing bars, review-signal filtering and local exact-hostname policy lookup. New read-only authenticated `/api/monitor` forwards a bounded sanitized worker snapshot; policy administration is not exposed. Updated installer to include the monitoring module and deployed it to the pilot worker. Restarted only the owned loopback backend.
+- **Successful:** Live snapshot verified all nine checks and CPU/memory/PIDs; sampled gateway denies appeared as review signals. Fourteen local API tests passed, one separate live lifecycle test skipped; three sanitization/policy tests passed, including seven deliberate weakening cases and unavailable-resource handling. JS/Python/shell syntax and Git whitespace checks passed. Native browser reviewed desktop/narrow layouts, active/history filters, approved/unapproved/lookalike domain lookups, signal filtering, charts, and zero console errors. [Evidence](results/console-monitoring-20261113/).
+- **Corrections / limits:** Narrow layout initially hid sidebar links and long stopped history crowded the page; added compact section navigation and active/history filters. Sampling is up to 200 gateway log lines/15m, decisions not unique requests. No blocked-hostname history, raw logs, credentials, headers or bodies returned. Review signals do not establish malicious activity; prompt-injection/malware detection, durable incidents, central alerts, policy editing, historical telemetry and full security acceptance remain pending. No VM restart, image rebuild, session stop or auth change in this batch.
+- **State / next:** User's coding session remains on its existing expiry; browser preview saved to /private/tmp/sandbox-console-monitoring.png and viewport override reset. Docs updated; changes remain uncommitted/unpushed. Next define detection rules/retention and alert handling, then safe policy administration and organization authorization.
+
+
+## 2026-11-13T13:20:32+05:30 — Real coding/tool task validated with installed runtime
+
+- **Successful:** Private login eventually verified in the fresh session. Node coding task wrote implementation/tests, ran a successful command and passed independent correctness assertions plus five generated tests. First message 4.233s, first tool 5.121s, completed turn 21.206s, CLI exit 22.099s. [Outcome](results/coding-task-20261113/node-task.json), [summary/source hashes](results/coding-task-20261113/summary.json).
+- **Failed / corrected:** Initial Python task created files but failed execution/independent validation because this agent image has no python3 (Node 22.23.4 is available). Preserved [failed attempt](results/coding-task-20261113/attempt-1.json); changed the fixed task/oracle to installed Node built-ins and added runtime preflight, without rebuilding image or weakening policy. The successful Node run still had one intermediate nonzero command; its cause was not captured by the sanitized counter-only harness. No claim of zero tool failures.
+- **Validation / limits:** Verified five tests exit 0 and both generated files in the dedicated workspace subdirectory. Python syntax checks on four changed/new scripts and Git whitespace checks passed. One after-login automated CLI task; no token-level TTFT, interactive attach, p95, uptime or general Python compatibility claim. Login-wait cause remains unconfirmed. No credentials, codes or raw model output saved.
+- **State / next:** Left coding session ready until its existing deadline (no extension) for further checks; workspace retained. Updated runbook, executive summary and requirement evidence. Changes uncommitted/unpushed. Next repeated timing and safe intermediate-error classification, image capabilities, then interactive attach and uptime testing.
+
+
+## 2026-11-13T13:13:34+05:30 — Investigate coding-session device authorization wait
+
+- **Observed:** Fresh coding session ready; Codex login process still running; login status not authenticated. Gateway running, no OOM, nine sampled allow decisions and zero deny decisions. Dedicated login log found but no fixed-category timeout/token-exchange/certificate errors recorded. No raw logs, auth files, bodies or codes saved. [Evidence](results/coding-task-20261113/login-diagnostic.json).
+- **Correction / limits:** A naive substring count initially matched digits 502 in policy JSON; excluding JSON flow IDs found no explicit HTTP 502/error evidence. Do not interpret arbitrary digit matches as response status. A shell-quoting error in the first diagnostic was corrected by staging a script. These diagnostics do not identify the cause of the authorization wait. No gateway restart or policy relaxation was applied.
+- **Next:** Asked user to distinguish account sign-in from completed device-code approval, following [official authentication documentation](https://learn.chatgpt.com/docs/auth?surface=cli). Coding task remains gated on verified login. Changes remain uncommitted/unpushed.
+
+
+## 2026-11-13T13:09:10+05:30 — Prepare real coding/tool task and timing capture
+
+- **Changed:** Added and staged `scripts/test_managed_coding_task.py`: fixed Python implementation/unittest task, bounded streaming JSON-event timing, independent in-container correctness/test validation, sanitized outcomes only. Created a fresh one-hour managed session after prior concurrency-test cleanup.
+- **Validation / state:** Python syntax passed; VM staging succeeded. Fresh session is ready, but private login status is false. No model/tool task has run and no performance claim is made. [Preparation evidence](results/coding-task-20261113/preparation.json).
+- **Limits:** First response is an observed message event, not token-level TTFT. This will be one task after manual login, excluding provisioning; no p95 or uptime evidence. No credentials/codes/raw model output recorded.
+- **Next:** User completes private device login, then run coding task and report first-event, response, tool and completion timings. Changes remain uncommitted/unpushed.
+
+
+## 2026-11-13T13:01:43+05:30 — Five authenticated concurrent model probes passed
+
+- **Successful:** Verified independent private sign-in in all five ready sessions, then ran the fixed reply-only probes concurrently. Five of five passed with expected reply, exit 0, completed turns and zero recorded error events. Completed-response times 36.284–38.690s, median 37.648s; batch 38.693s. [Evidence](results/five-session-pilot-20261113/authenticated.json), [summary](results/five-session-pilot-20261113/summary.json).
+- **Cleanup / docs:** Stopped the five completed test sessions, retaining managed workspace data and removing temporary homes/keys/networks. Updated worker runbook, requirement matrix and executive summary. No credentials, login codes or raw model output saved.
+- **Limits / failures:** Earlier HTTP 504 origin remains unresolved; foreground-login retries succeeded but causality is unproven. One account, five reply-only tasks; no tools, browser attach, reliable p95 or uptime claim. Response times exclude provisioning and human login; startup and model-completion targets must be assessed separately.
+- **Next / status:** Repeated readiness decomposition, authenticated interactive tool task, sleep/recovery and uptime testing. Changes remain uncommitted/unpushed.
+
+
+## 2026-11-13T12:56:58+05:30 — Foreground private login retry
+
+- **Observed:** Sessions 1–3 verified logged in; 4–5 not logged in. User reported browser approval while session 4 Terminal waited. In-container process-name inspection showed only sleep and the diagnostic node process, with no active Codex login poller. Gateway running, no OOM or sampled error/deny indicators; deadline still in future. No credentials or raw request data were inspected.
+- **Changed / validation:** Managed interactive login now uses the supported global `--no-daemon` flag, matching attach's existing foreground behavior. Deployed to VM; Python syntax passed; status recheck preserved the three logins. The original cause and successful retry remain unverified; no claim of resolution.
+- **Next:** User restarts the private helper for sessions 4–5; run concurrent model probes only after all five report logged in. Changes remain uncommitted/unpushed.
+
+
+## 2026-11-13T12:28:02+05:30 — Device-login timeout diagnostic
+
+- **Successful:** Session 1 remains privately logged in; all five sessions remain ready and resident cleanup is healthy. Verified TLS requests to the public device page returned HTTP 302 in 0.069/0.088s from sessions 1/2. Both gateways were running with no OOM and no observed policy denials in the sampled logs.
+- **Failure / limits:** Session 2 device authorization returned HTTP 504 in the user's terminal. Current public-page reachability does not identify the historical timeout's origin or validate the token endpoint. No codes, tokens, bodies or raw gateway logs were saved. [Sanitized evidence](results/five-session-pilot-20261113/login-timeout-diagnostic.json).
+- **Next:** Re-run the private helper, which skips verified session 1, obtains fresh login challenges for the remaining sessions and checks persistence. Five-session authenticated model probing remains pending. Changes remain uncommitted/unpushed.
+
+
+## 2026-11-13T12:25:31+05:30 — Actual VM restart and five-session preparation
+
+- **Changed:** Added explicit isolated VM recovery phases and a five-session private-login/probe helper. Restarted the idle POC VM with no active pilot containers; cleanup services resumed automatically. Prepared five sessions under the existing one-hour policy. Updated current worker/requirement documentation.
+- **Successful:** [Nine actual stop/start checks](results/vm-recovery-20261113/restart.json) passed, covering automatic service startup, overdue/lost-session cleanup, resource removal and retained workspace marker. Recovery test unit/state/volume were removed; production service remained healthy. [Five login-ready timings](results/five-session-pilot-20261113/login-ready.json) ranged 0.788–4.259s including serialization, with all five simultaneously ready.
+- **Failures / pending:** User reported login, but all five new sessions returned not-logged-in with no auth file present (presence checked without reading credentials). Authenticated probe correctly refused to run. Added per-session verification and requested private sign-in again. One CLI-help inspection used an incorrect container namespace; corrected by resolving the name from Worker. No model requests or credentials were captured.
+- **Limits:** One VM restart, no actual Mac sleep, clock-jump or uptime soak; five timings are not reliable p95 evidence and exclude human login. This is one account across five sessions, not five users. Authenticated test awaits private login; sessions expire normally after one hour. Changes remain uncommitted/unpushed.
+- **Next:** Verify all five private logins, run the concurrent fixed model probes, then clean up test sessions and report authenticated response timings separately from provisioning.
+
+
 ## 2026-11-13T01:41:44+05:30 — Commit console, expiry and resident cleanup
 
 - **Scope:** Consolidated the live local console, one-hour session expiry, supervised VM reconciliation, runbooks and sanitized validation evidence for commit and push at the user's request. Earlier uncommitted-state notes describe their batch-time state.

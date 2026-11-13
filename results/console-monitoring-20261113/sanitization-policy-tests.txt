@@ -1,0 +1,8 @@
+test_gateway_output_never_exposes_extra_fields_or_counts_nonpolicy_lines (test_console_observability.MonitoringTests.test_gateway_output_never_exposes_extra_fields_or_counts_nonpolicy_lines) ... ok
+test_unavailable_resources_remain_unknown_and_failures_are_only_review_signals (test_console_observability.MonitoringTests.test_unavailable_resources_remain_unknown_and_failures_are_only_review_signals) ... ok
+test_weakened_configurations_are_detected (test_console_observability.MonitoringTests.test_weakened_configurations_are_detected) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.002s
+
+OK
