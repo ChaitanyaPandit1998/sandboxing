@@ -1,0 +1,7 @@
+{
+  "state": "retained",
+  "hard_quota_enforced": false,
+  "budget_bytes": 5368709120,
+  "allocated_bytes": 22528,
+  "active_sessions": 0
+}

@@ -1,0 +1,11 @@
+{
+  "port_scoped_personal_bootstrap": true,
+  "personal_identity": true,
+  "resident_cleanup_healthy": true,
+  "ready_sessions": 0,
+  "terminal_page": true,
+  "terminal_script": true,
+  "vendored_terminal": true,
+  "deployed_worker_sources_match": true,
+  "final_personal_console_verified": true
+}

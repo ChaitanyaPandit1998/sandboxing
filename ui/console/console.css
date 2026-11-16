@@ -36,3 +36,27 @@ html { scroll-behavior: smooth; scroll-padding-top: 24px; }
 .compact-nav { display: none; }.session-tools { display: flex; align-items: center; gap: 10px; }.session-tools select { color: #58677d; background: white; padding: 9px; border: 1px solid #e1e6ef; border-radius: 7px; font-size: 12px; }.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media(max-width: 850px) { .compact-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: -5px 0 18px; }.compact-nav a { border: 1px solid #e0e6f1; background: white; color: #526780; padding: 8px 11px; border-radius: 7px; font-size: 12px; }.session-section .section-heading { align-items: start; flex-direction: column; gap: 12px; } }
 .alert-copy { flex: 1; }.alert-buttons { display: flex; gap: 12px; margin-top: 12px; }.alert-buttons .text-button { border: 1px solid #dfe5ef; border-radius: 6px; padding: 7px 10px; background: white; }.audit-card summary { padding: 18px; font-size: 13px; color: #435772; cursor: pointer; }.audit-row { padding: 12px 18px; border-top: 1px solid var(--line); color: #68768b; font-size: 12px; }.history-actions { padding: 14px 18px; display: flex; gap: 12px; }#history-count { color: #758095; font-size: 11px; }#alert-list small { color: #7c8796; font-size: 11px; }#collector-status { margin-bottom: 12px; }
+
+.rule-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }.rule-card { padding:20px; margin:0; }.rule-card h3 { margin:14px 0 10px; }.rule-card strong { font-size:11px; color:#5e7088; }.rule-card p { font-size:12px; color:#6b788b; line-height:1.65; }.review-guide { margin-top:12px; color:#586c87; font-size:12px; }.review-guide summary { cursor:pointer; }.review-guide p { padding-left:12px; border-left:2px solid #e1e7f1; }@media(max-width:850px) { .rule-grid { grid-template-columns:1fr; } }
+
+.identity-strip { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin:0 0 14px; padding:11px 14px; background:#eef2fb; border:1px solid #dfe6f2; border-radius:8px; color:#516782; font-size:11px; }.identity-strip strong { color:#344b6d; }.identity-strip span { line-height:1.5; }
+.login-page { display: grid; place-items: center; min-height: 100vh; padding: 24px; }
+.login-card { width: min(100%, 520px); background: white; border: 1px solid #dbe3ed; border-radius: 18px; padding: 36px; }
+.login-card p { margin: 20px 0; line-height: 1.6; }
+.login-card .primary-button { display: inline-block; text-decoration: none; }
+.login-card small { display: block; line-height: 1.6; color: #53647a; }
+.terminal-dialog { width: min(1160px, 96vw); max-width: 96vw; padding: 18px; border: 1px solid #d9e2ef; border-radius: 14px; }
+.terminal-dialog::backdrop { background: #13213b99; }
+.terminal-dialog iframe { width: 100%; height: min(72vh, 740px); min-height: 310px; border: 0; display: block; border-radius: 9px; background: #111b2e; }
+.terminal-dialog .dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.terminal-page { margin: 0; height: 100vh; overflow: hidden; background: #111b2e; color: #e7edf8; display: flex; flex-direction: column; font: 13px system-ui,sans-serif; }
+.terminal-toolbar { display: flex; gap: 15px; align-items: center; padding: 12px; flex-shrink: 0; }
+.terminal-toolbar button { margin-left: auto; padding: 8px 12px; border: 1px solid #53698a; border-radius: 6px; color: #e7edf8; background: #263b5d; cursor: pointer; }
+.terminal-privacy { font-size: 11px; color: #a9bbd5; margin: 0; padding: 0 12px 10px; flex-shrink: 0; }
+#terminal-screen { min-height: 0; flex: 1; padding: 0 8px 8px; overflow: hidden; }
+@media (max-width: 650px) { .terminal-toolbar { flex-wrap: wrap; gap: 8px; } .terminal-toolbar #terminal-status { font-size: 11px; } }
+
+#workspace-delete-dialog label { display: block; margin: 16px 0 8px; }
+#workspace-delete-dialog input { box-sizing: border-box; width: 100%; }
+#confirm-workspace-deletion { margin-left: 8px; padding: 10px 14px; border: 1px solid #b42318; border-radius: 8px; background: #b42318; color: #fff; font: inherit; cursor: pointer; }
+#confirm-workspace-deletion:disabled { opacity: .45; cursor: not-allowed; }

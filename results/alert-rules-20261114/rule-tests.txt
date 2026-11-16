@@ -1,0 +1,13 @@
+test_collector_gap_clock_regression_and_review_only_catalog (test_alert_rules.RuleTests.test_collector_gap_clock_regression_and_review_only_catalog) ... ok
+test_denials_outside_window_do_not_combine (test_alert_rules.RuleTests.test_denials_outside_window_do_not_combine) ... ok
+test_egress_five_unique_observations_and_repeat_dedup (test_alert_rules.RuleTests.test_egress_five_unique_observations_and_repeat_dedup) ... ok
+test_memory_and_pid_rules_and_below_threshold (test_alert_rules.RuleTests.test_memory_and_pid_rules_and_below_threshold) ... ok
+test_missing_long_gap_and_duplicate_samples_reset_or_do_not_advance (test_alert_rules.RuleTests.test_missing_long_gap_and_duplicate_samples_reset_or_do_not_advance) ... ok
+test_repeated_incomplete_samples_and_invalid_numbers (test_alert_rules.RuleTests.test_repeated_incomplete_samples_and_invalid_numbers) ... ok
+test_resource_boundary_sustained_samples_and_recovery (test_alert_rules.RuleTests.test_resource_boundary_sustained_samples_and_recovery) ... ok
+test_sustained_sample_progress_survives_database_reopen (test_alert_rules.RuleTests.test_sustained_sample_progress_survives_database_reopen) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.009s
+
+OK

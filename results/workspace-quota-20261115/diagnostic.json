@@ -1,0 +1,100 @@
+{
+  "checks": {
+    "project_enforcement_on": true,
+    "configured_5_gib_hard_limit": false,
+    "nonroot_workspace_write": false,
+    "multiple_files_near_5_gib": true,
+    "over_limit_is_edquot": false,
+    "other_project_same_uid_writable": true,
+    "second_project_limit_enforced": false,
+    "freeing_space_recovers_writes": true,
+    "hard_limit_survives_remount": false,
+    "data_survives_remount": false,
+    "enforcement_survives_remount": false,
+    "disposable_storage_cleaned": true
+  },
+  "passed": false,
+  "hard_limit_bytes": 5368709120,
+  "candidate_only": true,
+  "pilot_hard_quota_enabled": false,
+  "user_workspace_read": false,
+  "user_workspace_changed": false,
+  "elapsed_seconds": 0.837,
+  "measurements": {
+    "quota_diagnostics": [
+      {
+        "command": "project -s -p <fixture-mount>/a 1001",
+        "stdout": "Setting up project 1001 (path /var/tmp/gvisor-quota-test-6jgewrun/mount/a)...\nProcessed 1 (/etc/projects and cmdline) paths for project 1001 with recursion depth infinite (-1).",
+        "stderr": ""
+      },
+      {
+        "command": "limit -p bhard=5g bsoft=0 ihard=100000 1001",
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "project -s -p <fixture-mount>/b 1002",
+        "stdout": "Setting up project 1002 (path /var/tmp/gvisor-quota-test-6jgewrun/mount/b)...\nProcessed 1 (/etc/projects and cmdline) paths for project 1002 with recursion depth infinite (-1).",
+        "stderr": ""
+      },
+      {
+        "command": "limit -p bhard=32m bsoft=0 ihard=100000 1002",
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "state -p",
+        "stdout": "Project quota state on /var/tmp/gvisor-quota-test-6jgewrun/mount (/dev/loop0)\n  Accounting: ON\n  Enforcement: ON\n  Inode: #131 (2 blocks, 2 extents)\nBlocks grace time: [7 days]\nBlocks max warnings: 0\nInodes grace time: [7 days]\nInodes max warnings: 0\nRealtime Blocks grace time: [7 days]\nRealtime Blocks max warnings: 0",
+        "stderr": ""
+      },
+      {
+        "command": "quota -p -b -N 1001",
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "quota -p -b -N 1001",
+        "stdout": "/dev/loop0                1028          0    5242880   00 [--------] /var/tmp/gvisor-quota-test-6jgewrun/mount",
+        "stderr": ""
+      }
+    ],
+    "project_a_quota_report": "",
+    "probe_diagnostics": [
+      {
+        "exit": 1,
+        "stderr": "sh: 1: cat: Cannot allocate memory"
+      },
+      {
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "exit": 1,
+        "stderr": "fallocate: fallocate failed: No space left on device"
+      },
+      {
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "exit": 1,
+        "stderr": "fallocate: fallocate failed: No space left on device"
+      },
+      {
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "exit": 1,
+        "stderr": "sh: 1: cat: Cannot allocate memory"
+      },
+      {
+        "exit": 1,
+        "stderr": "fallocate: fallocate failed: No space left on device"
+      }
+    ],
+    "over_limit_exit": 1
+  },
+  "error": "quota_acceptance_check_failed",
+  "cleanup_errors": []
+}

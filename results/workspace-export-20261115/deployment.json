@@ -1,0 +1,15 @@
+{
+  "worker_files_installed": 3,
+  "source_equality_verified": true,
+  "personal_console_port": 4180,
+  "temporary_fixture_console_port": 4181,
+  "temporary_console_stopped": true,
+  "source_sha256": {
+    "scripts/workspace_export.py": "cf8a25d87d2130c70a3a007c8696f67046e5b3c65a8eada5f29a6a0715f29ba2",
+    "scripts/workspace_storage.py": "6123f9f5dae536a46a78c5ad1910277cce57df05126605bc7839d529c4ce4a1b",
+    "scripts/manage_codex_session.py": "cf1a4887f90e311389510ab20b8a2a60c2d46466875363fc30cfa97e7df26773",
+    "scripts/serve_session_console.py": "832a2901220b94c2abc746917f54f25ed622b745a308bb18f57e01ffe4413cf6",
+    "ui/console/app.js": "f8c54ef518433551c813faec2b44e02b9052c1317e33ff336cb52c63c7b7ac91",
+    "ui/console/index.html": "2d1812bcc2c21b0f98e656069df9b27ea1075324e8ef84bbf40441fe311d346e"
+  }
+}

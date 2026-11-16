@@ -1,0 +1,15 @@
+{
+  "checks": {
+    "missing_not_created": true,
+    "measured_own_volume": false,
+    "budget_5_gib_advisory": true,
+    "content_unchanged": true,
+    "unreadable_is_unknown": true,
+    "no_paths_or_contents_in_response": true,
+    "probe_containers_removed": true,
+    "isolated_volume_and_state_removed": true
+  },
+  "passed": false,
+  "secrets_read": false,
+  "hard_quota_enforced": false
+}

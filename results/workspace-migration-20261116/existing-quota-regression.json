@@ -1,0 +1,39 @@
+{
+  "checks": {
+    "two_managed_sessions_ready": true,
+    "same_owner_same_volume": true,
+    "verified_hard_quota_metadata": true,
+    "other_owner_cannot_see_quota_workspace": true,
+    "other_owner_cannot_delete_quota_workspace": true,
+    "changed_quota_limit_fails_closed": true,
+    "no_host_paths_in_public_metadata": true,
+    "workspace_shared_only_through_managed_volume": true,
+    "aggregate_limit_across_sessions": true,
+    "active_export_blocked": true,
+    "active_deletion_blocked": true,
+    "freeing_space_recovers": true,
+    "readonly_export_matches_fixture": true,
+    "missing_mount_fails_closed": true,
+    "service_recovery_preserves_data": true,
+    "quota_verified_after_recovery": true,
+    "expiry_retains_quota_workspace": true,
+    "confirmed_deletion_removes_backing_data": true,
+    "deletion_audit_recorded": true,
+    "new_workspace_is_empty": true,
+    "old_storage_identity_cannot_delete_replacement": true,
+    "canary_resources_removed": true
+  },
+  "passed": true,
+  "create_seconds": [
+    0.888,
+    1.168,
+    0.878,
+    1.206
+  ],
+  "error": null,
+  "cleanup_errors": [],
+  "legacy_workspace_migrated": false,
+  "model_requests": 0,
+  "owner": "quota-canary",
+  "namespace": "4e17cb74ad"
+}

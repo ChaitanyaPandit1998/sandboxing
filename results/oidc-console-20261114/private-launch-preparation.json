@@ -1,0 +1,16 @@
+{
+  "recorded_at": "2026-11-14T16:35:17+05:30",
+  "assignment_observed_in_user_screenshot": true,
+  "exact_subject_configured": true,
+  "configured_role": "member",
+  "external_config_mode": "0600",
+  "launcher_mode": "0700",
+  "launcher_shell_syntax_passed": true,
+  "offline_profile_shape_passed": true,
+  "previous_verified_personal_console_stopped": true,
+  "port_4180_available": true,
+  "secret_supplied_to_agent": false,
+  "secret_persisted": false,
+  "real_okta_login_verified": false,
+  "next": "User runs private hidden-input launcher and signs in through browser"
+}

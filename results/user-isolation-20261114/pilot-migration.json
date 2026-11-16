@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "identity": {
+    "principal": "local-pilot",
+    "role": "operator",
+    "mode": "server_bound_local_operator",
+    "organization_sso": false
+  },
+  "legacy_session_count": 13,
+  "all_legacy_owners_preserved": true,
+  "legacy_quota": 5,
+  "resident_cleanup": {
+    "active": true,
+    "stale": false,
+    "interval_seconds": 30,
+    "last_attempt": 1794600081.4159422,
+    "last_success": 1794600081.4695985,
+    "error": null
+  },
+  "monitoring_endpoint_works": true,
+  "alerts_endpoint_works": true,
+  "private_metadata_backup_created": true
+}

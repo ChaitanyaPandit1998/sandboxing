@@ -1,0 +1,15 @@
+{
+  "checks": {
+    "wrong_phrase_rejected": true,
+    "http_delete_succeeded": true,
+    "http_replay_rejected": true,
+    "absence_and_owner_audit": true
+  },
+  "browser_initially_disabled": true,
+  "browser_partial_phrase_blocked": true,
+  "browser_exact_phrase_enabled": true,
+  "browser_cancel_retained_volume": true,
+  "browser_final_delete_not_clicked": true,
+  "browser_errors": 0,
+  "only_disposable_fixture_deleted": true
+}

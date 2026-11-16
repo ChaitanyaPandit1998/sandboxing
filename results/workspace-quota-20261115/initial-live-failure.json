@@ -1,0 +1,29 @@
+{
+  "checks": {
+    "project_enforcement_on": true,
+    "configured_5_gib_hard_limit": false,
+    "nonroot_workspace_write": true,
+    "multiple_files_near_5_gib": true,
+    "over_limit_is_edquot": false,
+    "other_project_same_uid_writable": true,
+    "second_project_limit_enforced": false,
+    "freeing_space_recovers_writes": true,
+    "hard_limit_survives_remount": false,
+    "data_survives_remount": false,
+    "enforcement_survives_remount": false,
+    "disposable_storage_cleaned": true
+  },
+  "passed": false,
+  "hard_limit_bytes": 5368709120,
+  "candidate_only": true,
+  "pilot_hard_quota_enabled": false,
+  "user_workspace_read": false,
+  "user_workspace_changed": false,
+  "elapsed_seconds": 1.01,
+  "measurements": {
+    "project_a_quota_report": "",
+    "over_limit_exit": 1
+  },
+  "error": "quota_acceptance_check_failed",
+  "cleanup_errors": []
+}

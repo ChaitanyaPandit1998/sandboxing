@@ -1,0 +1,14 @@
+{
+  "owner": "local-pilot",
+  "state": "retained",
+  "active_sessions": 0,
+  "retention": "until_explicit_deletion",
+  "hard_quota_enforced": false,
+  "budget_bytes": 5368709120,
+  "over_budget": false,
+  "quota_bytes": null,
+  "allocated_bytes": 22528,
+  "measurement_status": "measured",
+  "sampled_at": 1794685669.0378394,
+  "measurement_scope": "allocated bytes readable by the sandbox user; live, non-atomic sample"
+}

@@ -1,0 +1,17 @@
+test_actual_cli_preflight_and_gate (test_console_auth.AuthProfileTests.test_actual_cli_preflight_and_gate) ... ok
+test_assignments_are_explicit_bounded_unique_and_least_privilege (test_console_auth.AuthProfileTests.test_assignments_are_explicit_bounded_unique_and_least_privilege) ... ok
+test_authorization_rejects_other_issuer_unassigned_and_local_identity (test_console_auth.AuthProfileTests.test_authorization_rejects_other_issuer_unassigned_and_local_identity) ... ok
+test_bad_files_duplicate_keys_unknown_fields_and_size_fail_closed (test_console_auth.AuthProfileTests.test_bad_files_duplicate_keys_unknown_fields_and_size_fail_closed) ... ok
+test_callback_must_match_fixed_loopback_route_and_port (test_console_auth.AuthProfileTests.test_callback_must_match_fixed_loopback_route_and_port) ... ok
+test_cli_check_and_okta_gate_run_before_adapter_or_server (test_console_auth.AuthProfileTests.test_cli_check_and_okta_gate_run_before_adapter_or_server) ... ok
+test_diagnostics_do_not_disclose_configuration (test_console_auth.AuthProfileTests.test_diagnostics_do_not_disclose_configuration) ... ok
+test_issuer_is_exact_https_and_has_no_ambiguous_parts (test_console_auth.AuthProfileTests.test_issuer_is_exact_https_and_has_no_ambiguous_parts) ... ok
+test_mapping_separates_issuer_and_subject_and_preserves_case (test_console_auth.AuthProfileTests.test_mapping_separates_issuer_and_subject_and_preserves_case) ... ok
+test_modes_cannot_mix_or_fall_back (test_console_auth.AuthProfileTests.test_modes_cannot_mix_or_fall_back) ... ok
+test_only_secret_reference_allowed (test_console_auth.AuthProfileTests.test_only_secret_reference_allowed) ... ok
+test_personal_preserves_legacy_and_explicit_member_defaults (test_console_auth.AuthProfileTests.test_personal_preserves_legacy_and_explicit_member_defaults) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.123s
+
+OK

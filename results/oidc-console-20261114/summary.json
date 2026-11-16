@@ -1,0 +1,36 @@
+{
+  "recorded_at": "2026-11-14T15:03:31+05:30",
+  "scope": "OIDC candidate with simulated provider; no real tenant or worker SSO acceptance",
+  "tests": {
+    "oidc_signed_token_and_http_passed": 20,
+    "profile_passed": 12,
+    "ownership_passed": 6,
+    "existing_console_api_passed": 18,
+    "live_vm_lifecycle_skipped": 1
+  },
+  "browser_login_page_content_reviewed": true,
+  "preview_stopped": true,
+  "real_okta_login_verified": false,
+  "real_distinct_user_worker_acceptance": false,
+  "deployed_to_pilot": false,
+  "committed": false,
+  "dependencies": {
+    "Authlib": "1.9.4",
+    "requests": "2.32.5",
+    "joserfc": "1.8.0",
+    "installed_in": "isolated temporary venv"
+  },
+  "sources": {
+    "scripts/console_auth.py": "b1eb4e28838b550843e70bc08b1db45583b3b6d8308ec0434f44c7553629deb4",
+    "scripts/console_oidc.py": "c47a3a1fa7429128f7b0eeae11fc43ecd49af2aa40fbd60d5911c38e2131ab34",
+    "scripts/serve_session_console.py": "f6f681b58dd3778602f6c02dc8dcab9c6b4b14e8f03231870ecf0012133d98c9",
+    "tests/test_console_auth.py": "8211d656e13b56e0063a59521f071013ccebdae5aa7be081e6ad70d173b141f4",
+    "tests/test_console_oidc.py": "5a9ddbabab726854f640466450abde63d23b0dd4719e0b22620b1d1ee203cf05"
+  },
+  "remaining": [
+    "real tenant/app registration and login",
+    "distinct real-user real-worker acceptance",
+    "secure browser attach relay",
+    "remote HTTPS and provider revocation integration"
+  ]
+}

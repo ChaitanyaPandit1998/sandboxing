@@ -1,0 +1,21 @@
+{
+  "recorded_at": "2026-11-14T16:27:08+05:30",
+  "public_discovery_verified": true,
+  "org_and_default_endpoints_responded": true,
+  "capabilities_verified": [
+    "authorization_code",
+    "S256",
+    "RS256",
+    "client_secret_basic",
+    "same-origin HTTPS endpoints"
+  ],
+  "selected_authorization_server": "org",
+  "reason": "OIDC sign-in only; ID-token validation; no application API access-token authorization",
+  "draft_prepared_outside_repository": true,
+  "user_assignment_verified": false,
+  "subject_configured": false,
+  "client_secret_supplied": false,
+  "application_credentials_verified": false,
+  "real_login_verified": false,
+  "limitation": "Latest user profile screenshot does not list the sandbox app; assign it and supply exact user subject before startup."
+}

@@ -1,0 +1,14 @@
+[Unit]
+Description=Local gVisor workspace quota mounts
+Requires=docker.service
+After=local-fs.target docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/gvisor-workspace-quota restore-all
+RemainAfterExit=yes
+UMask=0077
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target

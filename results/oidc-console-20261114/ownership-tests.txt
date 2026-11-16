@@ -1,0 +1,11 @@
+test_history_alert_audit_and_monitor_do_not_leak_other_users (test_session_ownership.OwnershipTests.test_history_alert_audit_and_monitor_do_not_leak_other_users) ... ok
+test_legacy_owner_volume_and_deadline_migration_preserved (test_session_ownership.OwnershipTests.test_legacy_owner_volume_and_deadline_migration_preserved) ... ok
+test_member_reconciliation_does_not_touch_foreign_provisioning (test_session_ownership.OwnershipTests.test_member_reconciliation_does_not_touch_foreign_provisioning) ... ok
+test_owner_scoped_idempotency_member_and_global_quotas (test_session_ownership.OwnershipTests.test_owner_scoped_idempotency_member_and_global_quotas) ... ok
+test_per_user_volume_and_owner_label_tamper (test_session_ownership.OwnershipTests.test_per_user_volume_and_owner_label_tamper) ... ok
+test_scoped_reads_stop_cleanup_attach_and_denial_audit (test_session_ownership.OwnershipTests.test_scoped_reads_stop_cleanup_attach_and_denial_audit) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.058s
+
+OK

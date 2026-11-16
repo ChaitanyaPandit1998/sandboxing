@@ -6,10 +6,12 @@ Start with the [POC overview](overview/POC_SUMMARY.md). For the current implemen
 
 | Need | Canonical document |
 |---|---|
+| Coding workflow and task-specific skills | [Repository instructions](../AGENTS.md) |
 | Leadership update | [Executive summary](overview/EXECUTIVE_SUMMARY.md) |
 | Design, findings, and limits | [POC overview](overview/POC_SUMMARY.md) |
 | What is complete or still pending | [Requirements status](REQUIREMENTS_STATUS.md) |
 | Create/manage a local pilot session | [Managed worker runbook](runbooks/MANAGED_WORKER.md) |
+| Personal mode and optional Okta SSO preparation | [Authentication modes](security/AUTHENTICATION.md) |
 | Manage real sessions from the local UI | [Local console runbook](runbooks/LOCAL_CONSOLE.md) |
 | Private Codex login, CA trust, HTTPS transport, cleanup, and authentication results | [Codex TLS guide](runbooks/CODEX_TLS.md) |
 | Gateway implementation, tested policy cases, and remaining acceptance criteria | [TLS gateway](security/TLS_GATEWAY.md) |
@@ -18,6 +20,8 @@ Start with the [POC overview](overview/POC_SUMMARY.md). For the current implemen
 | Synthetic streaming/network-failure checks | [Stream failures](reports/STREAM_FAILURE_RESULTS.md) |
 | Broader security test plan | [Security validation](validation/SECURITY_VALIDATION_PLAN.md) |
 | Agent/runtime compatibility and validation evidence | [Agent validation](validation/AGENT_SESSION_VALIDATION_PLAN.md) |
+| Managed 5 GiB quotas, tests and rollout gates | [Workspace quotas](platform/WORKSPACE_QUOTAS.md) |
+| Existing workspace cutover, rollback and backup finalization | [Workspace migration](runbooks/WORKSPACE_MIGRATION.md) |
 | Platform delivery sequence | [Roadmap](platform/PLATFORM_ROADMAP.md) |
 | Proposed service API, policy, and lifecycle contract | [Control-plane spec](platform/SESSION_CONTROL_PLANE_SPEC.md) |
 | Wardyn evaluation and remaining integration questions | [Wardyn assessment](platform/WARDYN_FIT_ASSESSMENT.md) |
@@ -45,3 +49,7 @@ Keep current coverage in the requirements matrix, operational instructions in ru
 - `CODEX_TLS_SESSION.md`, `CODEX_HTTPS_TRANSPORT.md`, and `CODEX_TLS_AUTHENTICATED_RESULTS.md` were merged into [Codex TLS](runbooks/CODEX_TLS.md), retaining the initial fallback result and later explicit-HTTPS result separately.
 - `TLS_GATEWAY_RESULTS.md` and `EGRESS_ENFORCEMENT_PLAN.md` were merged into [TLS gateway](security/TLS_GATEWAY.md), retaining the implementation evidence and uncompleted acceptance cases.
 - Repeated progress paragraphs were removed from summaries/plans. The [development log](../DEVLOG.md), source reports, and raw `results/` evidence retain the chronology and test limits. Superseded files remain accessible in Git history.
+
+- [Pilot alert rules and review criteria](security/ALERT_REVIEW_RULES.md): thresholds, rule versions, review workflow and coverage limits.
+
+- [Owner-scoped sessions and workspace isolation](security/USER_ISOLATION.md): tested local foundation and the required SSO/remote-access gate.

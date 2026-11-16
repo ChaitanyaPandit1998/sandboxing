@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "checks": {
+    "unit_validated": true,
+    "service_healthy": true,
+    "health_private": true,
+    "resident_expiry_without_console": true,
+    "expiry_reason": true,
+    "temporary_container_removed": true,
+    "workspace_volume_retained": true,
+    "supervised_restart": true,
+    "docker_failure_reported": true,
+    "recovery_after_docker_connection_restore": true,
+    "workspace_data_survives": true
+  },
+  "scope": "real isolated systemd user unit with production sandbox settings; injected past deadline; no browser/backend requests; no VM reboot test"
+}

@@ -1,0 +1,7 @@
+test_http_roles_and_persistent_volume_isolation (test_user_isolation_live.LiveOwnershipTests.test_http_roles_and_persistent_volume_isolation) ... OWNERSHIP_CHECKS {"same_key_scoped_by_owner": true, "idempotent_owner_retry": true, "principal_header_cannot_impersonate": true, "request_owner_override_rejected": true, "list_is_owner_scoped": true, "foreign_targets_denied": true, "operator_read_but_no_credential_attach": true, "other_user_cannot_read_workspace_marker": true, "same_user_workspace_persists": true, "replacement_home_is_ephemeral": true, "replacement_cannot_read_other_workspace": true, "history_is_owner_scoped": true, "alert_counts_scoped": true, "foreign_alert_action_denied": true, "audit_is_owner_scoped": true, "monitor_is_owner_scoped": true, "operator_expiry_reconciles_member_resources": true, "operator_can_stop_foreign_session": true, "isolated_resources_cleaned": true}
+ok
+
+----------------------------------------------------------------------
+Ran 1 test in 8.808s
+
+OK

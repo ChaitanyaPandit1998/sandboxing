@@ -1,0 +1,4 @@
+# Optional: personal mode retains its standard-library-only runtime.
+Authlib==1.9.4
+requests==2.32.5
+joserfc==1.8.0

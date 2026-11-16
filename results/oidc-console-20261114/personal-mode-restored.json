@@ -1,0 +1,14 @@
+{
+  "recorded_at": "2026-11-14T16:45:40+05:30",
+  "requested_by_user": "defer_authentication_and_focus_remaining_functions",
+  "personal_bootstrap_passed": true,
+  "personal_identity_passed": true,
+  "session_count": 13,
+  "active_sessions": 0,
+  "resident_cleanup_active": true,
+  "resident_cleanup_stale": false,
+  "okta_login_verified": false,
+  "okta_code_retained": true,
+  "external_config_retained": true,
+  "next_priority": "owner-bound browser terminal relay for local pilot"
+}

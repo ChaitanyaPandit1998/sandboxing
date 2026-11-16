@@ -1,0 +1,25 @@
+{
+  "deployed_source_equality_verified": true,
+  "source_sha256": {
+    "scripts/workspace_quota_service.py": "86e8f84b9aebddd0ca673ba8cd5cbc6598d3b54df04dcea5fd10233d12f6bded",
+    "scripts/workspace_copy.py": "e61da64cdbd4f7f7fb16cd959c5d74e45e296cbb7fa0c7ca19190df5cf40a1a8",
+    "scripts/manage_codex_session.py": "6abbf660257db454df39a2be7c72902243b4909b7eaa202a9ee7333294372109",
+    "scripts/workspace_quota.py": "d5ffc7cce9593de39fb3e6cd968e476f7133157cd44ed74a7cfa575bfe517250",
+    "scripts/workspace_lifecycle.py": "c206197633c3487801b49d92ec05c01022b5487017ba3ba9156267c45080e130",
+    "scripts/workspace_migration.py": "d1e9bf4714ac05f8f9b577657ccbb8d0ab41879f6ade5c78021aa7e2d87ff3cc",
+    "scripts/workspace_storage.py": "7dc2d040505a4c2e555ce961cb11c35dbcab4aa453f1bf1a559e634f29382ced"
+  },
+  "quota_service_active": true,
+  "reconciler_active": true,
+  "migration_phase": "active",
+  "source_and_target_match": true,
+  "hard_quota_enforced": true,
+  "quota_bytes": 5368709120,
+  "active_sessions": 0,
+  "browser_hard_quota_verified": true,
+  "browser_retained_copy_deletion_guard_verified": true,
+  "browser_console_errors": 0,
+  "actual_rollback_copy_deleted": false,
+  "python_syntax_passed": true,
+  "doc_links_passed": true
+}

@@ -1,0 +1,8 @@
+{
+  "issuer": "https://example.okta.com/oauth2/default",
+  "client_id": "REPLACE_WITH_PUBLIC_CLIENT_ID",
+  "redirect_uri": "http://127.0.0.1:4180/auth/callback",
+  "client_secret_env": "POC_OKTA_CLIENT_SECRET",
+  "allowed_subjects": ["REPLACE_WITH_ASSIGNED_OKTA_SUBJECT"],
+  "operator_subjects": []
+}

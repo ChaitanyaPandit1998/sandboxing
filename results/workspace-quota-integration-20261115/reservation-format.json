@@ -1,0 +1,9 @@
+{
+  "default_before": 536875008,
+  "default_after": 536875008,
+  "keep_before": 536875008,
+  "keep_after": 536875008,
+  "test_cleaned": true,
+  "format_keep_option_enabled": true,
+  "reservation_guard_added": true
+}

@@ -1,0 +1,26 @@
+{
+  "checks": {
+    "interrupted_copy_abort_preserves_original": true,
+    "verified_copy_prepared": true,
+    "original_binding_retained": true,
+    "active_cutover_blocked": true,
+    "quota_cutover_verified": true,
+    "original_volume_preserved": true,
+    "copied_files_links_read_in_managed_session": true,
+    "permanent_deletion_blocked_with_rollback_copy": true,
+    "rollback_restores_original_binding": true,
+    "new_work_prevents_silent_rollback": true,
+    "explicit_finalize_removes_only_legacy_copy": true,
+    "new_work_survives_finalization": true,
+    "finalized_workspace_deletion_complete": true,
+    "post_migration_recreation_is_empty_quota_workspace": true,
+    "migration_audit_recorded": true,
+    "fixture_cleaned": true
+  },
+  "passed": true,
+  "error": null,
+  "cleanup_errors": [],
+  "actual_workspace_touched": false,
+  "model_requests": 0,
+  "namespace": "1444c43b88"
+}

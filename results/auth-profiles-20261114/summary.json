@@ -1,0 +1,26 @@
+{
+  "recorded_at": "2026-11-14T11:12:01+05:30",
+  "scope": "offline configuration and identity-mapping foundation; Okta startup gated",
+  "tests": {
+    "auth_profile_passed": 12,
+    "ownership_passed": 6,
+    "console_api_passed": 18,
+    "live_console_skipped": 1
+  },
+  "live_okta_login_tested": false,
+  "oidc_adapter_implemented": false,
+  "deployed": false,
+  "committed": false,
+  "sources": {
+    "scripts/console_auth.py": "33b846944bd3304000785b3387a4aaa09aba3f479d7240ed2500f0d2cd946c56",
+    "scripts/serve_session_console.py": "a20c8f20941ae76b92ac55b7cc383e5eedcb4c3ba339cff11ebc3a58257c7b22",
+    "tests/test_console_auth.py": "fdf3e93b40ef89418ff268c06ebe8ecf98b6ea254238f90a4e260500bc113da0"
+  },
+  "remaining": [
+    "OIDC library adapter and token verification",
+    "per-browser request identity and sessions",
+    "Okta tenant/application setup",
+    "real distinct-user acceptance",
+    "reviewed remote transport and secure attach relay"
+  ]
+}

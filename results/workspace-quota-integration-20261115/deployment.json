@@ -1,0 +1,21 @@
+{
+  "deployed_source_equality_verified": true,
+  "mount_service_enabled": true,
+  "mount_service_active": true,
+  "remaining_quota_canary_stores": 0,
+  "remaining_quota_loop_devices": 0,
+  "remaining_quota_volumes": 0,
+  "legacy_owner_enrolled": false,
+  "ui_fixture_removed": true,
+  "temporary_console_stopped": true,
+  "browser_console_errors": 0,
+  "browser_hard_quota_display_verified": true,
+  "source_sha256": {
+    "scripts/workspace_quota_service.py": "a9bba4733405b60418f51db2cbb2628f11d1fae6f1befee129a3fb7f4ad8bb12",
+    "deploy/systemd/gvisor-workspace-quota.service": "e54ec6a7ecb6cd2281c51bac82f835036f4d648317d8f9ecbf5bbc372f4812ed",
+    "scripts/manage_codex_session.py": "55e321177337e0ff8182fb468555563ffe9727bf8e2efb6177a1a173cca187e9",
+    "scripts/workspace_quota.py": "3504bd8633072148e35e92a1116ccc6c450757bb466c35429f54eb833eaf5f88",
+    "scripts/workspace_storage.py": "7dc2d040505a4c2e555ce961cb11c35dbcab4aa453f1bf1a559e634f29382ced",
+    "scripts/workspace_lifecycle.py": "cdaa7288612acae0cd622372c3b7cb6ca339995be0846a9fbfc1774546b878e9"
+  }
+}

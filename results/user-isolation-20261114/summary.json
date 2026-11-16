@@ -1,0 +1,30 @@
+{
+  "recorded_at": "2026-11-14T01:36:47+05:30",
+  "ownership_unit_tests_passed": 6,
+  "journal_tests_passed": 7,
+  "rule_tests_passed": 8,
+  "sanitization_tests_passed": 4,
+  "local_api_tests_passed": 18,
+  "separate_live_lifecycle_test_skipped": true,
+  "real_isolated_workflow_checks_passed": 19,
+  "legacy_worker_checks_passed": 22,
+  "pilot_legacy_owners_preserved": 13,
+  "explicit_principal_defaults_member": true,
+  "browser_identity_quota_review": true,
+  "browser_console_errors": 0,
+  "isolated_resources_cleaned": true,
+  "organization_sso": false,
+  "mode": "trusted local principal/role foundation; no remote or mutually untrusted user deployment",
+  "scope": "real containers and scoped APIs with simulated principals; no new credentials/model tasks; SSO and secure user attach still required",
+  "source_sha256": {
+    "scripts/manage_codex_session.py": "ddd7a5672b5487feaef7a4bd7f54277bb302a82b6f03689a6933c73930020122",
+    "scripts/security_history.py": "9351d169980c54322df6ca8031be0520c63eb6ebcb545e8721fc3cc116bbc260",
+    "scripts/console_observability.py": "185e3eece0461cf6768fb79320d51d4d78a20a16c1731000398596795d690fce",
+    "scripts/serve_session_console.py": "f0ad923ff9027487abb09ac64b1f2dfe62f064887b6d061cb60d3581033c21fd",
+    "ui/console/app.js": "8ea224e8759d769c9e202716536a2dc0db021b28e8c77b92b0a56d4cfbe097fd",
+    "ui/console/index.html": "a55557d9099bf84dbe1cfe0275ac814481f249a276284b8287f89e9024cddc20",
+    "tests/test_session_ownership.py": "aef7ca840485f6d2a89f3da5e429de9cb85edf0a024a292a0c74bd300b2b81e9",
+    "tests/test_user_isolation_live.py": "9129d73299d28901d7362428b904fafd3b50fab4a94716101cfb26981215e3f1",
+    "tests/test_session_console.py": "5651fb7b6c414d192846fa24b07c68315728ed07dd833da4797260cd8f138a08"
+  }
+}

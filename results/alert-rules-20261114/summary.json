@@ -1,0 +1,30 @@
+{
+  "recorded_at": "2026-11-14T00:19:37+05:30",
+  "rules_version": "pilot-review-v1",
+  "rule_tests_passed": 8,
+  "journal_tests_passed": 7,
+  "sanitization_policy_tests_passed": 4,
+  "api_tests_passed": 17,
+  "separate_live_lifecycle_test_skipped": true,
+  "isolated_service_checks_passed": 11,
+  "real_burst_checks_passed": 8,
+  "browser_rule_cards": 7,
+  "browser_console_errors": 0,
+  "validation_alerts_resolved": true,
+  "review_only": true,
+  "no_automatic_stop": true,
+  "no_model_calls": true,
+  "scope": "real denied-flow burst; resource/sampling/gap rules exercised with injected unit samples; no pressure soak or production detection claim",
+  "source_sha256": {
+    "scripts/alert_rules.py": "d66505e01e14fe0380787641fc6145058edc2b8cd2ce0669831f400b0e1a626e",
+    "scripts/security_history.py": "b55ee1ef75dfb2040aa9ac7cf069ca8fb9ad0c86900ae1c5e16a799cbab763a2",
+    "scripts/console_observability.py": "1f16eec4a2fe56a5b2fff4b1d2f087d322b843927c65f22775a9da176fff2c9b",
+    "scripts/manage_codex_session.py": "601b785efa3cdffe1d74a0c35ab4189249dab11163fae7e966f8550496f05a6e",
+    "scripts/serve_session_console.py": "054907120fad7e96d726cc2ac11adbbdd7891ed433631aa004b16d6c8a0f8877",
+    "scripts/test_alert_rules_live.py": "788d6b4d35218e434b6e4d2069fb1709da01b88cde8c21bb3369ceb0c9e65be3",
+    "ui/console/app.js": "1868fa6a3fd7f1208e445c23c99530b82fcec5d79785f868e6d510f927b5b38e",
+    "ui/console/index.html": "098e14f085f329443b126518f49f61d3e897b565f13f6d31ead71c24a9221d20",
+    "tests/test_alert_rules.py": "af81e2a977be11657f2087946c26d28bfd365d67d8a69792b73d65181cafd787",
+    "tests/test_security_history.py": "a24174a1403c531bd5a86796e7638f06fa4f7bbcbdcb0805563ee126bb372fb8"
+  }
+}

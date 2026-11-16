@@ -37,7 +37,7 @@ def main():
     worker = Worker(state)
     source = state / 'source'
     source.mkdir()
-    for name in ['manage_codex_session.py', 'run_worker_reconciler.py', 'security_history.py', 'console_observability.py']:
+    for name in ['manage_codex_session.py', 'run_worker_reconciler.py', 'security_history.py', 'console_observability.py', 'alert_rules.py', 'terminal_programs.py', 'workspace_storage.py', 'workspace_export.py', 'workspace_lifecycle.py', 'workspace_quota.py', 'workspace_migration.py']:
         shutil.copyfile(ROOT / 'scripts' / name, source / name)
     unit = 'gvisor-poc-reconciler-test-' + tag + '.service'
     unit_file = pathlib.Path.home() / '.config/systemd/user' / unit

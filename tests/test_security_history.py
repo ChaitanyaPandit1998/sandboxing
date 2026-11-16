@@ -3,6 +3,7 @@ import importlib.util
 import json
 import pathlib
 import sqlite3
+import sys
 import tempfile
 import time
 import unittest
@@ -10,6 +11,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / 'scripts'))
 spec = importlib.util.spec_from_file_location('history', ROOT / 'scripts/security_history.py')
 history = importlib.util.module_from_spec(spec); spec.loader.exec_module(history)
 SID = 'a' * 32
@@ -52,6 +54,15 @@ class JournalTests(unittest.TestCase):
         self.assertEqual([a['action'] for a in reversed(current['audit'])], ['opened','acknowledge','resolve','reopened'])
         self.assertTrue(all(a['actor'] in ('local-operator','collector') for a in current['audit']))
 
+    def test_evidence_records_rule_version_without_relabeling_legacy_rows(self):
+        self.db.execute('INSERT INTO security_events(fingerprint,observed_at,session_id,kind,detail) VALUES(?,?,?,?,?)',('legacy',time.time(),SID,'lifecycle','state_change: ready'))
+        self.db.commit()
+        history.ingest(self.worker,self.sample())
+        entries=history.history(self.worker)['events']
+        self.assertEqual(next(e for e in entries if e['kind']=='lifecycle')['rules_version'],'legacy-observation-v0')
+        self.assertEqual(next(e for e in entries if e['kind']=='egress_denied')['rules_version'],'pilot-review-v1')
+        self.assertEqual(history.alerts(self.worker)['alerts'][0]['rules_version'],'pilot-review-v1')
+
     def test_journal_and_alert_state_survive_db_reopen(self):
         history.ingest(self.worker, self.sample())
         aid = history.alerts(self.worker)['alerts'][0]['id']
@@ -93,7 +104,7 @@ class JournalTests(unittest.TestCase):
         self.assertEqual(history.alerts(self.worker)['alerts'][0]['status'],'resolved')
         with patch.object(history.time,'time',return_value=now+31*86400):
             history.ingest(self.worker,{})
-        self.assertEqual(history.alerts(self.worker)['alerts'],[])
+        self.assertFalse(any(a['id']==alert['id'] for a in history.alerts(self.worker)['alerts']))
 
     def test_pagination_filter_retention_and_invalid_actions(self):
         now = time.time()

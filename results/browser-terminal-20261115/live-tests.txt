@@ -1,0 +1,6 @@
+test_real_http_codex_attach_disconnect_stop_and_workspace (test_browser_terminal_live.BrowserTerminalLiveTests.test_real_http_codex_attach_disconnect_stop_and_workspace) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 4.870s
+
+OK

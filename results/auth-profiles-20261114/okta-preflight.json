@@ -1,0 +1,1 @@
+{"mode": "okta", "configuration_valid": true, "login_ready": false, "organization_sso": false, "identity_source": "oidc_pending", "status": "oidc_adapter_not_implemented", "local_fallback": false}

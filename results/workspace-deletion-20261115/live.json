@@ -1,0 +1,15 @@
+{
+  "checks": {
+    "prepare_retains_volume": true,
+    "wrong_phrase_rejected": true,
+    "wrong_phrase_retains_volume": true,
+    "active_session_rejected": true,
+    "volume_removed": true,
+    "replay_rejected": true,
+    "metadata_and_audit": true,
+    "isolated_state_removed": true
+  },
+  "passed": true,
+  "user_workspace_deleted": false,
+  "credentials_read": false
+}

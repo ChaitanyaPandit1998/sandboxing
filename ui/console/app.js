@@ -1,5 +1,5 @@
 "use strict";
-let csrf = "", busy = false, connected = false, createKey = null, commandToCopy = "", lastSessions = [];
+let csrf = "", busy = false, connected = false, createKey = null, commandToCopy = "", lastSessions = [], quotaLimit = 5, currentPrincipal = "local-pilot", organizationSSO = false;
 const $ = (selector) => document.querySelector(selector);
 const dialog = $("#details-dialog");
 function toast(message) { $("#toast").textContent = message; $("#toast").classList.add("visible"); setTimeout(() => $("#toast").classList.remove("visible"), 3500); }
@@ -12,6 +12,9 @@ async function api(path, body, key, retried = false) {
     if (key) headers["Idempotency-Key"] = key;
   }
   const response = await fetch(path, options), data = await response.json();
+  if (response.status === 401 && data.error === "sso_session_required") {
+    csrf = ""; window.location.assign("/login"); throw new Error("Sign in required");
+  }
   if (response.status === 401 && !retried && path !== "/api/bootstrap") {
     csrf = (await api("/api/bootstrap")).csrf;
     return api(path, body, key, true);
@@ -45,7 +48,7 @@ function render(sessions) {
   const visible = sessions.filter(s => filter === "all" || (filter === "active" ? ["ready", "provisioning", "stopping"].includes(s.state) : s.state === filter));
   $("#session-rows").replaceChildren();
   const active = sessions.filter((session) => session.state === "ready").length;
-  $("#active-total").textContent = `${active} / 5`; $("#session-count").textContent = String(sessions.length);
+  $("#active-total").textContent = `${active} / ${quotaLimit}`; $("#session-count").textContent = String(sessions.length);
   $("#empty-state").hidden = visible.length !== 0;
   $("#empty-state strong").textContent = "No sessions match this view";
   $("#empty-state span").textContent = sessions.length ? "Choose another state filter to view session history." : "Create your first session to get started.";
@@ -53,7 +56,7 @@ function render(sessions) {
     const row = document.createElement("tr");
     const state = session.stop_reason === "expired" ? "Expired" : session.state === "ready" ? "Login-ready" : session.state;
     const expiry = session.expires ? new Date(session.expires * 1000).toLocaleString() : "No expiry (legacy)";
-    for (const value of [`Codex · ${session.id.slice(0, 8)}`, state, session.runtime, expiry]) {
+    for (const value of [`${session.owner || "local-pilot"} · ${session.id.slice(0, 8)}`, state, session.runtime, expiry]) {
       const cell = document.createElement("td"); cell.textContent = value; row.append(cell);
     }
     const actions = document.createElement("td");
@@ -63,9 +66,9 @@ function render(sessions) {
       details("Session details", "Current worker metadata. Login status is not inferred from the ready state.", JSON.stringify(info, null, 2));
     }));
     for (const kind of ["login", "attach"]) actions.append(button(kind === "login" ? "Login" : "Open Codex", async () => {
-      const commands = await api(`/api/sessions/${session.id}/terminal`);
-      details(kind === "login" ? "Private device login" : "Open Codex in Terminal", "Run this command in Mac Terminal. Keep login codes and credentials private. Browser terminal relay is not available in this pilot.", commands[kind], commands[kind]);
-    }, session.state !== "ready"));
+      $("#terminal-frame").src = `/terminal.html?session=${encodeURIComponent(session.id)}&mode=${kind}`;
+      $("#terminal-dialog").showModal();
+    }, session.state !== "ready" || session.owner !== currentPrincipal || organizationSSO));
     actions.append(button("Stop", async () => {
       if (!window.confirm("Stop this session? Its temporary login home will be deleted. Your managed workspace will be kept.")) return;
       await api(`/api/sessions/${session.id}/stop`, {}); toast("Session stopped. Workspace retained."); await refresh();
@@ -75,7 +78,7 @@ function render(sessions) {
 }
 async function refresh() {
   try {
-    const result = await api("/api/sessions"); render(result.sessions);
+    const result = await api("/api/sessions"); quotaLimit = result.quota; render(result.sessions); $("#quota-label").textContent = `${result.quota} session limit · ${result.global_quota || 5} across worker`;
     const cleanup = result.cleanup;
     const resident = result.resident_cleanup;
     const healthy = resident?.active && !resident.stale && resident.last_success && !resident.error;
@@ -101,7 +104,7 @@ $("#close-dialog").addEventListener("click", () => dialog.close());
 $("#copy-command").addEventListener("click", async () => { try { await navigator.clipboard.writeText(commandToCopy); toast("Command copied."); } catch { toast("Select the command and copy it manually."); } });
 $("#date-label").textContent = new Intl.DateTimeFormat("en-IN", {dateStyle: "full", timeZone: "Asia/Kolkata"}).format(new Date()) + " · LOCAL PILOT";
 (async () => {
-  try { csrf = (await api("/api/bootstrap")).csrf; await refresh(); await refreshMonitoring(); await refreshJournal(); await loadHistory(true); }
+  try { csrf = (await api("/api/bootstrap")).csrf; await refreshIdentity(); await refresh(); await refreshMonitoring(); await refreshJournal(); await loadHistory(true); await refreshRules(); await refreshWorkspace(); }
   catch { notice(false, "Local backend unavailable", "Start scripts/serve_session_console.py and open its loopback URL."); }
 })();
 setInterval(() => { if (!busy && csrf) refresh(); }, 8000);
@@ -176,27 +179,28 @@ $("#domain-form").addEventListener("submit", event => {
   const valid = host.length <= 253 && host.split(".").every(label => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(label));
   $("#domain-result").textContent = !valid ? "Enter a hostname only, without a URL scheme, port or path." : approvedHosts.includes(host) ? `${host}: allowed by the HTTPS hostname policy (port 443). This does not guarantee endpoint access.` : `${host}: blocked by the default-deny policy. IP literals and unapproved subdomains are not allowed.`;
 });
-function updateNavigation() { const hash = location.hash || "#overview"; for (const link of document.querySelectorAll('nav a[href^="#"]')) link.classList.toggle("active", link.hash === hash); const titles = {"#overview":"Overview", "#sessions":"Sessions", "#activity":"Lifecycle events", "#policy":"Policy checks", "#telemetry":"Telemetry", "#security":"Suspicious activity", "#domains":"Blocked sites", "#alerts":"Alerts", "#history":"Event history"}; $(".breadcrumb strong").textContent = titles[hash] || "Overview"; }
+function updateNavigation() { const hash = location.hash || "#overview"; for (const link of document.querySelectorAll('nav a[href^="#"]')) link.classList.toggle("active", link.hash === hash); const titles = {"#overview":"Overview", "#sessions":"Sessions", "#workspace":"Workspace storage", "#activity":"Lifecycle events", "#policy":"Policy checks", "#telemetry":"Telemetry", "#security":"Suspicious activity", "#domains":"Blocked sites", "#alerts":"Alerts", "#history":"Event history", "#alert-rules":"Detection rules"}; $(".breadcrumb strong").textContent = titles[hash] || "Overview"; }
 window.addEventListener("hashchange", updateNavigation); updateNavigation();
 setInterval(() => { if (csrf && !busy) refreshMonitoring(); }, 30000);
 
 $("#session-state-filter").addEventListener("change", () => render(lastSessions));
 
 let storedAlerts = [], journalBusy = false, historyBusy = false, historyBefore = null, storedHistory = [];
-const kindLabels = {lifecycle:"Lifecycle", lifecycle_failure:"Worker failure", egress_denied:"Egress denied", policy_drift:"Policy drift"};
+const kindLabels = {lifecycle:"Lifecycle", lifecycle_failure:"Worker failure", egress_denied:"Egress denied", policy_drift:"Policy drift", egress_burst:"Repeated egress denials", resource_pressure:"Resource pressure", sample_unavailable:"Incomplete samples", collector_gap:"Collector gap"};
 function renderAlerts() {
   const filter = $("#alert-state").value;
   const visible = storedAlerts.filter(a => filter === "all" || (filter === "active" ? a.status !== "resolved" : a.status === filter));
   $("#alert-list").replaceChildren();
   for (const alert of visible) {
     const row = textNode("div", "", "signal-row"), copy = textNode("div", "", "alert-copy");
-    copy.append(textNode("strong", `${kindLabels[alert.kind]} · ${alert.session_id.slice(0, 8)}`), textNode("p", alert.detail));
-    copy.append(textNode("small", `${alert.event_count} distinct event(s) · last seen ${new Date(alert.last_seen*1000).toLocaleString()}`));
+    copy.append(textNode("strong", `${kindLabels[alert.kind]} · ${alert.scope === "worker" ? "Worker collector" : alert.session_id.slice(0, 8)}`), textNode("p", alert.detail));
+    copy.append(textNode("small", `${alert.event_count} distinct event(s) · last seen ${new Date(alert.last_seen*1000).toLocaleString()} · latest evidence: ${alert.rules_version || "legacy-observation-v0"}`));
     const actions = textNode("div", "", "alert-buttons");
     for (const operation of ["acknowledge", "resolve"]) actions.append(button(operation === "acknowledge" ? "Acknowledge" : "Resolve", async () => {
       await api(`/api/alerts/${alert.id}/${operation}`, {});
       toast(operation === "acknowledge" ? "Alert acknowledged." : "Alert resolved. New evidence may reopen it."); await refreshJournal();
     }, alert.status === "resolved" || (operation === "acknowledge" && alert.status === "acknowledged")));
+    const guide = document.createElement("details"); guide.className = "review-guide"; guide.append(textNode("summary","Current trigger & review guidance"),textNode("p",alert.trigger),textNode("p",alert.review)); copy.append(guide);
     copy.append(actions); row.append(pill(alert.status, alert.status === "resolved" ? "muted-pill" : alert.severity === "high" ? "fail" : "review"), copy);
     $("#alert-list").append(row);
   }
@@ -207,9 +211,10 @@ async function refreshJournal() {
   try {
     const data = await api("/api/alerts"); storedAlerts = data.alerts; renderAlerts();
     $("#alert-counts").textContent = `${data.counts.open} open · ${data.counts.acknowledged} acknowledged · ${data.counts.resolved} resolved`;
-    const recent = data.last_collection && Date.now()/1000 - data.last_collection < 90;
+    const age = Date.now()/1000 - data.last_collection;
+    const recent = data.last_collection && age >= 0 && age < 90;
     $("#collector-status").textContent = data.last_collection
-      ? `Last resident collection: ${new Date(data.last_collection*1000).toLocaleString()}. ${recent ? "Recent" : "Stale; check the VM service"}. ${data.collection_errors} incomplete session sample(s). Latest 100 alerts shown; counts cover all retained alerts.`
+      ? `Last resident collection: ${new Date(data.last_collection*1000).toLocaleString()}. ${recent ? "Recent" : "Stale; check the VM service"}. ${data.collection_errors === null ? "Worker-wide error count restricted to operators" : data.collection_errors + " incomplete session sample(s)"}. Latest 100 alerts shown; counts cover all retained alerts.`
       : "No resident collection recorded yet. Local history collection requires the VM service; this browser does not collect events.";
     $("#alert-audit").replaceChildren();
     for (const entry of data.audit) $("#alert-audit").append(textNode("div", `${new Date(entry.at*1000).toLocaleString()} · ${entry.action} · ${entry.actor} · alert ${entry.alert_id.slice(0,8)}`, "audit-row"));
@@ -229,7 +234,7 @@ async function loadHistory(reset = true) {
     $("#history-rows").replaceChildren();
     for (const entry of storedHistory) {
       const row = document.createElement("tr");
-      for (const value of [new Date(entry.observed_at*1000).toLocaleString(), kindLabels[entry.kind], entry.session_id.slice(0,8),entry.detail]) row.append(textNode("td",value));
+      for (const value of [new Date(entry.observed_at*1000).toLocaleString(), kindLabels[entry.kind], entry.kind === "collector_gap" ? "Worker collector" : entry.session_id.slice(0,8),entry.detail]) row.append(textNode("td",value));
       $("#history-rows").append(row);
     }
     if (!storedHistory.length) { const row = document.createElement("tr"), cell = textNode("td","No retained events match this filter."); cell.colSpan = 4; row.append(cell); $("#history-rows").append(row); }
@@ -244,3 +249,129 @@ $("#history-kind").addEventListener("change",()=>loadHistory(true));
 $("#history-load").addEventListener("click",()=>loadHistory(false));
 $("#history-refresh").addEventListener("click",()=>loadHistory(true));
 setInterval(()=>{ if(csrf && !busy) refreshJournal(); },30000);
+
+async function refreshRules() {
+  try {
+    const data = await api("/api/alert-rules");
+    $("#rules-version").textContent = data.version + " · review only";
+    $("#rules-scope").textContent = data.observation_scope + " Changes are deployed through reviewed source; policy and resource limits remain unchanged.";
+    $("#rules-list").replaceChildren();
+    for (const rule of data.rules) {
+      const card = textNode("article","","monitor-card rule-card");
+      card.append(pill(rule.severity === "high" ? "High priority" : "Review",rule.severity === "high" ? "fail" : "review"),textNode("h3",rule.name),textNode("p",rule.trigger),textNode("strong","Review criteria"),textNode("p",rule.review));
+      $("#rules-list").append(card);
+    }
+  } catch { $("#rules-version").textContent = "Rules unavailable"; $("#rules-scope").textContent = "Cannot load the active worker rule version; previous content may be stale."; }
+}
+
+async function refreshIdentity() {
+  try {
+    const identity = await api("/api/identity"); currentPrincipal = identity.principal; organizationSSO = identity.organization_sso;
+    $("#sign-out").hidden = !organizationSSO;
+    $("#identity-name").textContent = identity.principal; $("#identity-role").textContent = identity.role + (organizationSSO ? " · Okta OIDC" : " · local binding");
+    $("#identity-summary").textContent = `${identity.principal} · ${identity.role}`;
+    $("#identity-scope").textContent = organizationSSO ? "Authenticated Okta identity. Loopback pilot; remote deployment and browser terminal relay remain pending." : "Trusted local identity binding. Organization SSO is not connected; do not expose to untrusted users.";
+  } catch { $("#identity-scope").textContent = "Identity metadata unavailable. This remains a trusted local pilot."; }
+}
+
+$("#sign-out").addEventListener("click", () => action(async () => { await api("/auth/logout", {}); csrf = ""; window.location.assign("/login"); }));
+
+$("#close-terminal").addEventListener("click",()=>$("#terminal-dialog").close());
+$("#terminal-dialog").addEventListener("close",()=>{ $("#terminal-frame").src="about:blank"; });
+
+let workspaceBusy = false;
+function storageSize(bytes) {
+  return Number.isSafeInteger(bytes) && bytes >= 0 ? `${(bytes / 1024**3).toFixed(3)} GiB (${bytes.toLocaleString()} bytes)` : "Unknown";
+}
+async function refreshWorkspace() {
+  if (workspaceBusy) return;
+  workspaceBusy = true;
+  $("#refresh-workspace").disabled = true;
+  $("#workspace-status").textContent = "Measuring workspace metadata…";
+  try {
+    const data = await api("/api/workspace");
+    $("#workspace-usage").textContent = storageSize(data.allocated_bytes);
+    $("#workspace-budget").textContent = data.hard_quota_enforced
+      ? `${storageSize(data.quota_bytes)} hard quota · ${storageSize(data.quota_remaining_bytes)} remaining`
+      : `${storageSize(data.budget_bytes)} per user · advisory; not a hard quota`;
+    $("#workspace-quota-note").textContent = data.hard_quota_enforced
+      ? "Filesystem quota enforcement is verified for this workspace. Quota accounting includes all charged blocks; the readable-file sample below may differ."
+      : "Hard storage quotas are not enforced.";
+    $("#workspace-active").textContent = String(data.active_sessions);
+    $("#workspace-deletion-history").textContent = (data.deletion_history || []).map(item => `${item.outcome} · ${new Date(item.at*1000).toLocaleString()}`).join("; ") || "No recorded deletion attempts";
+    $("#workspace-status").textContent = data.state === "not_created"
+      ? `No workspace created for ${data.owner}. Create a session to provision one.`
+      : data.measurement_status !== "measured"
+        ? `Workspace retained for ${data.owner}. Usage is incomplete; budget status is unknown.`
+        : `Workspace retained for ${data.owner} · ${data.over_budget ? "Over the reporting budget" : "Within the reporting budget"} · sampled ${new Date(data.sampled_at*1000).toLocaleString()}.`;
+  } catch {
+    $("#workspace-usage").textContent = "Unknown";
+    $("#workspace-active").textContent = "Unknown";
+    $("#workspace-quota-note").textContent = "Quota enforcement could not be verified. Do not treat stale storage information as healthy.";
+    $("#workspace-budget").textContent = "Unknown";
+    $("#workspace-deletion-history").textContent = "Unavailable; refresh before retrying deletion";
+    $("#workspace-status").textContent = "Storage measurement unavailable. Refresh to retry; unknown usage does not mean zero.";
+  } finally {
+    workspaceBusy = false;
+    $("#refresh-workspace").disabled = false;
+  }
+}
+$("#refresh-workspace").addEventListener("click", refreshWorkspace);
+
+$("#export-workspace").addEventListener("click", async () => {
+  const button = $("#export-workspace"), status = $("#workspace-export-status");
+  if (button.disabled) return;
+  button.disabled = true; status.textContent = "Preparing a private workspace download…";
+  try {
+    const response = await fetch("/api/workspace/export", {method:"POST", credentials:"same-origin", cache:"no-store",
+      headers:{"Content-Type":"application/json", "X-POC-CSRF":csrf}, body:"{}"});
+    if (!response.ok) { const error = await response.json(); throw new Error(error.error || "export_failed"); }
+    const url = URL.createObjectURL(await response.blob()), link = document.createElement("a");
+    link.href = url; link.download = "workspace.tar"; document.body.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    status.textContent = "Archive sent to your browser for download. Keep it private.";
+  } catch (error) {
+    status.textContent = error.message === "workspace_in_use" ? "Stop all your sessions before exporting this workspace." : `Export unavailable (${error.message}). No partial archive was returned.`;
+  } finally { button.disabled = false; }
+});
+
+let workspaceDeletion = null, workspaceDeletionBusy = false;
+const deletionDialog = $("#workspace-delete-dialog");
+$("#prepare-workspace-deletion").addEventListener("click", async () => {
+  const button = $("#prepare-workspace-deletion");
+  if (button.disabled) return;
+  button.disabled = true;
+  try {
+    workspaceDeletion = await api("/api/workspace/deletion-prepare", {});
+    $("#workspace-delete-owner").textContent = `Owner: ${workspaceDeletion.owner}. Only this owner's current managed workspace will be deleted.`;
+    $("#workspace-delete-confirmation").value = "";
+    $("#confirm-workspace-deletion").disabled = true;
+    $("#workspace-delete-error").textContent = "";
+    deletionDialog.showModal();
+  } catch (error) {
+    workspaceDeletion = null;
+    $("#workspace-delete-status").textContent = error.message === "migration_rollback_retained" ? "A migration rollback copy is retained. Review or finalize the migration before permanent deletion." : `Deletion unavailable (${error.message}). Stop all workspace consumers and refresh before retrying.`;
+  } finally { button.disabled = false; }
+});
+$("#workspace-delete-confirmation").addEventListener("input", () => {
+  $("#confirm-workspace-deletion").disabled = workspaceDeletionBusy || $("#workspace-delete-confirmation").value !== "DELETE WORKSPACE";
+});
+$("#cancel-workspace-deletion").addEventListener("click", () => { if (!workspaceDeletionBusy) deletionDialog.close(); });
+deletionDialog.addEventListener("cancel", event => { if (workspaceDeletionBusy) event.preventDefault(); });
+deletionDialog.addEventListener("close", () => { workspaceDeletion = null; $("#workspace-delete-confirmation").value = ""; });
+$("#workspace-delete-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  if (workspaceDeletionBusy || !workspaceDeletion || $("#workspace-delete-confirmation").value !== "DELETE WORKSPACE") return;
+  workspaceDeletionBusy = true; $("#confirm-workspace-deletion").disabled = true; $("#cancel-workspace-deletion").disabled = true;
+  try {
+    await api("/api/workspace/delete", {token: workspaceDeletion.token, confirmation: "DELETE WORKSPACE"});
+    deletionDialog.close();
+    $("#workspace-delete-status").textContent = "Workspace permanently deleted. A new session will create an empty workspace.";
+  } catch (error) {
+    deletionDialog.close();
+    $("#workspace-delete-status").textContent = `Deletion did not complete or could not be verified (${error.message}). Refresh storage and its audit before preparing a new confirmation.`;
+  } finally {
+    workspaceDeletionBusy = false; $("#cancel-workspace-deletion").disabled = false;
+    await refreshWorkspace();
+  }
+});

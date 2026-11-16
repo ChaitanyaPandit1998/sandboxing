@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-11-16T19:07:18+05:30",
+  "tests_run": 177,
+  "passed": 154,
+  "skipped": 23,
+  "failures": 0,
+  "errors": 0,
+  "optional_oidc_dependencies_available": false,
+  "explicit_live_tests_enabled": false,
+  "initial_restricted_http_fixture_bind_failed": true,
+  "authorized_localhost_rerun_passed": true
+}

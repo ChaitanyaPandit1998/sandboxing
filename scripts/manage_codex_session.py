@@ -35,12 +35,16 @@ class WorkerError(Exception):
 
 
 class Worker:
-    def __init__(self, state):
+    def __init__(self, state, principal="local-pilot", role=None):
+        if role is None:
+            role = 'operator' if principal=='local-pilot' else 'member'
+        if not isinstance(principal,str) or not re.fullmatch(r'[a-z0-9][a-z0-9._-]{0,63}',principal) or role not in ('member','operator'):
+            raise WorkerError('invalid_principal')
+        self.principal, self.role = principal, role
         self.root = pathlib.Path(state).expanduser().resolve()
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         os.chmod(self.root, 0o700)
         self.namespace = hashlib.sha256(str(self.root).encode()).hexdigest()[:10]
-        self.volume = f'poc-managed-{self.namespace}-pilot-workspace'
         self.label = f'poc.worker={self.namespace}'
         self.db = sqlite3.connect(self.root / 'sessions.sqlite', timeout=120)
         os.chmod(self.root / 'sessions.sqlite', 0o600)
@@ -51,10 +55,52 @@ class Worker:
             for name, kind in [('expires', 'REAL'), ('stop_reason', 'TEXT')]:
                 if name not in columns:
                     self.db.execute(f'ALTER TABLE sessions ADD COLUMN {name} {kind}')
+            if 'owner' not in columns:
+                self.db.execute("ALTER TABLE sessions ADD COLUMN owner TEXT NOT NULL DEFAULT 'local-pilot'")
+            self.db.execute('CREATE TABLE IF NOT EXISTS authorization_audit (id INTEGER PRIMARY KEY, actor TEXT, action TEXT, target TEXT, outcome TEXT, at REAL)')
             self.db.execute('CREATE TABLE IF NOT EXISTS events (sequence INTEGER PRIMARY KEY, session_id TEXT, action TEXT, state TEXT, at REAL)')
             self.db.commit()
             from security_history import initialize
             initialize(self.db)
+
+    def volume_for_owner(self, owner):
+        suffix = 'pilot' if owner == 'local-pilot' else 'user-' + hashlib.sha256(owner.encode()).hexdigest()[:16]
+        canonical = f'poc-managed-{self.namespace}-{suffix}-workspace'
+        from workspace_quota import volume_name
+        return volume_name(self,owner,canonical)
+
+    @property
+    def volume(self):
+        return self.volume_for_owner(self.principal)
+
+    def session_volume(self, sid):
+        return self.volume_for_owner(self.get(sid)['owner'])
+
+    def visible_rows(self):
+        if self.role == 'operator':
+            return self.db.execute('SELECT * FROM sessions ORDER BY created').fetchall()
+        return self.db.execute('SELECT * FROM sessions WHERE owner=? ORDER BY created', (self.principal,)).fetchall()
+
+    def visible_events(self):
+        if self.role == 'operator':
+            return [dict(r) for r in self.db.execute('SELECT session_id,action,state,at FROM events ORDER BY sequence DESC LIMIT 50')]
+        return [dict(r) for r in self.db.execute('SELECT e.session_id,e.action,e.state,e.at FROM events e JOIN sessions s ON s.id=e.session_id WHERE s.owner=? ORDER BY e.sequence DESC LIMIT 50',(self.principal,))]
+
+    def denied(self, action, target):
+        self.db.execute('INSERT INTO authorization_audit(actor,action,target,outcome,at) VALUES(?,?,?,?,?)', (self.principal,action,target,'denied',time.time()))
+        self.db.commit()
+
+    def authorize_attach(self, sid):
+        row = self.get(sid)
+        if row['owner'] != self.principal:
+            self.denied('attach',sid)
+            raise WorkerError('attach_owner_required')
+        from workspace_quota import enabled
+        if enabled(self):
+            from workspace_storage import checked_volume
+            if checked_volume(self) is None:
+                raise WorkerError('workspace_not_found')
+        return row
 
     @contextlib.contextmanager
     def locked(self):
@@ -92,6 +138,9 @@ class Worker:
         row = self.db.execute('SELECT * FROM sessions WHERE id=?', (sid,)).fetchone()
         if not row:
             raise WorkerError('session_not_found')
+        if self.role == 'member' and row['owner'] != self.principal:
+            self.denied(getattr(self,'operation','session_access'),sid)
+            raise WorkerError('session_not_found')
         return dict(row)
 
     def event(self, sid, action, state):
@@ -112,8 +161,12 @@ class Worker:
         labels = obj.get('Labels') or obj.get('Config', {}).get('Labels') or {}
         if labels.get('poc.worker') != self.namespace or (sid and labels.get('poc.session') != sid):
             raise WorkerError('resource_ownership_mismatch')
+        owner = self.get(sid)['owner'] if sid else self.principal
+        if owner != 'local-pilot' and labels.get('poc.owner') != hashlib.sha256(owner.encode()).hexdigest():
+            raise WorkerError('resource_ownership_mismatch')
 
     def cleanup(self, sid):
+        self.get(sid)
         names = self.names(sid)
         for key in ('agent', 'gateway'):
             obj = self.exists('container', names[key])
@@ -142,7 +195,7 @@ class Worker:
         return self.public(self.get(sid))
 
     def reconcile(self):
-        rows = self.db.execute("SELECT * FROM sessions WHERE state IN ('provisioning','stopping','ready')").fetchall()
+        rows = [r for r in self.visible_rows() if r["state"] in ("provisioning","stopping","ready")]
         for row in rows:
             sid = row['id']
             if row['state'] in ('provisioning', 'stopping'):
@@ -163,32 +216,36 @@ class Worker:
 
     def public(self, row):
         return {key: row[key] for key in ('id', 'state', 'created', 'ready', 'stopped', 'failure', 'expires', 'stop_reason')} | {
-            'owner': 'local-pilot', 'policy': 'codex-tls-pilot-v1', 'runtime': RUNTIME,
+            'owner': row['owner'], 'policy': 'codex-tls-pilot-v1', 'runtime': RUNTIME,
             'readiness': 'cli_and_gateway_ready_login_required' if row['state'] == 'ready' else 'not_ready',
-            'workspace': 'shared-per-local-pilot'}
+            'workspace': 'shared-per-local-pilot' if row['owner']=='local-pilot' else 'persistent-per-user'}
 
     def create(self, key):
         self.reconcile()
-        request_key = hashlib.sha256(key.encode()).hexdigest()
+        request_key = hashlib.sha256((key if self.principal=='local-pilot' else self.principal+'\0'+key).encode()).hexdigest()
         old = self.db.execute('SELECT * FROM sessions WHERE request_key=?', (request_key,)).fetchone()
         if old:
             return self.public(dict(old))
-        if self.db.execute("SELECT COUNT(*) FROM sessions WHERE state='ready'").fetchone()[0] >= 5:
+        if self.db.execute("SELECT COUNT(*) FROM sessions WHERE state IN ('ready','provisioning','stopping')").fetchone()[0] >= 5:
             raise WorkerError('quota_five_sessions')
+        if self.role=='member' and self.db.execute("SELECT COUNT(*) FROM sessions WHERE owner=? AND state IN ('ready','provisioning','stopping')",(self.principal,)).fetchone()[0]>=2:
+            raise WorkerError('quota_member_sessions')
         self.docker('image', 'inspect', AGENT)
         self.docker('image', 'inspect', GATEWAY)
         info = json.loads(self.docker('info', '--format', '{{json .Runtimes}}'))
         if RUNTIME not in info:
             raise WorkerError('runtime_unavailable')
-        volume = self.exists('volume', self.volume)
-        if volume:
-            self.ensure_owned(volume)
+        from workspace_quota import enabled, ensure
+        if enabled(self):
+            ensure(self)
         else:
-            self.docker('volume', 'create', '--label', self.label, self.volume)
+            from workspace_storage import checked_volume
+            if checked_volume(self) is None:
+                self.docker('volume', 'create', '--label', self.label, '--label', 'poc.owner='+hashlib.sha256(self.principal.encode()).hexdigest(), self.volume)
         sid = uuid.uuid4().hex
         created = time.time()
-        self.db.execute('INSERT INTO sessions(id,request_key,state,created,expires) VALUES(?,?,?,?,?)',
-                        (sid, request_key, 'provisioning', created, created + SESSION_LIFETIME_SECONDS))
+        self.db.execute('INSERT INTO sessions(id,request_key,state,created,expires,owner) VALUES(?,?,?,?,?,?)',
+                        (sid, request_key, 'provisioning', created, created + SESSION_LIFETIME_SECONDS, self.principal))
         self.event(sid, 'create', 'provisioning')
         try:
             self.provision(sid)
@@ -208,7 +265,7 @@ class Worker:
         material.mkdir(mode=0o700)
         shutil.copyfile(ROOT / 'tls_gateway.py', material / 'addon.py')
         (material / 'addon.py').chmod(0o644)
-        labels = ['--label', self.label, '--label', f'poc.session={sid}']
+        labels = ['--label', self.label, '--label', f'poc.session={sid}', '--label', 'poc.owner='+hashlib.sha256(self.get(sid)['owner'].encode()).hexdigest()]
         for key in ('internal', 'egress'):
             self.docker('network', 'create', *labels, *(['--internal'] if key == 'internal' else []), names[key])
         self.docker('run', '-d', '--name', names['gateway'], *labels, '--network', names['egress'],
@@ -247,16 +304,19 @@ class Worker:
                     '--cap-drop=ALL', '--security-opt=no-new-privileges',
                     '--tmpfs', '/tmp:size=256m,uid=10001,gid=10001,nosuid,nodev',
                     '--tmpfs', '/home/agent:size=512m,uid=10001,gid=10001,nosuid,nodev',
-                    '--mount', f'type=volume,source={self.volume},target=/workspace',
+                    '--mount', f'type=volume,source={self.session_volume(sid)},target=/workspace',
                     '-v', f'{material}/ca.pem:/trust/ca.pem:ro', *env, AGENT, 'sleep', 'infinity')
         self.docker('exec', '-i', names['agent'], 'sh', '-c',
                     'umask 077; mkdir -p "$HOME/.codex"; cat > "$HOME/.codex/config.toml"', input=CONFIG)
         self.docker('exec', names['agent'], 'sh', '-c', 'test -w /workspace && codex --version')
 
-    def interactive(self, sid, login):
+    def interactive(self, sid, login, terminal_id=None):
+        if terminal_id is not None and not re.fullmatch('[a-f0-9]{32}', terminal_id):
+            raise WorkerError('invalid_terminal_id')
         if not sys.stdin.isatty() or not sys.stdout.isatty():
             raise WorkerError('interactive_terminal_required')
         with self.locked():
+            self.authorize_attach(sid)
             self.reconcile()
             if self.get(sid)['state'] != 'ready':
                 raise WorkerError('session_not_ready')
@@ -265,7 +325,26 @@ class Worker:
             self.event(sid, 'login_requested' if login else 'attach_requested', 'ready')
         cmd = ['docker', 'exec', '-it', self.names(sid)['agent'], 'codex', '--no-daemon']
         cmd += ['login', '--device-auth'] if login else ['--sandbox', 'workspace-write', '--ask-for-approval', 'on-request']
+        if terminal_id is not None:
+            from terminal_programs import START
+            cmd = ['docker', 'exec', '-it', self.names(sid)['agent'], 'node', '-e', START,
+                   terminal_id, 'login' if login else 'attach']
         return subprocess.call(cmd)
+
+    def close_terminal(self, sid, terminal_id):
+        self.authorize_attach(sid)
+        if not terminal_id or not re.fullmatch('[a-f0-9]{32}', terminal_id):
+            raise WorkerError('invalid_terminal_id')
+        obj = self.exists('container', self.names(sid)['agent'])
+        if not obj or not obj.get('State', {}).get('Running'):
+            return {'closed': True}
+        self.ensure_owned(obj, sid)
+        from terminal_programs import CLOSE
+        result = json.loads(self.docker('exec', self.names(sid)['agent'], 'node', '-e', CLOSE, terminal_id))
+        if result != {'closed': True}:
+            raise WorkerError('terminal_cleanup_failed')
+        self.event(sid, 'terminal_closed', self.get(sid)['state'])
+        return result
 
     def health(self):
         result = {'active': False, 'stale': True, 'interval_seconds': 30,
@@ -290,14 +369,23 @@ class Worker:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state-dir', default='~/.local/state/gvisor-poc-worker')
-    parser.add_argument('action', choices=['create', 'list', 'inspect', 'stop', 'reconcile', 'health', 'monitor', 'collect-security', 'security-events', 'alerts', 'acknowledge-alert', 'resolve-alert', 'login', 'attach', 'events'])
+    parser.add_argument('action', choices=['create', 'list', 'inspect', 'stop', 'reconcile', 'health', 'authorize-attach', 'monitor', 'collect-security', 'alert-rules', 'security-events', 'alerts', 'acknowledge-alert', 'resolve-alert', 'login', 'attach', 'close-terminal', 'events', 'workspace', 'export-workspace', 'prepare-workspace-deletion', 'delete-workspace'])
     parser.add_argument('id', nargs='?')
     parser.add_argument('--key', default=None)
+    parser.add_argument('--terminal-id')
     parser.add_argument('--before', type=int)
-    parser.add_argument('--kind', choices=['lifecycle', 'lifecycle_failure', 'egress_denied', 'policy_drift'])
+    parser.add_argument('--kind', choices=['lifecycle', 'lifecycle_failure', 'egress_denied', 'policy_drift', 'egress_burst', 'resource_pressure', 'sample_unavailable', 'collector_gap'])
+    parser.add_argument('--confirmation-token')
+    parser.add_argument('--confirmation')
+    parser.add_argument('--principal')
+    parser.add_argument('--role', choices=['member','operator'])
     args = parser.parse_args()
     try:
-        worker = Worker(args.state_dir)
+        worker = Worker(args.state_dir, args.principal or 'local-pilot', args.role or ('member' if args.principal else 'operator'))
+        worker.operation = args.action
+        if args.action == 'authorize-attach':
+            print(json.dumps(worker.public(worker.authorize_attach(args.id or ''))))
+            return
         if args.action == 'health':
             print(json.dumps(worker.health()))
             return
@@ -305,23 +393,40 @@ def main():
             from console_observability import snapshot
             print(json.dumps(snapshot(worker)))
             return
+        if args.action == 'alert-rules':
+            from alert_rules import catalog
+            print(json.dumps(catalog()))
+            return
         if args.action == 'collect-security':
+            if worker.role!='operator':
+                raise WorkerError('operator_required')
             from security_history import collect
             print(json.dumps(collect(worker)))
             return
         if args.action in ('login', 'attach'):
-            raise SystemExit(worker.interactive(args.id or '', args.action == 'login'))
+            raise SystemExit(worker.interactive(args.id or '', args.action == 'login', args.terminal_id))
         with worker.locked():
-            if args.action in ('alerts', 'security-events', 'acknowledge-alert', 'resolve-alert'):
+            if args.action in ('prepare-workspace-deletion', 'delete-workspace'):
+                from workspace_lifecycle import prepare_deletion, delete_workspace
+                result = prepare_deletion(worker) if args.action == 'prepare-workspace-deletion' else delete_workspace(worker, args.confirmation_token, args.confirmation)
+            elif args.action == 'export-workspace':
+                from workspace_export import export_workspace
+                result = export_workspace(worker)
+            elif args.action == 'workspace':
+                from workspace_storage import describe
+                result = describe(worker)
+            elif args.action in ('alerts', 'security-events', 'acknowledge-alert', 'resolve-alert'):
                 from security_history import alerts, history, transition
                 try:
                     result = alerts(worker) if args.action == 'alerts' else history(worker, args.before, args.kind) if args.action == 'security-events' else transition(worker, args.id or '', 'acknowledge' if args.action == 'acknowledge-alert' else 'resolve')
                 except ValueError as exc:
                     raise WorkerError(str(exc)) from None
+            elif args.action == 'close-terminal':
+                result = worker.close_terminal(args.id or '', args.terminal_id)
             elif args.action == 'create':
                 result = worker.create(args.key or uuid.uuid4().hex)
             elif args.action == 'list':
-                result = [worker.public(dict(r)) for r in worker.db.execute('SELECT * FROM sessions ORDER BY created')]
+                result = [worker.public(dict(r)) for r in worker.visible_rows()]
             elif args.action == 'inspect':
                 result = worker.public(worker.get(args.id or ''))
             elif args.action == 'stop':
@@ -339,4 +444,6 @@ def main():
 
 
 if __name__ == '__main__':
+    # Helpers must share this CLI's WorkerError class, rather than import a second copy.
+    sys.modules['manage_codex_session'] = sys.modules[__name__]
     main()

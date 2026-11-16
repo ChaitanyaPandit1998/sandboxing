@@ -1,0 +1,7 @@
+{
+  "session_id": "9f23bb2fde2f44ed9f830919e8b012da",
+  "container": "poc-managed-2d47f4c1f3-9f23bb2fde2f44ed9f830919e8b012da-agent",
+  "workspace_volume": "poc-managed-2d47f4c1f3-pilot-workspace",
+  "file_hashes_unchanged_after_reopen": true,
+  "home_is_tmpfs": true
+}

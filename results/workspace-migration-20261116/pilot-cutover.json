@@ -1,0 +1,18 @@
+{
+  "migrated": true,
+  "hard_quota_enforced": true,
+  "quota_bytes": 5368709120,
+  "quota_used_bytes": 28672,
+  "quota_remaining_bytes": 5368680448,
+  "entries_verified": 11,
+  "logical_bytes_verified": 3765,
+  "source_and_target_match": true,
+  "original_volume_retained": true,
+  "migration_phase": "active",
+  "managed_session_ready_and_workspace_accessible": true,
+  "acceptance_session_stopped": true,
+  "active_sessions": 0,
+  "model_requests": 0,
+  "rollback_copy_deleted": false,
+  "session_auth_homes_accessed": false
+}

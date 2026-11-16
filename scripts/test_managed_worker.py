@@ -108,7 +108,7 @@ s.setTimeout(10000,()=>{s.destroy();resolve(0);});s.once('data',b=>{resolve(Numb
                 worker.cleanup('e' * 32)
                 checks['foreign_resource_preserved'] = False
             except module.WorkerError as exc:
-                checks['foreign_resource_preserved'] = str(exc) == 'resource_ownership_mismatch' and worker.exists('network', foreign) is not None
+                checks['foreign_resource_preserved'] = str(exc) in ('resource_ownership_mismatch','session_not_found') and worker.exists('network', foreign) is not None
         finally:
             worker.docker('network', 'rm', foreign)  # Created only by this test.
         denied = subprocess.run(['python3', str(ROOT / 'scripts/manage_codex_session.py'), '--state-dir', state,

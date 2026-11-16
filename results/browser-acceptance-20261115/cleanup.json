@@ -1,0 +1,8 @@
+{
+  "9f23bb2fde2f44ed9f830919e8b012da_containers_removed": true,
+  "9f23bb2fde2f44ed9f830919e8b012da_networks_removed": true,
+  "b090f4541c21432f95c5249ddcc01fb7_containers_removed": true,
+  "b090f4541c21432f95c5249ddcc01fb7_networks_removed": true,
+  "persistent_workspace_volume_retained": true,
+  "file_hashes_retained_after_stop": true
+}

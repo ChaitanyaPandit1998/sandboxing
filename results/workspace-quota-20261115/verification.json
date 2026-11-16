@@ -1,0 +1,9 @@
+{
+  "recorded_at": "2026-11-15T11:46:54+05:30",
+  "test_volumes_remaining": 0,
+  "test_containers_remaining": 0,
+  "test_loop_devices_remaining": 0,
+  "test_directories_remaining": 0,
+  "pilot_hard_quota_enabled": false,
+  "test_script_sha256": "848e374e408c5b7d9c26ee00c62b27e339603bf82dab070a3673b404449bca21"
+}

@@ -1,0 +1,16 @@
+{
+  "alert_id": "71f9ca832ee44c66a4057e9393df2e83",
+  "session_id": "ae80338245e54bc08dc3fb57cb40a573",
+  "passed": true,
+  "checks": {
+    "five_blocked_connects": true,
+    "resident_burst_alert": true,
+    "five_unique_denials_persisted": true,
+    "subsequent_resident_sample": true,
+    "resampling_did_not_duplicate_events": true,
+    "one_burst_episode": true,
+    "disposable_session_stopped": true,
+    "workspace_retained": true
+  },
+  "scope": "actual resident burst collection in a disposable session; no external site contacted, credentials, model calls or CPU/memory load; sustained resource and gap rules tested with injected unit samples"
+}

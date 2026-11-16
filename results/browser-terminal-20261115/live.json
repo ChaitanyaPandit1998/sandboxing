@@ -1,0 +1,20 @@
+{
+  "checks": {
+    "isolated_member_session_ready": true,
+    "codex_cli_rendered_without_login": true,
+    "tracked_remote_wrapper_present": true,
+    "resize_accepted": true,
+    "explicit_disconnect_reaped_local_and_remote": true,
+    "codex_process_count_restored": true,
+    "workspace_retained_after_disconnect": true,
+    "immediate_disconnect_cancelled_startup": true,
+    "no_codex_after_immediate_disconnect": true,
+    "stop_revokes_channel": true,
+    "agent_removed_after_stop": true,
+    "workspace_volume_retained_after_stop": true,
+    "isolated_state_and_test_volume_removed": true
+  },
+  "real_provider_login": false,
+  "model_request_made": false,
+  "terminal_transcript_retained": false
+}

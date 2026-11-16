@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "rules_version": "pilot-review-v1",
+  "rule_count": 7,
+  "review_only": true,
+  "automatic_session_stop": false,
+  "burst_priority": "high",
+  "burst_episode_count": 1,
+  "validation_alert_resolved": true,
+  "disposable_session_stopped": true,
+  "history_filter_verified": true,
+  "browser_guidance_verified": true,
+  "browser_console_errors": 0,
+  "legacy_evidence_kept_legacy_label": true,
+  "scope": "live rule metadata and existing real burst outcome; sustained resource/gap thresholds validated with synthetic unit samples"
+}

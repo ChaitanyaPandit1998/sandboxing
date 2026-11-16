@@ -49,8 +49,9 @@ def policy_checks(worker, sid, agent, gateway, network):
     options = host.get('SecurityOpt') or []
     mounts = agent.get('Mounts') or []
     expected_ca = str(worker.root / sid / 'ca.pem')
+    expected_volume = worker.session_volume(sid) if hasattr(worker,'session_volume') else worker.volume
     mounts_ok = bool(mounts) and all(
-        (m.get('Type') == 'volume' and m.get('Name') == worker.volume and m.get('Destination') == '/workspace')
+        (m.get('Type') == 'volume' and m.get('Name') == expected_volume and m.get('Destination') == '/workspace')
         or (m.get('Type') == 'bind' and m.get('Source') == expected_ca and m.get('Destination') == '/trust/ca.pem' and not m.get('RW'))
         or (m.get('Type') == 'tmpfs' and m.get('Destination') in ('/tmp', '/home/agent')) for m in mounts)
     env = gateway.get('Config', {}).get('Env') or []
@@ -70,10 +71,10 @@ def policy_checks(worker, sid, agent, gateway, network):
 
 
 def snapshot(worker, include_telemetry=True, collect_decisions=False):
-    rows = [dict(r) for r in worker.db.execute('SELECT * FROM sessions ORDER BY created DESC')]
+    rows = [dict(r) for r in worker.visible_rows()] if hasattr(worker,'visible_rows') else [dict(r) for r in worker.db.execute('SELECT * FROM sessions ORDER BY created DESC')]
     output = {'sampled_at': time.time(), 'policy_id': 'codex-tls-pilot-v1', 'allowed_hosts': ALLOWED_HOSTS,
               'domain_mode': 'default_deny', 'sessions': [], 'signals': [],
-              'events': [dict(r) for r in worker.db.execute('SELECT session_id,action,state,at FROM events ORDER BY sequence DESC LIMIT 50')],
+              'events': worker.visible_events() if hasattr(worker,'visible_events') else [dict(r) for r in worker.db.execute('SELECT session_id,action,state,at FROM events ORDER BY sequence DESC LIMIT 50')],
               'coverage': {'prompt_injection': 'not_implemented', 'malware_detection': 'not_implemented', 'central_alerts': 'not_implemented'},
               'log_scope': 'up to 200 log lines per active gateway from last 15 minutes; decisions, not unique requests; no blocked hostname capture',
               'telemetry_scope': 'current agent containers only; Docker CPU/memory/PIDs; no historical utilization or uptime SLO'}
@@ -81,7 +82,7 @@ def snapshot(worker, include_telemetry=True, collect_decisions=False):
         if row['state'] not in ('ready', 'provisioning', 'stopping'):
             continue
         sid = row['id']; names = worker.names(sid)
-        item = {'id': sid, 'checks': [], 'telemetry': None, 'egress': None, 'error': None}
+        item = {'id': sid, 'state': row['state'], 'checks': [], 'telemetry': None, 'egress': None, 'error': None}
         try:
             agent = worker.exists('container', names['agent']); gateway = worker.exists('container', names['gateway']); network = worker.exists('network', names['internal'])
             worker.ensure_owned(agent, sid); worker.ensure_owned(gateway, sid); worker.ensure_owned(network, sid)

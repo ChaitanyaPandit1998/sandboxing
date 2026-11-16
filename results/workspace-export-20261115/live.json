@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "missing_not_created": true,
+    "fixture_contents_exported": true,
+    "content_unchanged": true,
+    "symlink_rejected": true,
+    "active_session_blocked": true,
+    "probes_removed": true,
+    "isolated_fixture_removed": true
+  },
+  "passed": true,
+  "user_workspace_read": false,
+  "credentials_read": false
+}

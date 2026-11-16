@@ -2,7 +2,7 @@
 
 ## Outcome
 
-The POC demonstrates authenticated Codex tasks through a TLS gateway and a managed local worker with a persistent pilot workspace, temporary login homes, and selected cleanup/recovery controls. A [live local console](../runbooks/LOCAL_CONSOLE.md) now supports create/list/inspect/stop and events through a loopback API. The console also exposes selected live policy checks, resource telemetry, review signals, durable local history/alert acknowledgement and resolution, and read-only allowed/blocked-site lookup. Login and interactive Codex use Mac Terminal handoff. Five concurrent authenticated reply-only probes passed; organization identity, browser terminal relay and full service/attach readiness remain unfinished. New sessions now receive a one-hour deadline, with supervised cleanup polling inside the VM independently of the Mac backend.
+The POC demonstrates authenticated Codex tasks through a TLS gateway and a managed local worker with a persistent pilot workspace, temporary login homes, and selected cleanup/recovery controls. A [live local console](../runbooks/LOCAL_CONSOLE.md) now supports create/list/inspect/stop and events through a loopback API. The console also exposes selected live policy checks, resource telemetry, review signals, durable local history/alert acknowledgement and resolution, versioned review thresholds, and read-only allowed/blocked-site lookup. Personal-mode login and interactive Codex now use an embedded browser terminal, with Mac Terminal fallback. One authenticated browser coding/disconnect/reopen workflow and five concurrent authenticated reply-only probes passed; organization identity and repeated full service/attach readiness remain unfinished. New sessions now receive a one-hour deadline, with supervised cleanup polling inside the VM independently of the Mac backend.
 
 ## Evidence
 
@@ -20,4 +20,13 @@ All four functional requirements and two of three non-functional requirements re
 
 ## Next decisions
 
-Validate interactive attach, finish the control-plane/Wardyn integration decision, connect the worker to the service and UI, and extend the successful single VM-restart check to suspension and sustained recovery testing. Then measure repeated full authenticated service/attach readiness and sustained uptime, and complete the remaining [security](../validation/SECURITY_VALIDATION_PLAN.md) and [agent validation](../validation/AGENT_SESSION_VALIDATION_PLAN.md) gates. Selected probes do not establish production readiness or prove runsc more secure than runc.
+Accept the migrated quota-backed workspace before explicitly removing its retained rollback copy. Measure five-session readiness on the current integrated console/worker, then extend recovery checks to full quota-service VM reboot, suspension and sustained uptime, and complete the remaining [security](../validation/SECURITY_VALIDATION_PLAN.md) and [agent validation](../validation/AGENT_SESSION_VALIDATION_PLAN.md) gates. Selected probes do not establish production readiness or prove runsc more secure than runc.
+
+
+**Optional identity candidate (2026-11-14):** Personal mode remains the running default. An optional Okta OIDC login/session adapter now passes simulated-provider and signed-token tests, including separate request identities and negative controls. Real tenant/app login and distinct-user worker acceptance are unverified; organization-authenticated terminal acceptance and remote HTTPS deployment remain required before organization rollout. [Details](../security/AUTHENTICATION.md).
+
+
+**Local usability milestone (2026-11-15):** The personal-mode console now embeds a real Codex PTY terminal with owner-bound tickets, keyboard/resize support and tracked disconnect/stop cleanup. Automated negative controls and an isolated real runsc/browser workflow passed, with workspace retention preserved. A subsequent authenticated browser task passed eight generated tests and 11 independent checks, with disconnect/reopen and retained-file verification. Organization terminal access remains unverified; Okta troubleshooting is deferred. [Evidence and operating limits](../runbooks/LOCAL_CONSOLE.md#browser-terminal-for-the-local-personal-pilot-2026-11-15).
+
+
+**Storage milestone (2026-11-16):** The actual pilot workspace now has an enforced **5 GiB quota**. All 11 entries matched after verified migration, and a temporary managed session accessed the workspace successfully. The original copy is retained for rollback; deletion is guarded until that copy is resolved. All 16 migration and 22 repeat quota checks passed. Full reboot recovery and sustained five-session performance remain open. [Migration and evidence](../runbooks/WORKSPACE_MIGRATION.md).

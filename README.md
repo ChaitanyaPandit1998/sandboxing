@@ -4,7 +4,7 @@ Compare Docker's default `runc` runtime with gVisor's `runsc` runtime on the sam
 
 Start with the [documentation index](docs/README.md), [executive summary](docs/overview/EXECUTIVE_SUMMARY.md), or [current requirements status](docs/REQUIREMENTS_STATUS.md). The timestamped [DEVLOG.md](DEVLOG.md) records changes, checks, failures, and next steps.
 
-To operate the single-user pilot, use the [local console](docs/runbooks/LOCAL_CONSOLE.md) or [managed worker CLI](docs/runbooks/MANAGED_WORKER.md). The live console manages real sessions through a loopback API; login and Codex terminal access use a private Mac Terminal handoff. Browser terminal relay and organization identity remain pending. The earlier [static prototype](docs/platform/UI_PROTOTYPE.md) is retained as design history.
+To operate the single-user pilot, use the [local console](docs/runbooks/LOCAL_CONSOLE.md) or [managed worker CLI](docs/runbooks/MANAGED_WORKER.md). The live console manages real sessions through a loopback API; personal-mode login and Codex access use an embedded browser terminal, with Mac Terminal fallback. One authenticated browser coding/disconnect/reopen workflow passed. The pilot workspace now has an enforced 5 GiB quota, with its original copy retained for rollback; see [migration/recovery](docs/runbooks/WORKSPACE_MIGRATION.md). Organization identity and remote/multi-user acceptance remain pending. The earlier [static prototype](docs/platform/UI_PROTOTYPE.md) is retained as design history.
 
 ![Architecture diagram showing the Mac host, Lima Linux VM, paired Docker runtime paths, and saved experiment results](docs/diagrams/architecture.svg)
 

@@ -1,0 +1,16 @@
+{
+  "worker_files_installed": 3,
+  "source_equality_verified": true,
+  "personal_console_port": 4180,
+  "temporary_console_stopped": true,
+  "disposable_volume_and_state_removed": true,
+  "source_sha256": {
+    "scripts/workspace_lifecycle.py": "d922d3148e73b9ce89ecca3bdf598da733dd184634040b70d7196628601a5a5c",
+    "scripts/workspace_storage.py": "785fe9b95543c72245996c3e2fe57dc7ae193a0e080e31076384bda8e5f1c442",
+    "scripts/manage_codex_session.py": "f0136d7027f7ce0816f3bd11a6977213bbdc9b6eb08febb17204d0b400512215",
+    "scripts/serve_session_console.py": "25c989829acb8c3db8a22451b7d867352728344d7651bde0054d97d916615342",
+    "ui/console/app.js": "4d7d95e8f2648498fc38e02b6c7648db693b140a64b3367c7663aec02f29f7d1",
+    "ui/console/index.html": "162aaadc3b6cbe836e8ac0596a0af823154811780deaf90ae85540d9a2d074b8",
+    "ui/console/console.css": "a20160308c3eff4821ade01befbed15174c09c123a933b0c19935d542adc6e8c"
+  }
+}

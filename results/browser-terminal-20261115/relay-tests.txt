@@ -1,0 +1,23 @@
+test_buffer_overrun_fails_closed (test_terminal_relay.PtyTests.test_buffer_overrun_fails_closed) ... ok
+test_disconnect_expiry_bounds_and_invalid_input (test_terminal_relay.PtyTests.test_disconnect_expiry_bounds_and_invalid_input) ... ok
+test_expiry_revokes_real_pty_without_waiting_one_hour (test_terminal_relay.PtyTests.test_expiry_revokes_real_pty_without_waiting_one_hour) ... ok
+test_real_pty_input_output_resize_and_cleanup (test_terminal_relay.PtyTests.test_real_pty_input_output_resize_and_cleanup) ... ok
+test_command_is_fixed_arguments_no_shell_or_host_secret_environment (test_terminal_relay.RelayTests.test_command_is_fixed_arguments_no_shell_or_host_secret_environment) ... ok
+test_concurrent_connect_reservation_prevents_double_spawn (test_terminal_relay.RelayTests.test_concurrent_connect_reservation_prevents_double_spawn) ... ok
+test_foreign_owner_even_operator_unknown_mode_command_and_dimensions_denied (test_terminal_relay.RelayTests.test_foreign_owner_even_operator_unknown_mode_command_and_dimensions_denied) ... ok
+test_one_connection_per_session_stop_revokes_ticket_and_channel (test_terminal_relay.RelayTests.test_one_connection_per_session_stop_revokes_ticket_and_channel) ... ok
+test_ssh_transport_disables_host_escape_commands_and_forwarding (test_terminal_relay.RelayTests.test_ssh_transport_disables_host_escape_commands_and_forwarding) ... ok
+test_ticket_and_channel_bound_to_browser_and_principal (test_terminal_relay.RelayTests.test_ticket_and_channel_bound_to_browser_and_principal) ... ok
+test_ticket_expires_is_one_use_and_rechecks_state (test_terminal_relay.RelayTests.test_ticket_expires_is_one_use_and_rechecks_state) ... ok
+test_tickets_and_channels_bounded_and_failed_cleanup_retains_capacity (test_terminal_relay.RelayTests.test_tickets_and_channels_bounded_and_failed_cleanup_retains_capacity) ... ok
+test_cross_origin_and_foreign_owner_even_operator_rejected (test_terminal_relay.TerminalHTTPTests.test_cross_origin_and_foreign_owner_even_operator_rejected) ... ok
+test_failed_stop_does_not_revoke_another_channel (test_terminal_relay.TerminalHTTPTests.test_failed_stop_does_not_revoke_another_channel) ... ok
+test_local_console_ports_use_distinct_cookie_names (test_terminal_relay.TerminalHTTPTests.test_local_console_ports_use_distinct_cookie_names) ... ok
+test_static_terminal_assets_have_narrow_csp_and_no_external_scripts (test_terminal_relay.TerminalHTTPTests.test_static_terminal_assets_have_narrow_csp_and_no_external_scripts) ... ok
+test_ticket_requires_cookie_csrf_fixed_mode_and_personal_mode (test_terminal_relay.TerminalHTTPTests.test_ticket_requires_cookie_csrf_fixed_mode_and_personal_mode) ... ok
+test_owner_id_and_resource_bound_cleanup (test_terminal_relay.WorkerTerminalTests.test_owner_id_and_resource_bound_cleanup) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 3.467s
+
+OK

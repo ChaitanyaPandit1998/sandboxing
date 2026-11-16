@@ -1,0 +1,8 @@
+{
+  "fixture_volume_removed": true,
+  "audit_recorded_deleted": true,
+  "replay_error_contract_failed": true,
+  "cause": "CLI __main__ and imported worker module used distinct WorkerError classes",
+  "fixed": "Register the CLI module under its import name before main; real CLI JSON regression and HTTP replay now pass",
+  "user_workspace_deleted": false
+}

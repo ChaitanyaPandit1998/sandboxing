@@ -1,0 +1,82 @@
+{
+  "scope": "sandboxing-upstream repository",
+  "count": 15,
+  "source": "user-provided local instruction-only bundle",
+  "skills": [
+    {
+      "name": "api-contract-design",
+      "path": ".agents/skills/api-contract-design/SKILL.md",
+      "sha256": "b4a5c25d040349f3590d7efd4e5761cc097a871de80971e91a3f9646a3efeef7"
+    },
+    {
+      "name": "behavior-preserving-refactoring",
+      "path": ".agents/skills/behavior-preserving-refactoring/SKILL.md",
+      "sha256": "c322e00706cc11d0ae829bf662c7581e4cf140926d901d7739993bc8e35f8146"
+    },
+    {
+      "name": "ci-verification",
+      "path": ".agents/skills/ci-verification/SKILL.md",
+      "sha256": "0a30cf63c9f9d87d04ce7e76c62ad61597ac60c14d2aa8c995ebcad1ace0fb05"
+    },
+    {
+      "name": "code-review",
+      "path": ".agents/skills/code-review/SKILL.md",
+      "sha256": "9ae7a45c6194a7bb10dae97ae9c4cd70cc4d1d99ac50e69cbb60c23657fb047b"
+    },
+    {
+      "name": "coding-standards",
+      "path": ".agents/skills/coding-standards/SKILL.md",
+      "sha256": "61de23620332b54d21df5f4e213a8f4b1f10e1fd16aa5b87452b5cb2e8930cd3"
+    },
+    {
+      "name": "concurrency-reliability",
+      "path": ".agents/skills/concurrency-reliability/SKILL.md",
+      "sha256": "e834433caf04a7fb06f29f69541a7b1399c081c5967bc0d09882b88224202d5a"
+    },
+    {
+      "name": "database-change-safety",
+      "path": ".agents/skills/database-change-safety/SKILL.md",
+      "sha256": "b29143ee39e46895f92faf8eb6703159abcd6b4d71e84e08e7e5b7626bcbe305"
+    },
+    {
+      "name": "git-change-hygiene",
+      "path": ".agents/skills/git-change-hygiene/SKILL.md",
+      "sha256": "8c78d68843baace414d9cee50f8974b0c55fad2bd7cfa00ed87100051f1e1386"
+    },
+    {
+      "name": "implementation-planning",
+      "path": ".agents/skills/implementation-planning/SKILL.md",
+      "sha256": "90e65c8db238e75d8b7bceda4cf5fdfe921b016604fd228c8cb267ec0d74a6e0"
+    },
+    {
+      "name": "observability",
+      "path": ".agents/skills/observability/SKILL.md",
+      "sha256": "3566f64ed31ed07cef02712ce9d0d1aa656c690c22cd6f68a3a50b829a647303"
+    },
+    {
+      "name": "performance-profiling",
+      "path": ".agents/skills/performance-profiling/SKILL.md",
+      "sha256": "eed395fac164f15b3a0a4f98a13dce2595e54cac08378d4c4d299d42ba3324d6"
+    },
+    {
+      "name": "secure-coding",
+      "path": ".agents/skills/secure-coding/SKILL.md",
+      "sha256": "427ec0f2f6b5fd7e93c38f49f6afb5e061eeefa9e176c232616abb1fd5933ff6"
+    },
+    {
+      "name": "systematic-debugging",
+      "path": ".agents/skills/systematic-debugging/SKILL.md",
+      "sha256": "3f7db33d447d2b3b34d44d7d86bf6f80c7ea3c6c26c4455165d99f19adef456c"
+    },
+    {
+      "name": "test-driven-development",
+      "path": ".agents/skills/test-driven-development/SKILL.md",
+      "sha256": "226cda97e2f90b9b7463e58ab4e11174532d563790ad06ef22f37c69080021e9"
+    },
+    {
+      "name": "unit-integration-testing",
+      "path": ".agents/skills/unit-integration-testing/SKILL.md",
+      "sha256": "b717d81a562b87cadadeeffcef0a8d3a3be3307b0db5a3765b72fbaeb82374b9"
+    }
+  ]
+}

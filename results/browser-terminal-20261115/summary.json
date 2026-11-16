@@ -1,0 +1,61 @@
+{
+  "recorded_at": "2026-11-15T00:22:57+05:30",
+  "scope": "trusted personal-mode loopback browser terminal",
+  "tests": {
+    "terminal_unit_pty_http_passed": 18,
+    "existing_api_passed": 18,
+    "ownership_passed": 6,
+    "profile_passed": 12,
+    "oidc_passed": 20,
+    "isolated_real_vm_http_pty_test_passed": 1,
+    "separate_old_live_api_test_skipped": 1
+  },
+  "real_vm_checks": {
+    "isolated_member_session_ready": true,
+    "codex_cli_rendered_without_login": true,
+    "tracked_remote_wrapper_present": true,
+    "resize_accepted": true,
+    "explicit_disconnect_reaped_local_and_remote": true,
+    "codex_process_count_restored": true,
+    "workspace_retained_after_disconnect": true,
+    "immediate_disconnect_cancelled_startup": true,
+    "no_codex_after_immediate_disconnect": true,
+    "stop_revokes_channel": true,
+    "agent_removed_after_stop": true,
+    "workspace_volume_retained_after_stop": true,
+    "isolated_state_and_test_volume_removed": true
+  },
+  "browser": {
+    "create": true,
+    "embedded_codex_welcome": true,
+    "arrow_key_input": true,
+    "disconnect": true,
+    "panel_close": true,
+    "stop": true,
+    "console_error_count": 0,
+    "screenshot": "/private/tmp/sandbox-browser-terminal.png"
+  },
+  "deployed_to_personal_console": true,
+  "okta_terminal_enabled": false,
+  "real_provider_login_or_model_task_tested": false,
+  "test_resources_removed": true,
+  "committed": false,
+  "sources": {
+    "scripts/serve_session_console.py": "a3285368ca25d70f1870f38968457b9a68f1bcb95b25371c64e5a46566fce395",
+    "scripts/terminal_relay.py": "bf00465795db7b2f4fe658efcac2cd965d421c2ca971c95bf22c1e3088d33da3",
+    "scripts/terminal_exec.py": "b07799d2fea15daddf154daa30b2046c747e4e5266337f3e65be2880274a317d",
+    "scripts/terminal_programs.py": "c11f5770f9344e09756cfd250b242bfc544b58a9097ef7c013233139ed9ea0b9",
+    "scripts/terminal_ssh.sh": "4b57b97773f3d939da3b4c672258a0eb00231e5bc929912661f4dbc31a1c15c0",
+    "scripts/manage_codex_session.py": "a190302116104442f10c2661c212086fd5a001460dc56ae02d922022f4e189aa",
+    "tests/test_terminal_relay.py": "00440780f102b54d1696a196203906098f4dce8345a73f86174fd6d886c007d2",
+    "tests/test_browser_terminal_live.py": "306f7beb892d1324d7e96e6aaf92c08adabfe73d547e9ee05dd83cf592eaadf8",
+    "ui/console/terminal.html": "b9745451d4e02d8084b927be56e9e8bf6d29e5585b4a8cb9613d7129259466a8",
+    "ui/console/terminal.js": "8c3d23762228788ad646e72b145b47496b7a077a43012fe7375fd40b89762958",
+    "ui/console/app.js": "c2030dd4dc8fd32388ec3737c5a787803657a1edbbbdc97795ec080a3f024f15"
+  },
+  "next": [
+    "private authenticated browser workflow acceptance",
+    "workspace lifecycle controls",
+    "remaining security and performance/soak gates"
+  ]
+}

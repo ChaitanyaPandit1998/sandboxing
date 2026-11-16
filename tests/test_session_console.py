@@ -1,4 +1,5 @@
 import hashlib
+import base64
 import http.client
 import importlib.util
 import json
@@ -28,12 +29,17 @@ class FakeAdapter:
             self.reconciles += 1
         row = {'id': SID, 'state': 'ready', 'runtime': 'runsc-stable-20261109', 'created': 1}
         return {'health': {'active': True, 'stale': False, 'last_success': 1, 'error': None},
+                'prepare-workspace-deletion': {'token':'b'*64,'owner':'local-pilot','expires':time.time()+60,'confirmation':'DELETE WORKSPACE','irreversible':True},
+                'delete-workspace': {'deleted':True,'owner':'local-pilot','audit_id':1},
+                'export-workspace': {'archive_base64':base64.b64encode(b'bounded-test-archive').decode()},
+                'workspace': {'owner':'local-pilot','state':'retained','allocated_bytes':4096,'budget_bytes':5*1024**3,'hard_quota_enforced':False},
                 'monitor': {'sampled_at': 1, 'allowed_hosts': ['auth.openai.com'], 'sessions': [], 'signals': []},
+                'alert-rules': {'version':'pilot-review-v1','rules':[],'enforcement':'review_only','editable_in_ui':False,'automatic_session_stop':False},
                 'alerts': {'alerts': [], 'counts': {'open':0,'acknowledged':0,'resolved':0},'last_collection':None,'collection_errors':0,'audit':[]},
                 'security-events': {'events': [], 'next_before':None,'retention_days':30,'max_events':10000},
                 'acknowledge-alert': {'id': SID, 'status':'acknowledged'}, 'resolve-alert': {'id': SID, 'status':'resolved'},
                 'reconcile': {}, 'list': [row], 'create': row, 'stop': row,
-                'inspect': row, 'events': [{'sequence': 1, 'action': 'create', 'state': 'ready', 'at': 1}]}[action]
+                'authorize-attach': row, 'inspect': row, 'events': [{'sequence': 1, 'action': 'create', 'state': 'ready', 'at': 1}]}[action]
 
 
 class ConsoleTests(unittest.TestCase):
@@ -75,6 +81,52 @@ class ConsoleTests(unittest.TestCase):
 
     def test_authentication_required(self):
         self.assertEqual(self.request('/api/sessions')[0], 401)
+
+    def test_workspace_deletion_requires_exact_consent_and_csrf(self):
+        from unittest.mock import patch
+        self.assertEqual(self.request('/api/workspace/deletion-prepare','POST',{})[0],403)
+        self.bootstrap()
+        self.assertEqual(self.request('/api/workspace/delete')[0],405)
+        self.assertEqual(self.request('/api/workspace/deletion-prepare','POST',{'owner':'foreign'})[0],400)
+        self.assertEqual(self.request('/api/workspace/deletion-prepare?owner=foreign','POST',{})[0],400)
+        self.assertEqual(self.request('/api/workspace/delete','POST',{'token':'b'*64,'confirmation':'DELETE WORKSPACE'},headers={'X-POC-CSRF':'bad'})[0],403)
+        for body in [{},{'token':'bad','confirmation':'DELETE WORKSPACE'},{'token':'b'*64,'confirmation':'delete'},{'token':'b'*64,'confirmation':'DELETE WORKSPACE','owner':'foreign'}]:
+            self.assertEqual(self.request('/api/workspace/delete','POST',body)[0],400)
+        status,headers,data=self.request('/api/workspace/deletion-prepare','POST',{})
+        self.assertEqual(status,200);self.assertTrue(json.loads(data)['irreversible'])
+        self.assertEqual(headers['Cache-Control'],'no-store')
+        body={'token':'b'*64,'confirmation':'DELETE WORKSPACE'}
+        self.assertEqual(self.request('/api/workspace/delete','POST',body)[0],200)
+        self.assertEqual(self.server.adapter.calls[-1],('delete-workspace',('--confirmation-token','b'*64,'--confirmation','DELETE WORKSPACE')))
+        for error in ['workspace_in_use','workspace_changed','workspace_confirmation_invalid']:
+            with patch.object(self.server.adapter,'run',side_effect=RuntimeError(error)):
+                self.assertEqual(self.request('/api/workspace/delete','POST',body)[0],409)
+
+    def test_workspace_export_requires_authenticated_csrf_post(self):
+        self.assertEqual(self.request('/api/workspace/export','POST',{})[0],403)
+        self.bootstrap()
+        self.assertEqual(self.request('/api/workspace/export')[0],405)
+        self.assertEqual(self.request('/api/workspace/export','POST',{'owner':'foreign'})[0],400)
+        self.assertEqual(self.request('/api/workspace/export?path=/','POST',{})[0],400)
+        self.assertEqual(self.request('/api/workspace/export','POST',{},headers={'X-POC-CSRF':'bad'})[0],403)
+        status,headers,data=self.request('/api/workspace/export','POST',{})
+        self.assertEqual(status,200);self.assertEqual(data,b'bounded-test-archive')
+        self.assertEqual(headers['Content-Type'],'application/x-tar')
+        self.assertEqual(headers['Cache-Control'],'no-store')
+        self.assertEqual(headers['Content-Disposition'],'attachment; filename="workspace.tar"')
+        self.assertEqual(self.server.adapter.calls[-1],('export-workspace',()))
+
+    def test_workspace_requires_auth_and_rejects_owner_selection_and_mutation(self):
+        self.assertEqual(self.request('/api/workspace')[0],401)
+        self.bootstrap()
+        status, _, raw = self.request('/api/workspace')
+        self.assertEqual(status,200)
+        self.assertEqual(json.loads(raw)['allocated_bytes'],4096)
+        self.assertEqual(self.server.adapter.calls[-1],('workspace',()))
+        calls=len(self.server.adapter.calls)
+        self.assertEqual(self.request('/api/workspace?owner=someone-else')[0],400)
+        self.assertEqual(self.request('/api/workspace','POST',{})[0],405)
+        self.assertEqual(len(self.server.adapter.calls),calls)
 
     def test_cookie_is_private_and_no_store(self):
         headers = self.bootstrap()
@@ -127,6 +179,27 @@ class ConsoleTests(unittest.TestCase):
         self.assertIn(b'REAL WORKER STATE', data)
         for path in ['/app.js', '/styles.css', '/console.css', '/docs/README.md']:
             self.assertEqual(self.request(path)[0], 200)
+
+    def test_identity_is_bound_by_server_not_headers_or_body(self):
+        self.assertEqual(self.request('/api/identity')[0],401)
+        self.bootstrap()
+        self.server.adapter.principal='member-a';self.server.adapter.role='member'
+        status,_,body=self.request('/api/identity',headers={'X-Principal':'member-b','X-Role':'operator'})
+        self.assertEqual(status,200)
+        data=json.loads(body);self.assertEqual(data['principal'],'member-a');self.assertEqual(data['role'],'member')
+        self.assertFalse(data['organization_sso'])
+        self.assertEqual(self.request('/api/identity','POST',{'principal':'member-b'})[0],404)
+        status,_,body=self.request('/api/sessions');self.assertEqual(json.loads(body)['quota'],2)
+
+    def test_rules_are_authenticated_read_only_and_new_history_filters_valid(self):
+        self.assertEqual(self.request('/api/alert-rules')[0],401)
+        self.bootstrap()
+        status,_,body=self.request('/api/alert-rules')
+        self.assertEqual(status,200)
+        self.assertFalse(json.loads(body)['automatic_session_stop'])
+        self.assertEqual(self.request('/api/alert-rules','POST',{})[0],404)
+        for kind in ['egress_burst','resource_pressure','sample_unavailable','collector_gap']:
+            self.assertEqual(self.request('/api/security-events?kind='+kind)[0],200)
 
     def test_alert_actions_require_auth_csrf_and_fixed_body(self):
         self.assertEqual(self.request('/api/alerts')[0],401)
